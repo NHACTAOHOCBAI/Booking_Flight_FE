@@ -7,6 +7,12 @@ import AboutUsPage from 'pages/client/aboutUsPage/aboutUsPage';
 import BookingPage from 'pages/client/bookingPage/bookingPage';
 import LoginPage from 'pages/auth/loginPage/loginPage';
 import SignUpPage from 'pages/auth/signUpPage/signUpPage';
+import "./global.css"
+import AdminLayout from 'pages/admin/adminLayout/adminLayout';
+import Dashboard from 'pages/admin/dashboard/dashboard';
+import FlightManagement from 'pages/admin/flightManagement/flightManagement';
+import { ConfigProvider } from 'antd';
+import enUS from 'antd/locale/en_US';
 const router = createBrowserRouter([
   {
     path: "/",
@@ -27,6 +33,20 @@ const router = createBrowserRouter([
     ],
   },
   {
+    path: "/admin",
+    element: <AdminLayout />,
+    children: [
+      {
+        index: true,
+        element: <Dashboard />
+      },
+      {
+        path: "manageflight",
+        element: <FlightManagement />,
+      },
+    ],
+  },
+  {
     path: "/login",
     element: <LoginPage />,
   },
@@ -37,6 +57,8 @@ const router = createBrowserRouter([
 ]);
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <RouterProvider router={router} />
+    <ConfigProvider locale={enUS}>
+      <RouterProvider router={router} />
+    </ConfigProvider>
   </StrictMode>,
 )
