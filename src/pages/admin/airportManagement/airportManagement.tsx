@@ -6,10 +6,15 @@ import { Button, Popconfirm } from 'antd';
 import { useRef, useState } from 'react';
 import NewAirport from './newAirport';
 import UpdateAirport from './updateAirport';
-const FlightManagement = () => {
+const AirportManagement = () => {
     //update
     const [isUpdateOpen, setIsUpdateOpen] = useState(false);
-    const [updatedAirport, setUpdatedAirport] = useState<IAirportItem>();
+    const [updatedAirport, setUpdatedAirport] = useState<IAirportItem>({
+        _id: "",
+        name: "",
+        city: "",
+        country: ""
+    });
     //New
     const [isNewOpen, setIsNewOpen] = useState(false);
     //Table
@@ -134,6 +139,14 @@ const FlightManagement = () => {
             )
         }
     ];
+    const handleRequest = async (params, sort, filter) => {
+        console.log(params, sort, filter);
+        return {
+            data: {}, // Dữ liệu bảng
+            success: true,
+            total: 10,
+        }
+    }
     return (
         <>
             <ProTable<IAirportItem>
@@ -142,6 +155,8 @@ const FlightManagement = () => {
                 actionRef={actionRef}
                 cardBordered
                 headerTitle="Airport List"
+                request={handleRequest}
+                //Khi ProTable được render hoặc có sự thay đổi ở bộ lọc, tìm kiếm, phân trang, nó sẽ tự động gọi hàm request
                 toolBarRender={() => [
                     <Button
                         key="button"
@@ -152,6 +167,12 @@ const FlightManagement = () => {
                         New Airport
                     </Button>
                 ]}
+                pagination={{
+                    pageSizeOptions: [5, 10, 20],
+                    showSizeChanger: true,
+                    defaultCurrent: 1,
+                    defaultPageSize: 5
+                }}
             />
             <NewAirport
                 isNewOpen={isNewOpen}
@@ -166,4 +187,4 @@ const FlightManagement = () => {
         </>
     );
 }
-export default FlightManagement;
+export default AirportManagement;

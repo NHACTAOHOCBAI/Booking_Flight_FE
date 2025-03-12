@@ -10,9 +10,9 @@ import SignUpPage from 'pages/auth/signUpPage/signUpPage';
 import "./global.css"
 import AdminLayout from 'pages/admin/adminLayout/adminLayout';
 import Dashboard from 'pages/admin/dashboard/dashboard';
-import FlightManagement from 'pages/admin/flightManagement/flightManagement';
 import { ConfigProvider } from 'antd';
 import enUS from 'antd/locale/en_US';
+import AirportManagement from '@/pages/admin/airportManagement/airportManagement';
 const router = createBrowserRouter([
   {
     path: "/",
@@ -41,8 +41,8 @@ const router = createBrowserRouter([
         element: <Dashboard />
       },
       {
-        path: "manageflight",
-        element: <FlightManagement />,
+        path: "manageairport",
+        element: <AirportManagement />,
       },
     ],
   },
