@@ -1,6 +1,7 @@
 import { Link, Outlet } from "react-router-dom";
 import { useState } from 'react';
 import {
+    ApartmentOutlined,
     BarChartOutlined,
     EnvironmentOutlined,
     MenuFoldOutlined,
@@ -38,22 +39,27 @@ const AdminLayout = () => {
                         {
                             key: 'airport',
                             icon: <EnvironmentOutlined />,
-                            label: <Link to={"/admin/manageairport"} >Airport</Link>,
+                            label: <Link to={"/admin/manage-airport"} >Airport</Link>,
                         },
                         {
                             key: 'flight',
                             icon: <SendOutlined />,
-                            label: <Link to={"/admin/manageairport"} >Flight</Link>,
+                            label: <Link to={"/admin/manage-flight"} >Flight</Link>,
                         },
                         {
                             key: 'account',
                             icon: <UserOutlined />,
-                            label: <Link to={"/admin/manageaccount"} >Account</Link>,
+                            label: <Link to={"/admin/manage-account"} >Account</Link>,
+                        },
+                        {
+                            key: 'seatClass',
+                            icon: <ApartmentOutlined />,
+                            label: <Link to={"/admin/manage-seat"} >Seat Class</Link>,
                         },
                         {
                             key: 'setting',
                             icon: <SettingOutlined />,
-                            label: <Link to={"/admin/manageairport"} >Setting</Link>,
+                            label: <Link to={"/admin/manage-airport"} >Setting</Link>,
                         },
                     ]}
                 />

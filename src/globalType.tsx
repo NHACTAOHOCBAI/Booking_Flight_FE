@@ -18,4 +18,10 @@ declare global {
         gender: string,
         role: string,
     }
+    interface ISeatItem {
+        _id: string,
+        name: string,
+        price: number,
+        description: string,
+    }
 }

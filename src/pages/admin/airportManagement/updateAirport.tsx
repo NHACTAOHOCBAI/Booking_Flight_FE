@@ -18,6 +18,7 @@ const UpdateAirport = (props: IProp) => {
     const { updatedAirport, setUpdatedAirport, isUpdateOpen, setIsUpdateOpen } = props;
     const [form] = Form.useForm();
     const onFinish: FormProps<IUpdateAirportItem>['onFinish'] = (value) => {
+        console.log(value);
         handleCancel();
     }
     const handleOk = () => {

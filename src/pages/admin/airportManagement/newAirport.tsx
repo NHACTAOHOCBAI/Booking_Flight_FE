@@ -13,6 +13,7 @@ const NewAirport = (props: IProp) => {
     const { isNewOpen, setIsNewOpen } = props;
     const [form] = Form.useForm();
     const onFinish: FormProps<INewAirportItem>['onFinish'] = (value) => {
+        console.log(value)
         handleCancel();
     }
     const handleOk = () => {

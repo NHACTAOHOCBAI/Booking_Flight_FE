@@ -13,7 +13,9 @@ import Dashboard from 'pages/admin/dashboard/dashboard';
 import { ConfigProvider } from 'antd';
 import enUS from 'antd/locale/en_US';
 import AirportManagement from '@/pages/admin/airportManagement/airportManagement';
-import AccountManagement from './pages/admin/accountManagement/accountManagement';
+import AccountManagement from '@/pages/admin/accountManagement/accountManagement';
+import SeatManagement from '@/pages/admin/seatManagement/seatManagement';
+import FlightManagement from '@/pages/admin/flightManagement/flightManagement';
 const router = createBrowserRouter([
   {
     path: "/",
@@ -42,11 +44,19 @@ const router = createBrowserRouter([
         element: <Dashboard />
       },
       {
-        path: "manageairport",
+        path: "manage-airport",
         element: <AirportManagement />,
       },
       {
-        path: "manageaccount",
+        path: "manage-flight",
+        element: <FlightManagement />,
+      },
+      {
+        path: "manage-seat",
+        element: <SeatManagement />,
+      },
+      {
+        path: "manage-account",
         element: <AccountManagement />,
       },
     ],

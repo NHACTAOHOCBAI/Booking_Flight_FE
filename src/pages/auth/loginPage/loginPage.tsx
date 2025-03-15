@@ -1,6 +1,7 @@
 import type { FormProps } from 'antd';
-import { Button, Checkbox, Col, Divider, Flex, Form, Input, Row } from 'antd';
-import { GoogleOutlined } from '@ant-design/icons';
+import { Button, Checkbox, Col, Divider, Flex, Form, Input } from 'antd';
+import { ArrowLeftOutlined, GoogleOutlined } from '@ant-design/icons';
+import { Link } from 'react-router-dom';
 type FieldType = {
     username?: string;
     password?: string;
@@ -23,11 +24,10 @@ const LoginPage = () => (
             backgroundColor: "#ecf0f1",
             display: "flex",
             justifyContent: "center",
-            alignItems: "center"
+            alignItems: "center",
         }}>
-            <Col span={6}>
-                <div style={{
-                    width: "auto",
+            <Col xs={22} sm={12} xl={6}>
+                < div style={{
                     height: "auto",
                     background: "White",
                     padding: 30,
@@ -47,7 +47,7 @@ const LoginPage = () => (
                         color: "#95a5a6"
                     }}> Please enter your credentials to login</div>
                     <Form
-                        style={{ width: 320 }}
+                        style={{ width: "100%" }}
                         layout="vertical"
                         name="basic"
                         initialValues={{ remember: true }}
@@ -92,7 +92,20 @@ const LoginPage = () => (
                             </Button>
                         </Form.Item>
                     </Form>
-                    <Divider />
+                    <div style={{
+                        width: "100%",
+                        display: "flex",
+                        alignItems: "left",/* Căn giữa theo chiều dọc */
+                        justifyContent: "flex-start"
+                    }}>
+                        <Link to='/'>
+                            <ArrowLeftOutlined />
+                            <span> Go to homepage</span>
+                        </Link>
+                    </div>
+                    <Divider style={{
+                        marginTop: 10
+                    }} />
                     <div style={{
                         fontSize: 14,
                         color: "#95a5a6",
@@ -109,12 +122,16 @@ const LoginPage = () => (
                         <span style={{
                             fontSize: 14,
                             color: "#3498db",
-                        }}> Sign up</span>
-
+                            cursor: "pointer"
+                        }}>
+                            <Link to='/signup'>
+                                Sign up here
+                            </Link>
+                        </span>
                     </div>
                 </div>
             </Col>
-        </div>
+        </div >
     </>
 );
 
