@@ -2,12 +2,14 @@ import { Link, Outlet } from "react-router-dom";
 import { useState } from 'react';
 import {
     BarChartOutlined,
+    EnvironmentOutlined,
     MenuFoldOutlined,
     MenuUnfoldOutlined,
+    SendOutlined,
+    SettingOutlined,
     UserOutlined,
-    VideoCameraOutlined,
 } from '@ant-design/icons';
-import { Avatar, Badge, Button, Col, Layout, Menu, Row, theme } from 'antd';
+import { Avatar, Badge, Button, Layout, Menu, theme } from 'antd';
 const { Header, Sider, Content } = Layout;
 
 const AdminLayout = () => {
@@ -35,22 +37,22 @@ const AdminLayout = () => {
                         },
                         {
                             key: 'airport',
-                            icon: <VideoCameraOutlined />,
+                            icon: <EnvironmentOutlined />,
                             label: <Link to={"/admin/manageairport"} >Airport</Link>,
                         },
                         {
                             key: 'flight',
-                            icon: <VideoCameraOutlined />,
+                            icon: <SendOutlined />,
                             label: <Link to={"/admin/manageairport"} >Flight</Link>,
                         },
                         {
                             key: 'account',
-                            icon: <VideoCameraOutlined />,
-                            label: <Link to={"/admin/manageairport"} >Account</Link>,
+                            icon: <UserOutlined />,
+                            label: <Link to={"/admin/manageaccount"} >Account</Link>,
                         },
                         {
                             key: 'setting',
-                            icon: <VideoCameraOutlined />,
+                            icon: <SettingOutlined />,
                             label: <Link to={"/admin/manageairport"} >Setting</Link>,
                         },
                     ]}

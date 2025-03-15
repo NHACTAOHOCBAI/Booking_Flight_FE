@@ -13,6 +13,7 @@ import Dashboard from 'pages/admin/dashboard/dashboard';
 import { ConfigProvider } from 'antd';
 import enUS from 'antd/locale/en_US';
 import AirportManagement from '@/pages/admin/airportManagement/airportManagement';
+import AccountManagement from './pages/admin/accountManagement/accountManagement';
 const router = createBrowserRouter([
   {
     path: "/",
@@ -43,6 +44,10 @@ const router = createBrowserRouter([
       {
         path: "manageairport",
         element: <AirportManagement />,
+      },
+      {
+        path: "manageaccount",
+        element: <AccountManagement />,
       },
     ],
   },

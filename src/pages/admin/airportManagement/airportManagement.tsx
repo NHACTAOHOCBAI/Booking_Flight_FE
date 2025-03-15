@@ -91,7 +91,7 @@ const AirportManagement = () => {
             title: 'ID',
             search: false,
             render: (_, record) => (
-                <a href="#">{record._id}</a>
+                <a style={{ color: "#3498db" }}>{record._id}</a>
             )
         },
         {
@@ -140,7 +140,6 @@ const AirportManagement = () => {
         }
     ];
     const handleRequest = async (params, sort, filter) => {
-        console.log(params, sort, filter);
         return {
             data: {}, // Dữ liệu bảng
             success: true,
