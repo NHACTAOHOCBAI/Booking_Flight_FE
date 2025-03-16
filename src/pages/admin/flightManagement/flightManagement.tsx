@@ -3,13 +3,81 @@ import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons';
 import type { ActionType, ProColumns } from '@ant-design/pro-components';
 import { ProTable } from '@ant-design/pro-components';
 import { Button, Popconfirm } from 'antd';
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
+import NewFlight from './newFlight';
 const FlightManagement = () => {
+    //New
+    const [isNewOpen, setIsNewOpen] = useState(false);
     //Table
     const actionRef = useRef<ActionType>(null);
-    const data: IAirportItem[] = []
+    const data: IFlightItem[] = [
+        {
+            _id: "FL001",
+            planeId: "PL001",
+            planeName: "Boeing 747",
+            departureId: "SGN",
+            departureName: "Tan Son Nhat International Airport",
+            arrivalId: "HAN",
+            arrivalName: "Noi Bai International Airport",
+            departureTime: "2025-04-10T08:00:00Z",
+            arrivalTime: "2025-04-10T10:00:00Z",
+            price: 150,
+            ticket: [
+                { type: { _id: "S1", name: "Economy", price: 150, description: "Basic seat" }, quantity: 50 },
+                { type: { _id: "S2", name: "Business", price: 300, description: "Spacious seat with premium service" }, quantity: 10 }
+            ]
+        },
+        {
+            _id: "FL002",
+            planeId: "PL002",
+            planeName: "Airbus A320",
+            departureId: "DAD",
+            departureName: "Da Nang International Airport",
+            arrivalId: "SGN",
+            arrivalName: "Tan Son Nhat International Airport",
+            departureTime: "2025-04-12T14:00:00Z",
+            arrivalTime: "2025-04-12T16:00:00Z",
+            price: 120,
+            ticket: [
+                { type: { _id: "S1", name: "Economy", price: 120, description: "Affordable and comfortable seat" }, quantity: 60 },
+                { type: { _id: "S3", name: "First Class", price: 400, description: "Luxury seat with premium service" }, quantity: 5 }
+            ]
+        },
+        {
+            _id: "FL003",
+            planeId: "PL003",
+            planeName: "Boeing 777",
+            departureId: "HAN",
+            departureName: "Noi Bai International Airport",
+            arrivalId: "PQC",
+            arrivalName: "Phu Quoc International Airport",
+            departureTime: "2025-04-15T10:00:00Z",
+            arrivalTime: "2025-04-15T12:30:00Z",
+            price: 180,
+            ticket: [
+                { type: { _id: "S1", name: "Economy", price: 180, description: "Basic seat" }, quantity: 70 },
+                { type: { _id: "S2", name: "Business", price: 350, description: "Premium seat with extra legroom" }, quantity: 8 }
+            ]
+        },
+        {
+            _id: "FL004",
+            planeId: "PL004",
+            planeName: "Boeing 737",
+            departureId: "CXR",
+            departureName: "Cam Ranh International Airport",
+            arrivalId: "DAD",
+            arrivalName: "Da Nang International Airport",
+            departureTime: "2025-04-18T16:00:00Z",
+            arrivalTime: "2025-04-18T17:30:00Z",
+            price: 100,
+            ticket: [
+                { type: { _id: "S1", name: "Economy", price: 100, description: "Comfortable economy seat" }, quantity: 80 },
+                { type: { _id: "S3", name: "First Class", price: 450, description: "Exclusive first-class experience" }, quantity: 4 }
+            ]
+        }
+    ];
 
-    const columns: ProColumns<IAirportItem>[] = [
+    const columns: ProColumns<IFlightItem>[] = [
         {
             dataIndex: 'index',
             valueType: 'indexBorder',
@@ -23,17 +91,30 @@ const FlightManagement = () => {
             )
         },
         {
-            title: 'Name',
-            dataIndex: 'name',
-            copyable: true
+            title: 'Plane',
+            dataIndex: 'planeName',
         },
         {
-            title: 'City',
-            dataIndex: 'city',
+            title: 'Departure Airport',
+            dataIndex: 'departureName',
         },
         {
-            title: 'Country',
-            dataIndex: 'country',
+            title: 'Arrival Airport',
+            dataIndex: 'arrivalName',
+        },
+        {
+            title: 'Departure Time ',
+            dataIndex: 'departureTime',
+        },
+        {
+            title: 'Available tickets',
+            render: (_, record) => (
+                <a style={{ color: "#3498db" }}>{
+                    record.ticket.reduce((total, value) => {
+                        return total + value.quantity;
+                    }, 0)
+                }</a>
+            )
         },
         {
             title: 'Action',
@@ -71,12 +152,12 @@ const FlightManagement = () => {
     }
     return (
         <>
-            <ProTable<IAirportItem>
+            <ProTable<IFlightItem>
                 dataSource={data}
                 columns={columns}
                 actionRef={actionRef}
                 cardBordered
-                headerTitle="Airport List"
+                headerTitle="Flight List"
                 request={handleRequest}
                 //Khi ProTable được render hoặc có sự thay đổi ở bộ lọc, tìm kiếm, phân trang, nó sẽ tự động gọi hàm request
                 toolBarRender={() => [
@@ -84,6 +165,9 @@ const FlightManagement = () => {
                         key="button"
                         icon={<PlusOutlined />}
                         type="primary"
+                        onClick={() => {
+                            setIsNewOpen(true);
+                        }}
                     >
                         New Airport
                     </Button>
@@ -94,6 +178,10 @@ const FlightManagement = () => {
                     defaultCurrent: 1,
                     defaultPageSize: 5
                 }}
+            />
+            <NewFlight
+                isNewOpen={isNewOpen}
+                setIsNewOpen={setIsNewOpen}
             />
         </>
     );

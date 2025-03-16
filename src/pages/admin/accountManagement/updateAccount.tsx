@@ -9,16 +9,6 @@ interface IProp {
     isUpdateOpen: boolean
     setIsUpdateOpen: (value: boolean) => void
 }
-interface IUpdateAccountItem {
-    _id: string,
-    username: string,
-    password: string,
-    phone: string,
-    fullName: string,
-    dob: string,
-    gender: string,
-    role: string,
-};
 const UpdateAccount = (props: IProp) => {
     const { updatedAccount, setUpdatedAccount, isUpdateOpen, setIsUpdateOpen } = props;
     const [date, setDate] = useState<string>("");

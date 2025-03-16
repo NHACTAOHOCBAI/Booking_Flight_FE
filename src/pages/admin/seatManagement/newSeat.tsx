@@ -5,11 +5,6 @@ interface IProp {
     isNewOpen: boolean
     setIsNewOpen: (value: boolean) => void
 }
-interface INewSeatItem {
-    name: string,
-    price: number,
-    description: string,
-};
 const NewSeat = (props: IProp) => {
     const { isNewOpen, setIsNewOpen } = props;
     const [form] = Form.useForm();

@@ -4,11 +4,6 @@ interface IProp {
     isNewOpen: boolean
     setIsNewOpen: (value: boolean) => void
 }
-interface INewAirportItem {
-    name: string,
-    city: string,
-    country: string
-};
 const NewAirport = (props: IProp) => {
     const { isNewOpen, setIsNewOpen } = props;
     const [form] = Form.useForm();
