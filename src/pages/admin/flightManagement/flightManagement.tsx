@@ -5,7 +5,21 @@ import { ProTable } from '@ant-design/pro-components';
 import { Button, Popconfirm } from 'antd';
 import { useRef, useState } from 'react';
 import NewFlight from './newFlight';
+import UpdateFlight from './updateFlight';
 const FlightManagement = () => {
+    //update
+    const [isUpdateOpen, setIsUpdateOpen] = useState(false);
+    const [updatedFlight, setUpdatedFlight] = useState<IUpdateFlightItem>({
+        _id: "",
+        planeId: "",
+        departureId: "",
+        arrivalId: "",
+        departureTime: "01/01/2000 00:00:00",
+        arrivalTime: "01/01/2000 00:00:00",
+        price: 0,
+        ticket: [],
+        interAirport: [],
+    });
     //New
     const [isNewOpen, setIsNewOpen] = useState(false);
     //Table
@@ -23,8 +37,15 @@ const FlightManagement = () => {
             arrivalTime: "2025-04-10T10:00:00Z",
             price: 150,
             ticket: [
-                { type: { _id: "S1", name: "Economy", price: 150, description: "Basic seat" }, quantity: 50 },
-                { type: { _id: "S2", name: "Business", price: 300, description: "Spacious seat with premium service" }, quantity: 10 }
+                { type: { _id: "S001", name: "Economy", price: 150, description: "Basic seat" }, quantity: 50 },
+                { type: { _id: "S002", name: "Business", price: 300, description: "Spacious seat with premium service" }, quantity: 10 }
+            ],
+            interAirport: [
+                {
+                    _id: "PL001",
+                    arrivalTime: "2025-04-10T08:00:00Z",
+                    departureTime: "2025-04-10T08:00:00Z"
+                }
             ]
         },
         {
@@ -41,7 +62,8 @@ const FlightManagement = () => {
             ticket: [
                 { type: { _id: "S1", name: "Economy", price: 120, description: "Affordable and comfortable seat" }, quantity: 60 },
                 { type: { _id: "S3", name: "First Class", price: 400, description: "Luxury seat with premium service" }, quantity: 5 }
-            ]
+            ],
+            interAirport: [],
         },
         {
             _id: "FL003",
@@ -57,7 +79,8 @@ const FlightManagement = () => {
             ticket: [
                 { type: { _id: "S1", name: "Economy", price: 180, description: "Basic seat" }, quantity: 70 },
                 { type: { _id: "S2", name: "Business", price: 350, description: "Premium seat with extra legroom" }, quantity: 8 }
-            ]
+            ],
+            interAirport: [],
         },
         {
             _id: "FL004",
@@ -71,9 +94,10 @@ const FlightManagement = () => {
             arrivalTime: "2025-04-18T17:30:00Z",
             price: 100,
             ticket: [
-                { type: { _id: "S1", name: "Economy", price: 100, description: "Comfortable economy seat" }, quantity: 80 },
-                { type: { _id: "S3", name: "First Class", price: 450, description: "Exclusive first-class experience" }, quantity: 4 }
-            ]
+                { type: { _id: "S001", name: "Economy", price: 100, description: "Comfortable economy seat" }, quantity: 80 },
+                { type: { _id: "S003", name: "First Class", price: 450, description: "Exclusive first-class experience" }, quantity: 4 }
+            ],
+            interAirport: [],
         }
     ];
 
@@ -119,7 +143,7 @@ const FlightManagement = () => {
         {
             title: 'Action',
             search: false,
-            render: () => (
+            render: (_, record) => (
                 <div style={{
                     display: "flex",
                     gap: 10
@@ -127,6 +151,26 @@ const FlightManagement = () => {
                     <EditOutlined
                         style={{
                             color: "#54a0ff"
+                        }}
+                        onClick={() => {
+                            setIsUpdateOpen(true);
+                            const ticket = record.ticket.map((value) => {
+                                return {
+                                    ticketId: value.type._id,
+                                    quantity: value.quantity
+                                }
+                            })
+                            setUpdatedFlight({
+                                _id: record._id,
+                                planeId: record.planeId,
+                                departureId: record.departureId,
+                                arrivalId: record.arrivalId,
+                                departureTime: record.departureTime,
+                                arrivalTime: record.arrivalTime,
+                                price: record.price,
+                                ticket: ticket,
+                                interAirport: record.interAirport,
+                            })
                         }}
                     />
                     <Popconfirm
@@ -182,6 +226,12 @@ const FlightManagement = () => {
             <NewFlight
                 isNewOpen={isNewOpen}
                 setIsNewOpen={setIsNewOpen}
+            />
+            <UpdateFlight
+                isUpdateOpen={isUpdateOpen}
+                setIsUpdateOpen={setIsUpdateOpen}
+                updatedFlight={updatedFlight}
+                setUpdatedFlight={setUpdatedFlight}
             />
         </>
     );

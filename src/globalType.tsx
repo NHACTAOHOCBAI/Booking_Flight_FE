@@ -84,6 +84,11 @@ declare global {
         ticket: {
             type: ISeatItem,
             quantity: number
+        }[],
+        interAirport: {
+            _id: string,
+            arrivalTime: string,
+            departureTime: string
         }[]
     }
     interface INewFlightItem {
@@ -97,6 +102,28 @@ declare global {
             ticketId: string,
             quantity: number
         }[]
-        // [key: string]: any,
+        interAirport: {
+            _id: string,
+            arrivalTime: string,
+            departureTime: string
+        }[]
+    }
+    interface IUpdateFlightItem {
+        _id: string,
+        planeId: string,
+        departureId: string,
+        arrivalId: string,
+        departureTime: string,
+        arrivalTime: string,
+        price: number,
+        ticket: {
+            ticketId: string,
+            quantity: number
+        }[]
+        interAirport: {
+            _id: string,
+            arrivalTime: string,
+            departureTime: string
+        }[]
     }
 }

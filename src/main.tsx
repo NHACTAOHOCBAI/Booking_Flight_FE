@@ -16,6 +16,9 @@ import AirportManagement from '@/pages/admin/airportManagement/airportManagement
 import AccountManagement from '@/pages/admin/accountManagement/accountManagement';
 import SeatManagement from '@/pages/admin/seatManagement/seatManagement';
 import FlightManagement from '@/pages/admin/flightManagement/flightManagement';
+
+import { Provider } from 'react-redux'
+import { store } from './redux/store';
 const router = createBrowserRouter([
   {
     path: "/",
@@ -73,7 +76,9 @@ const router = createBrowserRouter([
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <ConfigProvider locale={enUS}>
-      <RouterProvider router={router} />
+      <Provider store={store}>
+        <RouterProvider router={router} />
+      </Provider>
     </ConfigProvider>
   </StrictMode>,
 )

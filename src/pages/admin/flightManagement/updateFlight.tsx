@@ -2,26 +2,26 @@
 import { Button, Col, DatePicker, Form, FormProps, InputNumber, Modal, Row, Select, Space } from "antd";
 import { CloseOutlined } from "@ant-design/icons"
 import dayjs from "dayjs";
+import { useEffect } from "react";
 interface IProp {
-    isNewOpen: boolean
-    setIsNewOpen: (value: boolean) => void
+    isUpdateOpen: boolean
+    setIsUpdateOpen: (value: boolean) => void
+    updatedFlight: IUpdateFlightItem
+    setUpdatedFlight: (value: IUpdateFlightItem) => void
 }
-const NewFlight = (props: IProp) => {
-    const { isNewOpen, setIsNewOpen } = props;
+const UpdateFlight = (props: IProp) => {
+    const { isUpdateOpen, setIsUpdateOpen, setUpdatedFlight, updatedFlight } = props;
     const [form] = Form.useForm();
-    const onFinish: FormProps<INewFlightItem>['onFinish'] = (value) => {
+    const onFinish: FormProps<IUpdateFlightItem>['onFinish'] = (value) => {
         value.departureTime = dayjs(value.departureTime).format("DD/MM/YYYY HH:mm:ss");
         value.arrivalTime = dayjs(value.arrivalTime).format("DD/MM/YYYY HH:mm:ss");
-        if (value.interAirport) {
-            value.interAirport = value.interAirport.map((values) => {
-                return {
-                    _id: values._id,
-                    arrivalTime: dayjs(values.arrivalTime).format("DD/MM/YYYY HH:mm:ss"),
-                    departureTime: dayjs(values.departureTime).format("DD/MM/YYYY HH:mm:ss"),
-                }
-            })
-        }
-        value.ticket = value.ticket ? value.ticket : [];
+        value.interAirport = value.interAirport.map((values) => {
+            return {
+                _id: values._id,
+                arrivalTime: dayjs(values.arrivalTime).format("DD/MM/YYYY HH:mm:ss"),
+                departureTime: dayjs(values.departureTime).format("DD/MM/YYYY HH:mm:ss"),
+            }
+        })
         console.log(value)
         handleCancel();
     }
@@ -31,8 +31,40 @@ const NewFlight = (props: IProp) => {
     const handleCancel = () => {
         // form.resetFields();
         // subForm.resetFields();
-        setIsNewOpen(false);
+        setUpdatedFlight({
+            _id: "",
+            planeId: "",
+            departureId: "",
+            arrivalId: "",
+            departureTime: "01/01/2000 00:00:00",
+            arrivalTime: "01/01/2000 00:00:00",
+            price: 0,
+            ticket: [],
+            interAirport: [],
+        })
+        setIsUpdateOpen(false);
     };
+    useEffect(() => {
+        console.log(updatedFlight);
+        const interAirport = updatedFlight.interAirport.map((value) => {
+            return {
+                _id: value._id,
+                arrivalTime: value.arrivalTime ? dayjs(value.arrivalTime) : null,
+                departureTime: value.departureTime ? dayjs(value.departureTime) : null,
+            }
+        })
+        form.setFieldsValue({
+            _id: updatedFlight._id,
+            planeId: updatedFlight.planeId,
+            departureId: updatedFlight.departureId,
+            arrivalId: updatedFlight.arrivalId,
+            departureTime: updatedFlight.departureTime ? dayjs(updatedFlight.departureTime) : null,
+            arrivalTime: updatedFlight.arrivalTime ? dayjs(updatedFlight.arrivalTime) : null,
+            price: updatedFlight.price,
+            ticket: updatedFlight.ticket,
+            interAirport: interAirport,
+        })
+    }, [updatedFlight])
     //fake data
     const planes = [
         { _id: "001", plane: "Boeing 747" },
@@ -76,7 +108,7 @@ const NewFlight = (props: IProp) => {
     })
     return (
         <>
-            <Modal width={1050} open={isNewOpen} onOk={handleOk} onCancel={handleCancel}>
+            <Modal width={1050} open={isUpdateOpen} onOk={handleOk} onCancel={handleCancel}>
                 <Form
                     layout="vertical"
                     name="basic"
@@ -91,7 +123,7 @@ const NewFlight = (props: IProp) => {
                                 fontWeight: "bold", color: "#95a5a6"
                             }}> Flight information</div>
 
-                            <Form.Item<INewFlightItem>
+                            <Form.Item<IUpdateFlightItem>
                                 label="Plane"
                                 name="planeId"
                                 rules={[
@@ -109,7 +141,7 @@ const NewFlight = (props: IProp) => {
                                 />
                             </Form.Item>
 
-                            <Form.Item<INewFlightItem>
+                            <Form.Item<IUpdateFlightItem>
                                 label="Departure airport"
                                 name="departureId"
                                 rules={[
@@ -127,7 +159,7 @@ const NewFlight = (props: IProp) => {
                                 />
                             </Form.Item>
 
-                            <Form.Item<INewFlightItem>
+                            <Form.Item<IUpdateFlightItem>
                                 label="Arrival airport"
                                 name="arrivalId"
                                 rules={[
@@ -147,7 +179,7 @@ const NewFlight = (props: IProp) => {
 
                             <Row>
                                 <Col span={12}>
-                                    <Form.Item<INewFlightItem>
+                                    <Form.Item<IUpdateFlightItem>
                                         label="Departure time"
                                         name="departureTime"
                                         rules={[
@@ -168,7 +200,7 @@ const NewFlight = (props: IProp) => {
                                 </Col>
 
                                 <Col span={12}>
-                                    <Form.Item<INewFlightItem>
+                                    <Form.Item<IUpdateFlightItem>
                                         label="Arrival time"
                                         name="arrivalTime"
                                         rules={[
@@ -188,8 +220,8 @@ const NewFlight = (props: IProp) => {
                                     </Form.Item>
                                 </Col>
                             </Row>
-                            <Form.Item<INewFlightItem>
-                                label="Intermediate airport"
+                            <Form.Item<IUpdateFlightItem>
+                                label="Intermediate Airport "
                             >
                                 <Form.List name="interAirport">
                                     {(subFields, subOpt) => (
@@ -274,7 +306,7 @@ const NewFlight = (props: IProp) => {
                                 fontSize: 20,
                                 fontWeight: "bold", color: "#95a5a6"
                             }}> Manage Tickets</div>
-                            <Form.Item<INewFlightItem>
+                            <Form.Item<IUpdateFlightItem>
                                 label=" "
                             >
                                 <Form.List name="ticket">
@@ -328,7 +360,7 @@ const NewFlight = (props: IProp) => {
                                     )}
                                 </Form.List>
                             </Form.Item>
-                            <Form.Item<INewFlightItem>
+                            <Form.Item<IUpdateFlightItem>
                                 label="Original price"
                                 name="price"
                                 rules={[
@@ -352,4 +384,4 @@ const NewFlight = (props: IProp) => {
         </>
     )
 }
-export default NewFlight;
+export default UpdateFlight;
