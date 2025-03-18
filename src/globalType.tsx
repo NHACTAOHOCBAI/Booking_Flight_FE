@@ -8,6 +8,11 @@ declare global {
         result?: T
     }
     // airport
+    interface IFakeAirportItem {
+        airportCode: string,
+        airportName: string,
+        location: string
+    }
     interface IAirportItem {
         _id: string,
         name: string,
