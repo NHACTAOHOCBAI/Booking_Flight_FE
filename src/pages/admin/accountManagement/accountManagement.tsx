@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons';
 import type { ActionType, ProColumns } from '@ant-design/pro-components';
 import { ProTable } from '@ant-design/pro-components';
@@ -233,14 +231,6 @@ const AccountManagement = () => {
             )
         }
     ];
-    const handleRequest = async (params: any) => {
-        console.log(params);
-        return {
-            data: {}, // Dữ liệu bảng
-            success: true,
-            total: 10,
-        }
-    }
     return (
         <>
             <ProTable<IAccountItem>
@@ -249,8 +239,6 @@ const AccountManagement = () => {
                 actionRef={actionRef}
                 cardBordered
                 headerTitle="Accounts List"
-                request={handleRequest}
-                //Khi ProTable được render hoặc có sự thay đổi ở bộ lọc, tìm kiếm, phân trang, nó sẽ tự động gọi hàm request
                 toolBarRender={() => [
                     <Button
                         key="button"

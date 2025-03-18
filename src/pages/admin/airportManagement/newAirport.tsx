@@ -1,7 +1,4 @@
-import { createAirport, setDoneCreate } from "@/redux/airport/airportSlice";
-import { useAppDispatch, useAppSelector } from "@/redux/hook";
 import { Form, FormProps, Input, message, Modal } from "antd";
-import { useEffect } from "react";
 
 interface IProp {
     isNewOpen: boolean
@@ -9,16 +6,10 @@ interface IProp {
 }
 const NewAirport = (props: IProp) => {
     const [messageApi, contextHolder] = message.useMessage();
-    const dispatch = useAppDispatch();
-    const isDoneCreate = useAppSelector(state => state.airport.isDoneCreate);
     const { isNewOpen, setIsNewOpen } = props;
     const [form] = Form.useForm();
     const onFinish: FormProps<INewAirportItem>['onFinish'] = (value) => {
-        const realValue = {
-            airportName: value.name,
-            location: value.city
-        }
-        dispatch(createAirport(realValue));
+        console.log(value);
         handleCancel();
     }
     const handleOk = () => {
@@ -28,15 +19,6 @@ const NewAirport = (props: IProp) => {
         form.resetFields();
         setIsNewOpen(false);
     };
-    useEffect(() => {
-        if (isDoneCreate) {
-            messageApi.open({
-                type: 'success',
-                content: 'This is a success message',
-            });
-            dispatch(setDoneCreate());
-        }
-    }, [isDoneCreate])
     return (
         <>
             {contextHolder}
