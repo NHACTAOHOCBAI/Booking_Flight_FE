@@ -156,13 +156,6 @@ const AirportManagement = () => {
             )
         }
     ];
-    const handleRequest = async () => {
-        return {
-            data: {}, // Dữ liệu bảng
-            success: true,
-            total: 10,
-        }
-    }
     return (
         <>
             <ProTable<IAirportItem>
@@ -171,8 +164,6 @@ const AirportManagement = () => {
                 actionRef={actionRef}
                 cardBordered
                 headerTitle="Airport List"
-                request={handleRequest}
-                //Khi ProTable được render hoặc có sự thay đổi ở bộ lọc, tìm kiếm, phân trang, nó sẽ tự động gọi hàm request
                 toolBarRender={() => [
                     <Button
                         key="button"
