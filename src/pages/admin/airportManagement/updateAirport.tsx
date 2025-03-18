@@ -1,5 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { Form, FormProps, Input, Modal } from "antd";
+import { setDoneUpdate, updateAirport } from "@/redux/airport/airportSlice";
+import { useAppDispatch, useAppSelector } from "@/redux/hook";
+import { Form, FormProps, Input, message, Modal } from "antd";
 import { useEffect } from "react";
 
 interface IProp {
@@ -9,10 +11,18 @@ interface IProp {
     setIsUpdateOpen: (value: boolean) => void
 }
 const UpdateAirport = (props: IProp) => {
+    const [messageApi, contextHolder] = message.useMessage();
+    const dispatch = useAppDispatch();
+    const isDoneUpdate = useAppSelector(state => state.airport.isDoneUpdate);
     const { updatedAirport, setUpdatedAirport, isUpdateOpen, setIsUpdateOpen } = props;
     const [form] = Form.useForm();
     const onFinish: FormProps<IUpdateAirportItem>['onFinish'] = (value) => {
-        console.log(value);
+        const realValue = {
+            airportCode: value._id,
+            airportName: value.name,
+            location: value.city
+        }
+        dispatch(updateAirport(realValue));
         handleCancel();
     }
     const handleOk = () => {
@@ -29,6 +39,15 @@ const UpdateAirport = (props: IProp) => {
         setIsUpdateOpen(false);
     };
     useEffect(() => {
+        if (isDoneUpdate) {
+            messageApi.open({
+                type: 'success',
+                content: 'This is a success update',
+            });
+            dispatch(setDoneUpdate());
+        }
+    }, [isDoneUpdate])
+    useEffect(() => {
         form.setFieldsValue({
             _id: updatedAirport._id,
             name: updatedAirport.name,
@@ -38,6 +57,7 @@ const UpdateAirport = (props: IProp) => {
     }, [updatedAirport])
     return (
         <>
+            {contextHolder}
             <Modal title="Update Airport" open={isUpdateOpen} onOk={handleOk} onCancel={handleCancel}>
                 <Form
                     layout="vertical"

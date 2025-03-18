@@ -2,15 +2,17 @@
 import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons';
 import type { ActionType, ProColumns } from '@ant-design/pro-components';
 import { ProTable } from '@ant-design/pro-components';
-import { Button, Popconfirm } from 'antd';
+import { Button, message, Popconfirm } from 'antd';
 import { useEffect, useRef, useState } from 'react';
 import NewAirport from './newAirport';
 import UpdateAirport from './updateAirport';
 import { useAppDispatch, useAppSelector } from '@/redux/hook';
-import { fetchAllAirports } from '@/redux/airport/airportSlice';
+import { deleteAirport, fetchAllAirports, setDoneDelete } from '@/redux/airport/airportSlice';
 const AirportManagement = () => {
+    const [messageApi, contextHolder] = message.useMessage();
     const dispatch = useAppDispatch();
     const allAirports = useAppSelector(state => state.airport.listAirports);
+    const isDoneDelete = useAppSelector(state => state.airport.isDoneDelete);
     const data: IAirportItem[] = allAirports.map((value) => {
         return {
             _id: value.airportCode,
@@ -147,6 +149,9 @@ const AirportManagement = () => {
                         description="Are you sure to delete this airport?"
                         okText="Delete"
                         cancelText="Cancel"
+                        onConfirm={() => {
+                            dispatch(deleteAirport(record._id));
+                        }}
                     >
                         <DeleteOutlined style={{
                             color: "#ee5253"
@@ -156,8 +161,18 @@ const AirportManagement = () => {
             )
         }
     ];
+    useEffect(() => {
+        if (isDoneDelete) {
+            messageApi.open({
+                type: 'success',
+                content: 'This is a success message',
+            });
+            dispatch(setDoneDelete());
+        }
+    }, [isDoneDelete])
     return (
         <>
+            {contextHolder}
             <ProTable<IAirportItem>
                 dataSource={data}
                 columns={columns}
