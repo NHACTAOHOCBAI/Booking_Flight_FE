@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons';
 import type { ActionType, ProColumns } from '@ant-design/pro-components';
 import { ProTable } from '@ant-design/pro-components';
@@ -6,9 +5,8 @@ import { Button, message, Popconfirm, Spin } from 'antd';
 import { useRef, useState } from 'react';
 import NewAirport from './newAirport';
 import UpdateAirport from './updateAirport';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useDeleteAirport, useGetAllAirports } from '@/hooks/useAirport';
 const AirportManagement = () => {
-    const queryClient = useQueryClient();
     const [messageApi, contextHolder] = message.useMessage();
     //update
     const [isUpdateOpen, setIsUpdateOpen] = useState(false);
@@ -22,41 +20,11 @@ const AirportManagement = () => {
     const [isNewOpen, setIsNewOpen] = useState(false);
     //Table
     const actionRef = useRef<ActionType>(null);
-    //fake data
-    const { isPending, error, data } = useQuery({
-        queryKey: ['getAllAirports'],
-        queryFn: (): Promise<APIResponse<IFakeAirportItem[]>> =>
-            fetch('http://localhost:8080/bookingflight/airports').then((res) =>
-                res.json(),
-            ),
-    })
-    //logic delete
-    const mutation = useMutation({
-        mutationFn: async (deletedAirport: IAirportItem) => {
-            await fetch(`http://localhost:8080/bookingflight/airports/${deletedAirport._id}`, {
-                method: "DELETE",
-                headers: {
-                    "Content-Type": "application/json"  // Thêm header JSON
-                },
-            })
-        },
-        onSuccess: async () => {
-            await queryClient.invalidateQueries({ queryKey: ['getAllAirports'] })
-            messageApi.open({
-                type: 'success',
-                content: 'You have deleted an airport',
-            });
-        }
-    })
-    if (isPending) return (
-        <div style={{ height: "100%", display: "flex", justifyContent: "center", alignItems: "center" }}>
-            <Spin size="large" />
-        </div>
-    )
-    if (error) return 'An error has occurred: ' + error.message
+    //fetch data
+    const { isPending, error, data } = useGetAllAirports();
     let fakeData: IAirportItem[] = [];
     if (data && data.result) {
-        fakeData = data.result.map((value: IFakeAirportItem) => {
+        fakeData = data.result.map((value) => {
             return {
                 _id: value.airportCode,
                 name: value.airportName,
@@ -64,6 +32,18 @@ const AirportManagement = () => {
                 country: value.location
             }
         })
+    }
+    // delete
+    const deleteAirport = useDeleteAirport();
+    const handleDelete = (value: string) => {
+        deleteAirport.mutate(value, {
+            onSuccess: () => {
+                messageApi.open({
+                    type: 'success',
+                    content: 'You have created an airport',
+                });
+            }
+        });
     }
     const columns: ProColumns<IAirportItem>[] = [
         {
@@ -114,9 +94,7 @@ const AirportManagement = () => {
                         description="Are you sure to delete this airport?"
                         okText="Delete"
                         cancelText="Cancel"
-                        onConfirm={() => {
-                            mutation.mutate(record);
-                        }}
+                        onConfirm={() => handleDelete(record._id)}
                     >
                         <DeleteOutlined style={{
                             color: "#ee5253"
@@ -126,11 +104,17 @@ const AirportManagement = () => {
             )
         }
     ];
+    if (isPending) return (
+        <div style={{ height: "100%", display: "flex", justifyContent: "center", alignItems: "center" }}>
+            <Spin size="large" />
+        </div>
+    )
+    if (error) return 'An error has occurred: ' + error.message
     return (
         <>
             {contextHolder}
             <ProTable<IAirportItem>
-                loading={mutation.isPending}
+                loading={deleteAirport.isPending}
                 dataSource={fakeData}
                 columns={columns}
                 actionRef={actionRef}

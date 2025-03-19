@@ -1,4 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+import { useUpdateAirport } from "@/hooks/useAirport";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Form, FormProps, Input, message, Modal } from "antd";
 import { useEffect, useState } from "react";
@@ -12,10 +13,22 @@ interface IProp {
 const UpdateAirport = (props: IProp) => {
     const queryClient = useQueryClient();
     const [messageApi, contextHolder] = message.useMessage();
+    const updateAirport = useUpdateAirport();
     const { updatedAirport, setUpdatedAirport, isUpdateOpen, setIsUpdateOpen } = props;
+    const [isLoading, setIsloading] = useState(false);
     const [form] = Form.useForm();
     const onFinish: FormProps<IUpdateAirportItem>['onFinish'] = (value) => {
-        mutation.mutate(value);
+        setIsloading(true);
+        updateAirport.mutate(
+            value,
+            {
+                onSuccess: () => {
+                    messageApi.success("You have updated an airport");
+                    handleCancel();
+                    setIsloading(false);
+                },
+            }
+        );
     }
     const handleOk = () => {
         form.submit();
@@ -64,7 +77,7 @@ const UpdateAirport = (props: IProp) => {
     return (
         <>
             {contextHolder}
-            <Modal title="Update Airport" loading={mutation.isPending} open={isUpdateOpen} onOk={handleOk} onCancel={handleCancel}>
+            <Modal title="Update Airport" loading={isLoading} open={isUpdateOpen} onOk={handleOk} onCancel={handleCancel}>
                 <Form
                     layout="vertical"
                     name="basic"

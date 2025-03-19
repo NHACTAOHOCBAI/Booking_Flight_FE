@@ -1,51 +1,51 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useCreateAirport } from "@/hooks/useAirport";
 import { Form, FormProps, Input, message, Modal } from "antd";
+import { useState } from "react";
+
 interface IProp {
-    isNewOpen: boolean
-    setIsNewOpen: (value: boolean) => void
+    isNewOpen: boolean;
+    setIsNewOpen: (value: boolean) => void;
 }
+
 const NewAirport = (props: IProp) => {
-    const queryClient = useQueryClient()
-    const [messageApi, contextHolder] = message.useMessage();
     const { isNewOpen, setIsNewOpen } = props;
     const [form] = Form.useForm();
-    const onFinish: FormProps<INewAirportItem>['onFinish'] = (value) => {
-        mutation.mutate(value);
-    }
+    const createAirport = useCreateAirport();
+    const [messageApi, contextHolder] = message.useMessage();
+    const [isLoading, setIsloading] = useState(false);
+    const onFinish: FormProps<INewAirportItem>["onFinish"] = async (value) => {
+        setIsloading(true);
+        createAirport.mutate(
+            value,
+            {
+                onSuccess: () => {
+                    messageApi.success("You have created an airport");
+                    handleCancel();
+                    setIsloading(false);
+                },
+            }
+        );
+    };
+
     const handleOk = () => {
         form.submit();
     };
+
     const handleCancel = () => {
         form.resetFields();
         setIsNewOpen(false);
     };
-    //logic create
-    const mutation = useMutation({
-        mutationFn: async (newAirport: INewAirportItem) => {
-            await fetch('http://localhost:8080/bookingflight/airports', {
-                method: "POST",
-                body: JSON.stringify({
-                    airportName: newAirport.name,
-                    location: newAirport.country
-                }),
-                headers: {
-                    "Content-Type": "application/json"  // Thêm header JSON
-                },
-            })
-        },
-        onSuccess: async () => {
-            await queryClient.invalidateQueries({ queryKey: ['getAllAirports'] })
-            handleCancel();
-            messageApi.open({
-                type: 'success',
-                content: 'You have created an airport',
-            });
-        }
-    })
+
     return (
         <>
             {contextHolder}
-            <Modal title="New Airport" loading={mutation.isPending} open={isNewOpen} onOk={handleOk} onCancel={handleCancel}>
+            <Modal
+                title="New Airport"
+                loading={isLoading} // Sử dụng trực tiếp trạng thái của useMutation
+                open={isNewOpen}
+                onOk={handleOk}
+                onCancel={handleCancel}
+            >
                 <Form
                     layout="vertical"
                     name="basic"
@@ -56,42 +56,28 @@ const NewAirport = (props: IProp) => {
                     <Form.Item<INewAirportItem>
                         label="Airport"
                         name="name"
-                        rules={[
-                            {
-                                required: true,
-                                message: "Please input airport's name"
-                            }
-                        ]}
+                        rules={[{ required: true, message: "Please input airport's name" }]}
                     >
                         <Input />
                     </Form.Item>
                     <Form.Item<INewAirportItem>
                         label="City"
                         name="city"
-                        rules={[
-                            {
-                                required: true,
-                                message: "Please input airport's city"
-                            }
-                        ]}
+                        rules={[{ required: true, message: "Please input airport's city" }]}
                     >
                         <Input />
                     </Form.Item>
                     <Form.Item<INewAirportItem>
                         label="Country"
                         name="country"
-                        rules={[
-                            {
-                                required: true,
-                                message: "Please input airport's country"
-                            }
-                        ]}
+                        rules={[{ required: true, message: "Please input airport's country" }]}
                     >
                         <Input />
                     </Form.Item>
                 </Form>
             </Modal>
         </>
-    )
-}
+    );
+};
+
 export default NewAirport;

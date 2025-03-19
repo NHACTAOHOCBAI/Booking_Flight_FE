@@ -4,7 +4,7 @@ const instance = axios.create({
     baseURL: 'http://localhost:8080/bookingflight/',
     timeout: 30000,
     headers: {
-        'Content-Type': 'application/json'
+        "Content-Type": "application/json"
     }
 });
 // Add a request interceptor
@@ -27,4 +27,4 @@ instance.interceptors.response.use(function (response) {
     // Do something with response error
     return Promise.reject(error);
 });
-export { instance };
+export default instance;
