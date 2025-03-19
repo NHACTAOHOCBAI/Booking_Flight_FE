@@ -1,23 +1,20 @@
 import { getFlight } from "@/apis/flight.api";
-import { Flight } from "@/types/flight.type";
 import { DeleteOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
 import type { ActionType, ProColumns } from "@ant-design/pro-components";
 import { ProTable } from "@ant-design/pro-components";
+import { useQuery } from "@tanstack/react-query";
 import { Button, Popconfirm } from "antd";
-import { useEffect, useRef, useState } from "react";
+import { useRef } from "react";
 const FlightManagement = () => {
   //Table
   const actionRef = useRef<ActionType>(null);
 
-  const [flight, setFlight] = useState<Flight[]>([]);
-  //fetching data
-  useEffect(() => {
-    getFlight().then((res) => {
-      return setFlight(res.data);
-    });
+  const { data } = useQuery({
+    queryKey: ["flights"],
+    queryFn: () => getFlight(),
   });
 
-  const data: IAirportItem[] = [];
+  // const data: IAirportItem[] = [];
 
   const columns: ProColumns<IAirportItem>[] = [
     {

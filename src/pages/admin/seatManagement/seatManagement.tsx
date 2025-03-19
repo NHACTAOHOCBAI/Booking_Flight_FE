@@ -2,11 +2,11 @@ import { DeleteOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
 import type { ActionType, ProColumns } from "@ant-design/pro-components";
 import { ProTable } from "@ant-design/pro-components";
 import { Button, Popconfirm } from "antd";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import NewSeat from "./newSeat";
 import UpdateSeat from "./updateSeat";
-import { Seat } from "@/types/seat.type";
 import { getSeat } from "@/apis/seat.api";
+import { useQuery } from "@tanstack/react-query";
 const SeatManagement = () => {
   //update
   const [isUpdateOpen, setIsUpdateOpen] = useState(false);
@@ -21,34 +21,31 @@ const SeatManagement = () => {
   //Table
   const actionRef = useRef<ActionType>(null);
 
-  const [seats, setSeats] = useState<Seat[]>([]);
-  //fetching data
-  useEffect(() => {
-    getSeat().then((res) => {
-      setSeats(res.data);
-    });
+  const { data } = useQuery({
+    queryKey: ["seats"],
+    queryFn: () => getSeat(),
   });
 
-  const data: ISeatItem[] = [
-    {
-      _id: "HG01",
-      name: "Economy Class",
-      price: 100,
-      description: "Basic seating with standard amenities.",
-    },
-    {
-      _id: "HG02",
-      name: "Business Class",
-      price: 150,
-      description: "Spacious seating with premium services.",
-    },
-    {
-      _id: "HG03",
-      name: "First Class",
-      price: 200,
-      description: "Luxury seating with top-tier comfort and exclusivity.",
-    },
-  ];
+  // const data: ISeatItem[] = [
+  //   {
+  //     _id: "HG01",
+  //     name: "Economy Class",
+  //     price: 100,
+  //     description: "Basic seating with standard amenities.",
+  //   },
+  //   {
+  //     _id: "HG02",
+  //     name: "Business Class",
+  //     price: 150,
+  //     description: "Spacious seating with premium services.",
+  //   },
+  //   {
+  //     _id: "HG03",
+  //     name: "First Class",
+  //     price: 200,
+  //     description: "Luxury seating with top-tier comfort and exclusivity.",
+  //   },
+  // ];
   const columns: ProColumns<ISeatItem>[] = [
     {
       dataIndex: "index",
