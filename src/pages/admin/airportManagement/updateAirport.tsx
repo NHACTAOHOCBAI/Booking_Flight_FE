@@ -1,8 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useUpdateAirport } from "@/hooks/useAirport";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Form, FormProps, Input, message, Modal } from "antd";
+import { Form, FormProps, Input, message, Modal, notification } from "antd";
 import { useEffect, useState } from "react";
+import { ExclamationCircleOutlined } from '@ant-design/icons';
 
 interface IProp {
     updatedAirport: IAirportItem
@@ -11,8 +11,8 @@ interface IProp {
     setIsUpdateOpen: (value: boolean) => void
 }
 const UpdateAirport = (props: IProp) => {
-    const queryClient = useQueryClient();
-    const [messageApi, contextHolder] = message.useMessage();
+    const [messageApi, messContextHolder] = message.useMessage();
+    const [api, notifiContextHolder] = notification.useNotification();
     const updateAirport = useUpdateAirport();
     const { updatedAirport, setUpdatedAirport, isUpdateOpen, setIsUpdateOpen } = props;
     const [isLoading, setIsloading] = useState(false);
@@ -27,6 +27,15 @@ const UpdateAirport = (props: IProp) => {
                     handleCancel();
                     setIsloading(false);
                 },
+                onError: () => {
+                    api.info({
+                        message: <div style={{ color: "#ee5253", fontWeight: "bold" }}>Update failed</div>,
+                        description: `${updateAirport.error?.response.data.message}  `,
+                        icon: <ExclamationCircleOutlined style={{ color: "#ee5253" }} />
+                    });
+                    handleCancel();
+                    setIsloading(false);
+                }
             }
         );
     }
@@ -51,32 +60,10 @@ const UpdateAirport = (props: IProp) => {
             country: updatedAirport.country
         })
     }, [updatedAirport])
-    //logic update
-    const mutation = useMutation({
-        mutationFn: async (updatedAirport: IUpdateAirportItem) => {
-            await fetch(`http://localhost:8080/bookingflight/airports/${updatedAirport._id}`, {
-                method: "PUT",
-                body: JSON.stringify({
-                    airportName: updatedAirport.name,
-                    location: updatedAirport.country
-                }),
-                headers: {
-                    "Content-Type": "application/json"  // Thêm header JSON
-                },
-            })
-        },
-        onSuccess: async () => {
-            await queryClient.invalidateQueries({ queryKey: ['getAllAirports'] })
-            handleCancel();
-            messageApi.open({
-                type: 'success',
-                content: 'You have updated an airport',
-            });
-        }
-    })
     return (
         <>
-            {contextHolder}
+            {messContextHolder}
+            {notifiContextHolder}
             <Modal title="Update Airport" loading={isLoading} open={isUpdateOpen} onOk={handleOk} onCancel={handleCancel}>
                 <Form
                     layout="vertical"

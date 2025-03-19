@@ -1,6 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useCreateAirport } from "@/hooks/useAirport";
-import { Form, FormProps, Input, message, Modal } from "antd";
+import { Form, FormProps, Input, message, Modal, notification } from "antd";
 import { useState } from "react";
+import { ExclamationCircleOutlined } from '@ant-design/icons';
 
 interface IProp {
     isNewOpen: boolean;
@@ -11,7 +13,8 @@ const NewAirport = (props: IProp) => {
     const { isNewOpen, setIsNewOpen } = props;
     const [form] = Form.useForm();
     const createAirport = useCreateAirport();
-    const [messageApi, contextHolder] = message.useMessage();
+    const [messageApi, messContextHolder] = message.useMessage();
+    const [api, notifiContextHolder] = notification.useNotification();
     const [isLoading, setIsloading] = useState(false);
     const onFinish: FormProps<INewAirportItem>["onFinish"] = async (value) => {
         setIsloading(true);
@@ -23,6 +26,15 @@ const NewAirport = (props: IProp) => {
                     handleCancel();
                     setIsloading(false);
                 },
+                onError: () => {
+                    api.info({
+                        message: <div style={{ color: "#ee5253", fontWeight: "bold" }}>Create failed</div>,
+                        description: `${createAirport.error?.response.data.message}  `,
+                        icon: < ExclamationCircleOutlined style={{ color: "#ee5253" }} />
+                    });
+                    handleCancel();
+                    setIsloading(false);
+                }
             }
         );
     };
@@ -38,7 +50,8 @@ const NewAirport = (props: IProp) => {
 
     return (
         <>
-            {contextHolder}
+            {messContextHolder}
+            {notifiContextHolder}
             <Modal
                 title="New Airport"
                 loading={isLoading} // Sử dụng trực tiếp trạng thái của useMutation

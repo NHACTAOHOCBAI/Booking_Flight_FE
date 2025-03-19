@@ -40,7 +40,7 @@ const AirportManagement = () => {
             onSuccess: () => {
                 messageApi.open({
                     type: 'success',
-                    content: 'You have created an airport',
+                    content: 'You have deleted an airport',
                 });
             }
         });
