@@ -1,6 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Form, FormProps, Input, message, Modal } from "antd";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 interface IProp {
     updatedAirport: IAirportItem
@@ -9,12 +10,12 @@ interface IProp {
     setIsUpdateOpen: (value: boolean) => void
 }
 const UpdateAirport = (props: IProp) => {
+    const queryClient = useQueryClient();
     const [messageApi, contextHolder] = message.useMessage();
     const { updatedAirport, setUpdatedAirport, isUpdateOpen, setIsUpdateOpen } = props;
     const [form] = Form.useForm();
     const onFinish: FormProps<IUpdateAirportItem>['onFinish'] = (value) => {
-        console.log(value);
-        handleCancel();
+        mutation.mutate(value);
     }
     const handleOk = () => {
         form.submit();
@@ -37,10 +38,33 @@ const UpdateAirport = (props: IProp) => {
             country: updatedAirport.country
         })
     }, [updatedAirport])
+    //logic update
+    const mutation = useMutation({
+        mutationFn: async (updatedAirport: IUpdateAirportItem) => {
+            await fetch(`http://localhost:8080/bookingflight/airports/${updatedAirport._id}`, {
+                method: "PUT",
+                body: JSON.stringify({
+                    airportName: updatedAirport.name,
+                    location: updatedAirport.country
+                }),
+                headers: {
+                    "Content-Type": "application/json"  // Thêm header JSON
+                },
+            })
+        },
+        onSuccess: async () => {
+            await queryClient.invalidateQueries({ queryKey: ['getAllAirports'] })
+            handleCancel();
+            messageApi.open({
+                type: 'success',
+                content: 'You have updated an airport',
+            });
+        }
+    })
     return (
         <>
             {contextHolder}
-            <Modal title="Update Airport" open={isUpdateOpen} onOk={handleOk} onCancel={handleCancel}>
+            <Modal title="Update Airport" loading={mutation.isPending} open={isUpdateOpen} onOk={handleOk} onCancel={handleCancel}>
                 <Form
                     layout="vertical"
                     name="basic"

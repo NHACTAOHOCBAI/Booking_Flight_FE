@@ -10,9 +10,7 @@ const NewAirport = (props: IProp) => {
     const { isNewOpen, setIsNewOpen } = props;
     const [form] = Form.useForm();
     const onFinish: FormProps<INewAirportItem>['onFinish'] = (value) => {
-        console.log(value);
         mutation.mutate(value);
-        handleCancel();
     }
     const handleOk = () => {
         form.submit();
@@ -35,18 +33,19 @@ const NewAirport = (props: IProp) => {
                 },
             })
         },
-        onSuccess: () => {
+        onSuccess: async () => {
+            await queryClient.invalidateQueries({ queryKey: ['getAllAirports'] })
+            handleCancel();
             messageApi.open({
                 type: 'success',
-                content: 'This is a success message',
+                content: 'You have created an airport',
             });
-            queryClient.invalidateQueries({ queryKey: ['getAllAirports'] })
         }
     })
     return (
         <>
             {contextHolder}
-            <Modal title="New Airport" open={isNewOpen} onOk={handleOk} onCancel={handleCancel}>
+            <Modal title="New Airport" loading={mutation.isPending} open={isNewOpen} onOk={handleOk} onCancel={handleCancel}>
                 <Form
                     layout="vertical"
                     name="basic"
