@@ -1,25 +1,16 @@
-import { Outlet } from "react-router-dom";
-import UserHeader from "pages/client/userLayout/userHeader";
-import UserFooter from "pages/client/userLayout/userFooter";
-import "./layoutStyle.css";
-import skyImage from "src/assets/background.png";
+import { Outlet } from 'react-router-dom'
+import UserHeader from 'pages/client/userLayout/userHeader'
+import Footer from '@/components/Footer'
+
 const UserLayout = () => {
   return (
-    <>
-      <div
-        className="layout"
-        style={{
-          backgroundImage: `url(${skyImage})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          height: 700,
-        }}
-      >
+    <div>
+      <div className='layout '>
         <UserHeader />
         <Outlet />
       </div>
-      <UserFooter />
-    </>
-  );
-};
-export default UserLayout;
+      <Footer />
+    </div>
+  )
+}
+export default UserLayout

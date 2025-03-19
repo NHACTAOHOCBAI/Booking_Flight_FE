@@ -1,30 +1,30 @@
-import { DeleteOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
-import type { ActionType, ProColumns } from "@ant-design/pro-components";
-import { ProTable } from "@ant-design/pro-components";
-import { Button, Popconfirm } from "antd";
-import { useRef, useState } from "react";
-import NewAirport from "./newAirport";
-import UpdateAirport from "./updateAirport";
-import { getAirPort } from "@/apis/airport.api";
-import { useQuery } from "@tanstack/react-query";
+import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons'
+import type { ActionType, ProColumns } from '@ant-design/pro-components'
+import { ProTable } from '@ant-design/pro-components'
+import { Button, Popconfirm } from 'antd'
+import { useRef, useState } from 'react'
+import NewAirport from './newAirport'
+import UpdateAirport from './updateAirport'
+import { getAirPort } from '@/apis/airport.api'
+import { useQuery } from '@tanstack/react-query'
 const AirportManagement = () => {
   //update
-  const [isUpdateOpen, setIsUpdateOpen] = useState(false);
+  const [isUpdateOpen, setIsUpdateOpen] = useState(false)
   const [updatedAirport, setUpdatedAirport] = useState<IAirportItem>({
-    _id: "",
-    name: "",
-    city: "",
-    country: "",
-  });
+    _id: '',
+    name: '',
+    city: '',
+    country: ''
+  })
   //New
-  const [isNewOpen, setIsNewOpen] = useState(false);
+  const [isNewOpen, setIsNewOpen] = useState(false)
   //Table
-  const actionRef = useRef<ActionType>(null);
+  const actionRef = useRef<ActionType>(null)
 
   const { data } = useQuery({
-    queryKey: ["airports"],
-    queryFn: () => getAirPort(),
-  });
+    queryKey: ['airports'],
+    queryFn: () => getAirPort()
+  })
 
   // const data: IAirportItem[] = [
   //   {
@@ -91,70 +91,70 @@ const AirportManagement = () => {
 
   const columns: ProColumns<IAirportItem>[] = [
     {
-      dataIndex: "index",
-      valueType: "indexBorder",
-      width: 48,
+      dataIndex: 'index',
+      valueType: 'indexBorder',
+      width: 48
     },
     {
-      title: "ID",
+      title: 'ID',
       search: false,
-      render: (_, record) => <a style={{ color: "#3498db" }}>{record._id}</a>,
+      render: (_, record) => <a style={{ color: '#3498db' }}>{record._id}</a>
     },
     {
-      title: "Name",
-      dataIndex: "name",
-      copyable: true,
+      title: 'Name',
+      dataIndex: 'name',
+      copyable: true
     },
     {
-      title: "City",
-      dataIndex: "city",
+      title: 'City',
+      dataIndex: 'city'
     },
     {
-      title: "Country",
-      dataIndex: "country",
+      title: 'Country',
+      dataIndex: 'country'
     },
     {
-      title: "Action",
+      title: 'Action',
       search: false,
       render: (_, record) => (
         <div
           style={{
-            display: "flex",
-            gap: 10,
+            display: 'flex',
+            gap: 10
           }}
         >
           <EditOutlined
             style={{
-              color: "#54a0ff",
+              color: '#54a0ff'
             }}
             onClick={() => {
-              setIsUpdateOpen(true);
-              setUpdatedAirport(record);
+              setIsUpdateOpen(true)
+              setUpdatedAirport(record)
             }}
           />
           <Popconfirm
-            title="Delete the airport"
-            description="Are you sure to delete this airport?"
-            okText="Delete"
-            cancelText="Cancel"
+            title='Delete the airport'
+            description='Are you sure to delete this airport?'
+            okText='Delete'
+            cancelText='Cancel'
           >
             <DeleteOutlined
               style={{
-                color: "#ee5253",
+                color: '#ee5253'
               }}
             />
           </Popconfirm>
         </div>
-      ),
-    },
-  ];
+      )
+    }
+  ]
   const handleRequest = async () => {
     return {
       data: {}, // Dữ liệu bảng
       success: true,
-      total: 10,
-    };
-  };
+      total: 10
+    }
+  }
   return (
     <>
       <ProTable<IAirportItem>
@@ -162,24 +162,19 @@ const AirportManagement = () => {
         columns={columns}
         actionRef={actionRef}
         cardBordered
-        headerTitle="Airport List"
+        headerTitle='Airport List'
         request={handleRequest}
         //Khi ProTable được render hoặc có sự thay đổi ở bộ lọc, tìm kiếm, phân trang, nó sẽ tự động gọi hàm request
         toolBarRender={() => [
-          <Button
-            key="button"
-            icon={<PlusOutlined />}
-            onClick={() => setIsNewOpen(true)}
-            type="primary"
-          >
+          <Button key='button' icon={<PlusOutlined />} onClick={() => setIsNewOpen(true)} type='primary'>
             New Airport
-          </Button>,
+          </Button>
         ]}
         pagination={{
           pageSizeOptions: [5, 10, 20],
           showSizeChanger: true,
           defaultCurrent: 1,
-          defaultPageSize: 5,
+          defaultPageSize: 5
         }}
       />
       <NewAirport isNewOpen={isNewOpen} setIsNewOpen={setIsNewOpen} />
@@ -190,6 +185,6 @@ const AirportManagement = () => {
         setIsUpdateOpen={setIsUpdateOpen}
       />
     </>
-  );
-};
-export default AirportManagement;
+  )
+}
+export default AirportManagement

@@ -1,4 +1,4 @@
 export interface Flight {
-  id: string;
+  id: string
 }
-export type Flights = Pick<Flight, "id">;
+export type Flights = Pick<Flight, 'id'>

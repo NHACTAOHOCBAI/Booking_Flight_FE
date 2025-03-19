@@ -1,30 +1,30 @@
-import { DeleteOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
-import type { ActionType, ProColumns } from "@ant-design/pro-components";
-import { ProTable } from "@ant-design/pro-components";
-import { Button, Popconfirm } from "antd";
-import { useRef, useState } from "react";
-import NewSeat from "./newSeat";
-import UpdateSeat from "./updateSeat";
-import { getSeat } from "@/apis/seat.api";
-import { useQuery } from "@tanstack/react-query";
+import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons'
+import type { ActionType, ProColumns } from '@ant-design/pro-components'
+import { ProTable } from '@ant-design/pro-components'
+import { Button, Popconfirm } from 'antd'
+import { useRef, useState } from 'react'
+import NewSeat from './newSeat'
+import UpdateSeat from './updateSeat'
+import { getSeat } from '@/apis/seat.api'
+import { useQuery } from '@tanstack/react-query'
 const SeatManagement = () => {
   //update
-  const [isUpdateOpen, setIsUpdateOpen] = useState(false);
+  const [isUpdateOpen, setIsUpdateOpen] = useState(false)
   const [updatedSeat, setUpdatedSeat] = useState<ISeatItem>({
-    _id: "",
-    name: "",
+    _id: '',
+    name: '',
     price: 0,
-    description: "",
-  });
+    description: ''
+  })
   //New
-  const [isNewOpen, setIsNewOpen] = useState(false);
+  const [isNewOpen, setIsNewOpen] = useState(false)
   //Table
-  const actionRef = useRef<ActionType>(null);
+  const actionRef = useRef<ActionType>(null)
 
   const { data } = useQuery({
-    queryKey: ["seats"],
-    queryFn: () => getSeat(),
-  });
+    queryKey: ['seats'],
+    queryFn: () => getSeat()
+  })
 
   // const data: ISeatItem[] = [
   //   {
@@ -48,68 +48,68 @@ const SeatManagement = () => {
   // ];
   const columns: ProColumns<ISeatItem>[] = [
     {
-      dataIndex: "index",
-      valueType: "indexBorder",
-      width: 48,
+      dataIndex: 'index',
+      valueType: 'indexBorder',
+      width: 48
     },
     {
-      title: "ID",
+      title: 'ID',
       search: false,
-      render: (_, record) => <a style={{ color: "#3498db" }}>{record._id}</a>,
+      render: (_, record) => <a style={{ color: '#3498db' }}>{record._id}</a>
     },
     {
-      title: "Name",
-      dataIndex: "name",
+      title: 'Name',
+      dataIndex: 'name'
     },
     {
-      title: "Price",
-      render: (_, record) => <div>{record.price}% </div>,
+      title: 'Price',
+      render: (_, record) => <div>{record.price}% </div>
     },
     {
-      title: "Description",
-      dataIndex: "description",
+      title: 'Description',
+      dataIndex: 'description'
     },
     {
-      title: "Action",
+      title: 'Action',
       render: (_, record) => (
         <div
           style={{
-            display: "flex",
-            gap: 10,
+            display: 'flex',
+            gap: 10
           }}
         >
           <EditOutlined
             style={{
-              color: "#54a0ff",
+              color: '#54a0ff'
             }}
             onClick={() => {
-              setIsUpdateOpen(true);
-              setUpdatedSeat(record);
+              setIsUpdateOpen(true)
+              setUpdatedSeat(record)
             }}
           />
           <Popconfirm
-            title="Delete the airport"
-            description="Are you sure to delete this seat?"
-            okText="Delete"
-            cancelText="Cancel"
+            title='Delete the airport'
+            description='Are you sure to delete this seat?'
+            okText='Delete'
+            cancelText='Cancel'
           >
             <DeleteOutlined
               style={{
-                color: "#ee5253",
+                color: '#ee5253'
               }}
             />
           </Popconfirm>
         </div>
-      ),
-    },
-  ];
+      )
+    }
+  ]
   const handleRequest = async () => {
     return {
       data: {}, // Dữ liệu bảng
       success: true,
-      total: 10,
-    };
-  };
+      total: 10
+    }
+  }
   return (
     <>
       <ProTable<ISeatItem>
@@ -118,24 +118,19 @@ const SeatManagement = () => {
         actionRef={actionRef}
         cardBordered
         search={false}
-        headerTitle="Existing Seat Class"
+        headerTitle='Existing Seat Class'
         request={handleRequest}
         //Khi ProTable được render hoặc có sự thay đổi ở bộ lọc, tìm kiếm, phân trang, nó sẽ tự động gọi hàm request
         toolBarRender={() => [
-          <Button
-            key="button"
-            icon={<PlusOutlined />}
-            type="primary"
-            onClick={() => setIsNewOpen(true)}
-          >
+          <Button key='button' icon={<PlusOutlined />} type='primary' onClick={() => setIsNewOpen(true)}>
             New Seat
-          </Button>,
+          </Button>
         ]}
         pagination={{
           pageSizeOptions: [5, 10, 20],
           showSizeChanger: true,
           defaultCurrent: 1,
-          defaultPageSize: 5,
+          defaultPageSize: 5
         }}
       />
       <NewSeat isNewOpen={isNewOpen} setIsNewOpen={setIsNewOpen} />
@@ -146,6 +141,6 @@ const SeatManagement = () => {
         setIsUpdateOpen={setIsUpdateOpen}
       />
     </>
-  );
-};
-export default SeatManagement;
+  )
+}
+export default SeatManagement

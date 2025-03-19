@@ -1,8 +1,4 @@
 const Dashboard = () => {
-    return (
-        <>
-            Dashboard
-        </>
-    )
+  return <>Dashboard</>
 }
-export default Dashboard;
+export default Dashboard

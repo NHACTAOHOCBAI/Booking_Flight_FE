@@ -1,6 +1,4 @@
 const UserFooter = () => {
-    return (
-        <>User Footer</>
-    )
+  return <>User Footer</>
 }
 export default UserFooter

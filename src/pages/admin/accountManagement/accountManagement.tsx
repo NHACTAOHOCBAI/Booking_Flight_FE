@@ -1,21 +1,21 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { DeleteOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
-import type { ActionType, ProColumns } from "@ant-design/pro-components";
-import { ProTable } from "@ant-design/pro-components";
-import { Button, Popconfirm } from "antd";
-import { useRef, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons'
+import type { ActionType, ProColumns } from '@ant-design/pro-components'
+import { ProTable } from '@ant-design/pro-components'
+import { Button, Popconfirm } from 'antd'
+import { useRef, useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
 
-import UpdateAccount from "./updateAccount";
-import NewAccount from "./newAccount";
-import DetailAccount from "./detailAccount";
-import { getAccounts } from "@/apis/account.api";
+import UpdateAccount from './updateAccount'
+import NewAccount from './newAccount'
+import DetailAccount from './detailAccount'
+import { getAccounts } from '@/apis/account.api'
 
 const AccountManagement = () => {
   //update
-  const [isUpdateOpen, setIsUpdateOpen] = useState(false);
-  const [isDetailOpen, setIsDetailOpen] = useState(false);
+  const [isUpdateOpen, setIsUpdateOpen] = useState(false)
+  const [isDetailOpen, setIsDetailOpen] = useState(false)
 
   // const [account, setAccount] = useState<Account[]>([]);
   //
@@ -27,36 +27,36 @@ const AccountManagement = () => {
 
   // fetching data
   const { data } = useQuery({
-    queryKey: ["accounts"],
-    queryFn: () => getAccounts(),
-  });
+    queryKey: ['accounts'],
+    queryFn: () => getAccounts()
+  })
 
   const [updatedAccount, setUpdatedAccount] = useState<IAccountItem>({
-    _id: "",
-    username: "",
-    phone: "",
-    fullName: "",
-    dob: "",
-    gender: "",
-    role: "",
-    createdAt: "",
-    updatedAt: "",
-  });
+    _id: '',
+    username: '',
+    phone: '',
+    fullName: '',
+    dob: '',
+    gender: '',
+    role: '',
+    createdAt: '',
+    updatedAt: ''
+  })
   const [detailAccount, setDetailAccount] = useState<IAccountItem>({
-    _id: "",
-    username: "",
-    phone: "",
-    fullName: "",
-    dob: "",
-    gender: "",
-    role: "",
-    createdAt: "",
-    updatedAt: "",
-  });
+    _id: '',
+    username: '',
+    phone: '',
+    fullName: '',
+    dob: '',
+    gender: '',
+    role: '',
+    createdAt: '',
+    updatedAt: ''
+  })
   //New
-  const [isNewOpen, setIsNewOpen] = useState(false);
+  const [isNewOpen, setIsNewOpen] = useState(false)
   //Table
-  const actionRef = useRef<ActionType>(null);
+  const actionRef = useRef<ActionType>(null)
   // const data2: IAccountItem[] = [
   //   {
   //     _id: "1a2b3c4d5e6f7g8h9i0j",
@@ -173,99 +173,99 @@ const AccountManagement = () => {
 
   const columns: ProColumns<IAccountItem>[] = [
     {
-      dataIndex: "index",
-      valueType: "indexBorder",
-      width: 48,
+      dataIndex: 'index',
+      valueType: 'indexBorder',
+      width: 48
     },
     {
-      title: "ID",
+      title: 'ID',
       search: false,
       render: (_, record) => (
         <a
-          style={{ color: "#3498db" }}
+          style={{ color: '#3498db' }}
           onClick={() => {
-            setIsDetailOpen(true);
-            setDetailAccount(record);
+            setIsDetailOpen(true)
+            setDetailAccount(record)
           }}
         >
           {record._id}
         </a>
-      ),
+      )
     },
     {
-      title: "Email",
-      dataIndex: "username",
-      copyable: true,
+      title: 'Email',
+      dataIndex: 'username',
+      copyable: true
     },
     {
-      title: "Full name",
-      dataIndex: "fullName",
+      title: 'Full name',
+      dataIndex: 'fullName'
     },
     // role hien thi
     {
-      title: "Phone",
-      dataIndex: "phone",
+      title: 'Phone',
+      dataIndex: 'phone'
     },
     //role tim kiem
     {
-      title: "Role",
-      dataIndex: "role",
+      title: 'Role',
+      dataIndex: 'role',
       hideInTable: true,
-      valueType: "select",
+      valueType: 'select',
       valueEnum: {
-        admin: { text: "Admin" },
-        user: { text: "User" },
-        client: { text: "Client" },
-      },
+        admin: { text: 'Admin' },
+        user: { text: 'User' },
+        client: { text: 'Client' }
+      }
     },
     {
-      title: "Role",
-      dataIndex: "role",
-      search: false,
+      title: 'Role',
+      dataIndex: 'role',
+      search: false
     },
     {
-      title: "Action",
+      title: 'Action',
       search: false,
       render: (_, record) => (
         <div
           style={{
-            display: "flex",
-            gap: 10,
+            display: 'flex',
+            gap: 10
           }}
         >
           <EditOutlined
             style={{
-              color: "#54a0ff",
+              color: '#54a0ff'
             }}
             onClick={() => {
-              setIsUpdateOpen(true);
-              setUpdatedAccount(record);
+              setIsUpdateOpen(true)
+              setUpdatedAccount(record)
             }}
           />
           <Popconfirm
-            title="Delete the airport"
-            description="Are you sure to delete this airport?"
-            okText="Delete"
-            cancelText="Cancel"
+            title='Delete the airport'
+            description='Are you sure to delete this airport?'
+            okText='Delete'
+            cancelText='Cancel'
           >
             <DeleteOutlined
               style={{
-                color: "#ee5253",
+                color: '#ee5253'
               }}
             />
           </Popconfirm>
         </div>
-      ),
-    },
-  ];
+      )
+    }
+  ]
   const handleRequest = async (params: any) => {
-    console.log(params);
+    console.log(params)
     return {
       data: {}, // Dữ liệu bảng
       success: true,
-      total: 10,
-    };
-  };
+      total: 10
+    }
+  }
   return (
     <>
       <ProTable<IAccountItem>
@@ -273,24 +273,19 @@ const AccountManagement = () => {
         columns={columns}
         actionRef={actionRef}
         cardBordered
-        headerTitle="Accounts List"
+        headerTitle='Accounts List'
         request={handleRequest}
         //Khi ProTable được render hoặc có sự thay đổi ở bộ lọc, tìm kiếm, phân trang, nó sẽ tự động gọi hàm request
         toolBarRender={() => [
-          <Button
-            key="button"
-            icon={<PlusOutlined />}
-            onClick={() => setIsNewOpen(true)}
-            type="primary"
-          >
+          <Button key='button' icon={<PlusOutlined />} onClick={() => setIsNewOpen(true)} type='primary'>
             New Account
-          </Button>,
+          </Button>
         ]}
         pagination={{
           pageSizeOptions: [5, 10, 20],
           showSizeChanger: true,
           defaultCurrent: 1,
-          defaultPageSize: 5,
+          defaultPageSize: 5
         }}
       />
       <NewAccount isNewOpen={isNewOpen} setIsNewOpen={setIsNewOpen} />
@@ -307,6 +302,6 @@ const AccountManagement = () => {
         setDetailAccount={setDetailAccount}
       />
     </>
-  );
-};
-export default AccountManagement;
+  )
+}
+export default AccountManagement

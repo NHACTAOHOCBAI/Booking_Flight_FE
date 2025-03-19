@@ -1,6 +1,4 @@
 const BookingPage = () => {
-    return (
-        <>Booking Page</>
-    )
+  return <>Booking Page</>
 }
 export default BookingPage

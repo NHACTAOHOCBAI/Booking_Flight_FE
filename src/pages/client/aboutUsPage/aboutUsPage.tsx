@@ -1,4 +1,4 @@
 const AboutUsPage = () => {
-  return <>About us Page</>;
-};
-export default AboutUsPage;
+  return <>About us Page</>
+}
+export default AboutUsPage
