@@ -238,6 +238,7 @@ const AccountManagement = () => {
                 columns={columns}
                 actionRef={actionRef}
                 cardBordered
+                bordered
                 headerTitle="Accounts List"
                 toolBarRender={() => [
                     <Button

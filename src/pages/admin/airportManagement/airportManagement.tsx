@@ -117,6 +117,7 @@ const AirportManagement = () => {
                 loading={deleteAirport.isPending}
                 dataSource={fakeData}
                 columns={columns}
+                bordered
                 actionRef={actionRef}
                 cardBordered
                 headerTitle="Airport List"

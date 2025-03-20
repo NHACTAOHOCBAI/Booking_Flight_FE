@@ -6,7 +6,24 @@ import { Button, Popconfirm } from 'antd';
 import { useRef, useState } from 'react';
 import NewFlight from './newFlight';
 import UpdateFlight from './updateFlight';
+import DetailFlight from './detailFlight';
 const FlightManagement = () => {
+    //detail
+    const [detailFlight, setDetailFlight] = useState<IFlightItem>({
+        _id: "",
+        planeId: "",
+        planeName: "",
+        departureId: "",
+        departureName: "",
+        arrivalId: "",
+        arrivalName: "",
+        departureTime: "",
+        arrivalTime: "",
+        price: 0,
+        ticket: [],
+        interAirport: []
+    });
+    const [isDetailOpen, setIsDetailOpen] = useState(false);
     //update
     const [isUpdateOpen, setIsUpdateOpen] = useState(false);
     const [updatedFlight, setUpdatedFlight] = useState<IUpdateFlightItem>({
@@ -42,7 +59,12 @@ const FlightManagement = () => {
             ],
             interAirport: [
                 {
-                    _id: "PL001",
+                    _id: "SGN",
+                    arrivalTime: "2025-04-10T08:00:00Z",
+                    departureTime: "2025-04-10T08:00:00Z"
+                },
+                {
+                    _id: "HAN",
                     arrivalTime: "2025-04-10T08:00:00Z",
                     departureTime: "2025-04-10T08:00:00Z"
                 }
@@ -60,8 +82,8 @@ const FlightManagement = () => {
             arrivalTime: "2025-04-12T16:00:00Z",
             price: 120,
             ticket: [
-                { type: { _id: "S1", name: "Economy", price: 120, description: "Affordable and comfortable seat" }, quantity: 60 },
-                { type: { _id: "S3", name: "First Class", price: 400, description: "Luxury seat with premium service" }, quantity: 5 }
+                { type: { _id: "S001", name: "Economy", price: 120, description: "Affordable and comfortable seat" }, quantity: 60 },
+                { type: { _id: "S003", name: "First Class", price: 400, description: "Luxury seat with premium service" }, quantity: 5 }
             ],
             interAirport: [],
         },
@@ -77,8 +99,8 @@ const FlightManagement = () => {
             arrivalTime: "2025-04-15T12:30:00Z",
             price: 180,
             ticket: [
-                { type: { _id: "S1", name: "Economy", price: 180, description: "Basic seat" }, quantity: 70 },
-                { type: { _id: "S2", name: "Business", price: 350, description: "Premium seat with extra legroom" }, quantity: 8 }
+                { type: { _id: "S001", name: "Economy", price: 180, description: "Basic seat" }, quantity: 70 },
+                { type: { _id: "S002", name: "Business", price: 350, description: "Premium seat with extra legroom" }, quantity: 8 }
             ],
             interAirport: [],
         },
@@ -111,7 +133,13 @@ const FlightManagement = () => {
             title: 'ID',
             search: false,
             render: (_, record) => (
-                <a style={{ color: "#3498db" }}>{record._id}</a>
+                <a style={{ color: "#3498db" }}
+                    onClick={() => {
+                        setDetailFlight(record);
+                        setIsDetailOpen(true);
+                    }
+                    }
+                >{record._id}</a>
             )
         },
         {
@@ -187,22 +215,20 @@ const FlightManagement = () => {
             )
         }
     ];
-    const handleRequest = async () => {
-        return {
-            data: {}, // Dữ liệu bảng
-            success: true,
-            total: 10,
-        }
-    }
     return (
         <>
             <ProTable<IFlightItem>
+                search={{
+                    labelWidth: 'auto',   // hoặc 120, 200, v.v.
+                    defaultCollapsed: false, // nếu muốn mở rộng sẵn form search
+                    span: 6,  // chia số cột hiển thị trong form, tuỳ độ rộng
+                }}
+                bordered
                 dataSource={data}
                 columns={columns}
                 actionRef={actionRef}
                 cardBordered
                 headerTitle="Flight List"
-                request={handleRequest}
                 //Khi ProTable được render hoặc có sự thay đổi ở bộ lọc, tìm kiếm, phân trang, nó sẽ tự động gọi hàm request
                 toolBarRender={() => [
                     <Button
@@ -232,6 +258,12 @@ const FlightManagement = () => {
                 setIsUpdateOpen={setIsUpdateOpen}
                 updatedFlight={updatedFlight}
                 setUpdatedFlight={setUpdatedFlight}
+            />
+            <DetailFlight
+                isDetailOpen={isDetailOpen}
+                setIsDetailOpen={setIsDetailOpen}
+                detailFlight={detailFlight}
+                setDetailFlight={setDetailFlight}
             />
         </>
     );

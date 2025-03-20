@@ -8,7 +8,7 @@ import BookingPage from 'pages/client/bookingPage/bookingPage';
 import LoginPage from 'pages/auth/loginPage/loginPage';
 import SignUpPage from 'pages/auth/signUpPage/signUpPage';
 import "./global.css"
-import AdminLayout from 'pages/admin/adminLayout/adminLayout';
+import AdminLayout from '@/layouts/adminLayout/adminLayout';
 import Dashboard from 'pages/admin/dashboard/dashboard';
 import { ConfigProvider } from 'antd';
 import enUS from 'antd/locale/en_US';
@@ -18,7 +18,6 @@ import SeatManagement from '@/pages/admin/seatManagement/seatManagement';
 import FlightManagement from '@/pages/admin/flightManagement/flightManagement';
 
 import { Provider } from 'react-redux'
-import { store } from './redux/store';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 const router = createBrowserRouter([
@@ -80,10 +79,8 @@ createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <ConfigProvider locale={enUS}>
       <QueryClientProvider client={queryClient}>
-        <Provider store={store}>
-          <RouterProvider router={router} />
-          <ReactQueryDevtools initialIsOpen={false} />
-        </Provider>
+        <RouterProvider router={router} />
+        <ReactQueryDevtools initialIsOpen={false} />
       </QueryClientProvider>
     </ConfigProvider>
   </StrictMode>,

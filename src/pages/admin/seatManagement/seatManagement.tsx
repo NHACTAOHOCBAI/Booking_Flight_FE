@@ -96,13 +96,6 @@ const SeatManagement = () => {
             )
         }
     ];
-    const handleRequest = async () => {
-        return {
-            data: {}, // Dữ liệu bảng
-            success: true,
-            total: 10,
-        }
-    }
     return (
         <>
             <ProTable<ISeatItem>
@@ -110,9 +103,9 @@ const SeatManagement = () => {
                 columns={columns}
                 actionRef={actionRef}
                 cardBordered
+                bordered
                 search={false}
                 headerTitle="Existing Seat Class"
-                request={handleRequest}
                 //Khi ProTable được render hoặc có sự thay đổi ở bộ lọc, tìm kiếm, phân trang, nó sẽ tự động gọi hàm request
                 toolBarRender={() => [
                     <Button

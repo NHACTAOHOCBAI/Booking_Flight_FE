@@ -28,19 +28,3 @@ const deleteUser = async (value: string) => {
     return res.data;
 };
 export { fetchAllAirports, createAirport, updateAirport, deleteUser }
-// // Tạo user mới
-//  const createUser = async (user) => {
-//     const { data } = await axios.post(API_URL, user);
-//     return data;
-// };
-
-// // Cập nhật user
-//  const updateUser = async ({ id, user }) => {
-//     const { data } = await axios.put(`${API_URL}/${id}`, user);
-//     return data;
-// };
-
-// // Xóa user
-//  const deleteUser = async (id) => {
-//     await axios.delete(`${API_URL}/${id}`);
-// };

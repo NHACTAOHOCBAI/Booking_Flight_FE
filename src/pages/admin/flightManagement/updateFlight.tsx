@@ -228,7 +228,7 @@ const UpdateFlight = (props: IProp) => {
                                         <div style={{ display: 'flex', flexDirection: 'column', rowGap: 16 }}>
                                             {subFields.map((subField) => (
                                                 <Space key={subField.key}>
-                                                    <Row gutter={20}>
+                                                    <Row gutter={10}>
                                                         <Col span={8}>
                                                             <Form.Item
                                                                 rules={[
