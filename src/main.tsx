@@ -17,9 +17,10 @@ import AccountManagement from '@/pages/admin/accountManagement/accountManagement
 import SeatManagement from '@/pages/admin/seatManagement/seatManagement';
 import FlightManagement from '@/pages/admin/flightManagement/flightManagement';
 
-import { Provider } from 'react-redux'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+import PlaneManagement from './pages/admin/planeManagement/planeManagement';
+import AdminBooking from './pages/admin/booking/adminBooking';
 const router = createBrowserRouter([
   {
     path: "/",
@@ -63,7 +64,15 @@ const router = createBrowserRouter([
         path: "manage-account",
         element: <AccountManagement />,
       },
-    ],
+      {
+        path: "manage-plane",
+        element: <PlaneManagement />,
+      },
+    ]
+  },
+  {
+    path: "/admin/manage-flight/booking/:flightId",
+    element: <AdminBooking />,
   },
   {
     path: "/login",

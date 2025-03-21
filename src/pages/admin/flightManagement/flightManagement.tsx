@@ -7,6 +7,8 @@ import { useRef, useState } from 'react';
 import NewFlight from './newFlight';
 import UpdateFlight from './updateFlight';
 import DetailFlight from './detailFlight';
+import { useNavigate } from 'react-router-dom';
+import { IoTicketOutline } from 'react-icons/io5';
 const FlightManagement = () => {
     //detail
     const [detailFlight, setDetailFlight] = useState<IFlightItem>({
@@ -40,6 +42,7 @@ const FlightManagement = () => {
     //New
     const [isNewOpen, setIsNewOpen] = useState(false);
     //Table
+    const navigate = useNavigate();
     const actionRef = useRef<ActionType>(null);
     const data: IFlightItem[] = [
         {
@@ -143,10 +146,6 @@ const FlightManagement = () => {
             )
         },
         {
-            title: 'Plane',
-            dataIndex: 'planeName',
-        },
-        {
             title: 'Departure Airport',
             dataIndex: 'departureName',
         },
@@ -211,6 +210,9 @@ const FlightManagement = () => {
                             color: "#ee5253"
                         }} />
                     </Popconfirm>
+                    <Button type="dashed" onClick={() => {
+                        navigate(`booking/${record._id}`)
+                    }}><IoTicketOutline />Booking</Button>
                 </div>
             )
         }

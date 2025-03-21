@@ -1,16 +1,16 @@
 import { Link, Outlet } from "react-router-dom";
 import { useState } from 'react';
 import {
-    ApartmentOutlined,
-    BarChartOutlined,
-    EnvironmentOutlined,
     MenuFoldOutlined,
     MenuUnfoldOutlined,
-    SendOutlined,
-    SettingOutlined,
     UserOutlined,
 } from '@ant-design/icons';
 import { Avatar, Badge, Button, Layout, Menu, theme } from 'antd';
+import { IoAirplaneOutline, IoSettingsOutline } from "react-icons/io5";
+import { PiAirplaneInFlight, PiSeat } from "react-icons/pi";
+import { VscAccount } from "react-icons/vsc";
+import { GoLocation } from "react-icons/go";
+import { RxDashboard } from "react-icons/rx";
 const { Header, Sider, Content } = Layout;
 
 const AdminLayout = () => {
@@ -33,32 +33,37 @@ const AdminLayout = () => {
                     items={[
                         {
                             key: 'dashboard',
-                            icon: <BarChartOutlined />,
+                            icon: <RxDashboard style={{ width: 20, height: 20 }} />,
                             label: <Link to={"/admin"} >Dashboard</Link>,
                         },
                         {
                             key: 'airport',
-                            icon: <EnvironmentOutlined />,
+                            icon: <GoLocation style={{ width: 20, height: 20 }} />,
                             label: <Link to={"/admin/manage-airport"} >Airport</Link>,
                         },
                         {
+                            key: 'plane',
+                            icon: <IoAirplaneOutline style={{ width: 20, height: 20 }} />,
+                            label: <Link to={"/admin/manage-plane"} >Plane</Link>,
+                        },
+                        {
                             key: 'flight',
-                            icon: <SendOutlined />,
+                            icon: <PiAirplaneInFlight style={{ width: 20, height: 20 }} />,
                             label: <Link to={"/admin/manage-flight"} >Flight</Link>,
                         },
                         {
                             key: 'account',
-                            icon: <UserOutlined />,
+                            icon: <VscAccount style={{ width: 20, height: 20 }} />,
                             label: <Link to={"/admin/manage-account"} >Account</Link>,
                         },
                         {
                             key: 'seatClass',
-                            icon: <ApartmentOutlined />,
+                            icon: <PiSeat style={{ width: 20, height: 20 }} />,
                             label: <Link to={"/admin/manage-seat"} >Seat Class</Link>,
                         },
                         {
                             key: 'setting',
-                            icon: <SettingOutlined />,
+                            icon: <IoSettingsOutline style={{ width: 20, height: 20 }} />,
                             label: <Link to={"/admin/manage-airport"} >Setting</Link>,
                         },
                     ]}

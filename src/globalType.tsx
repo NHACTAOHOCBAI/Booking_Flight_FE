@@ -136,4 +136,19 @@ declare global {
             departureTime: string
         }[]
     }
+    //plane
+    interface IPlaneItem {
+        id: string,
+        name: string,
+        airline: string
+    }
+    interface INewPlaneItem {
+        name: string,
+        airline: string
+    }
+    interface IUpdatePlaneItem {
+        id: string,
+        name: string,
+        airline: string
+    }
 }
