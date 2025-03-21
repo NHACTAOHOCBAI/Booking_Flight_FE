@@ -1,7 +1,6 @@
-import { Card, Divider, Table } from 'antd';
+import { Card, Table } from 'antd';
 import { TableProps } from 'antd/lib';
 import { FaMoneyCheckAlt } from 'react-icons/fa';
-import { GiMoneyStack } from 'react-icons/gi';
 import { ImPriceTags } from 'react-icons/im';
 interface IDetailPrice {
     seatName: string,

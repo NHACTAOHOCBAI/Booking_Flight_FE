@@ -9,7 +9,7 @@
 // export default AdminBooking
 import React, { useState } from 'react';
 import { Button, Card, message, Steps, theme } from 'antd';
-import FirstStep from './firstStep';
+import FirstStep from './firstStep/firstStep';
 const steps = [
     {
         title: 'Ticket information',

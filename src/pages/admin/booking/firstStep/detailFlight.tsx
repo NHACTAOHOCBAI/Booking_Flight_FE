@@ -2,7 +2,6 @@ import { Card, Col, Divider, Row } from 'antd';
 import { MdOutlineDoubleArrow } from 'react-icons/md';
 import { PiAirplaneInFlightFill } from 'react-icons/pi';
 import FlightSchedule from './flightSchedule';
-import { TiPlaneOutline } from 'react-icons/ti';
 
 const DetailFlight = () => (
     <Card
