@@ -10,6 +10,7 @@
 import React, { useState } from 'react';
 import { Button, Card, message, Steps, theme } from 'antd';
 import FirstStep from './firstStep/firstStep';
+import SecondStep from './secondStep/secondStep';
 const steps = [
     {
         title: 'Ticket information',
@@ -17,7 +18,7 @@ const steps = [
     },
     {
         title: 'Review',
-        content: 'Second-content',
+        content: <SecondStep />,
     },
     {
         title: <div>Complete</div>,
