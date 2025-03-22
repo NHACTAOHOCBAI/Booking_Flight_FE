@@ -87,8 +87,8 @@ const DetailAccount = (props: IProps) => {
   return (
     <>
       <Drawer title='Account Information' onClose={handleClose} open={isDetailOpen} size='large'>
-        <Descriptions title='Account Info' column={4} bordered items={accountItems} />
-        <Descriptions title='Personal Info' bordered items={personalItems} />
+        <Descriptions size='middle' title='Account Info' column={4} bordered items={accountItems} />
+        <Descriptions size='middle' title='Personal Info' bordered items={personalItems} />
       </Drawer>
     </>
   )

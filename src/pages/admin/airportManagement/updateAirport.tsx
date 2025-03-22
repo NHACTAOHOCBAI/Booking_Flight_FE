@@ -1,6 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { Form, FormProps, Input, Modal } from 'antd'
-import { useEffect } from 'react'
+import { useUpdateAirport } from '@/hooks/useAirport'
+import { Form, FormProps, Input, message, Modal, notification } from 'antd'
+import { useEffect, useState } from 'react'
+import { ExclamationCircleOutlined } from '@ant-design/icons'
 
 interface IProp {
   updatedAirport: IAirportItem
@@ -8,18 +10,31 @@ interface IProp {
   isUpdateOpen: boolean
   setIsUpdateOpen: (value: boolean) => void
 }
-interface IUpdateAirportItem {
-  _id: string
-  name: string
-  city: string
-  country: string
-}
 const UpdateAirport = (props: IProp) => {
+  const [messageApi, messContextHolder] = message.useMessage()
+  const [api, notifiContextHolder] = notification.useNotification()
+  const updateAirport = useUpdateAirport()
   const { updatedAirport, setUpdatedAirport, isUpdateOpen, setIsUpdateOpen } = props
+  const [isLoading, setIsloading] = useState(false)
   const [form] = Form.useForm()
   const onFinish: FormProps<IUpdateAirportItem>['onFinish'] = (value) => {
-    console.log(value)
-    handleCancel()
+    setIsloading(true)
+    updateAirport.mutate(value, {
+      onSuccess: () => {
+        messageApi.success('You have updated an airport')
+        handleCancel()
+        setIsloading(false)
+      },
+      onError: () => {
+        api.info({
+          message: <div style={{ color: '#ee5253', fontWeight: 'bold' }}>Update failed</div>,
+          description: `${updateAirport.error?.response.data.message}  `,
+          icon: <ExclamationCircleOutlined style={{ color: '#ee5253' }} />
+        })
+        handleCancel()
+        setIsloading(false)
+      }
+    })
   }
   const handleOk = () => {
     form.submit()
@@ -44,7 +59,9 @@ const UpdateAirport = (props: IProp) => {
   }, [updatedAirport])
   return (
     <>
-      <Modal title='Update Airport' open={isUpdateOpen} onOk={handleOk} onCancel={handleCancel}>
+      {messContextHolder}
+      {notifiContextHolder}
+      <Modal title='Update Airport' loading={isLoading} open={isUpdateOpen} onOk={handleOk} onCancel={handleCancel}>
         <Form layout='vertical' name='basic' onFinish={onFinish} autoComplete='off' form={form}>
           <Form.Item<IUpdateAirportItem> label='ID' name='_id'>
             <Input disabled />

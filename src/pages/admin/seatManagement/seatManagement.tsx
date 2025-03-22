@@ -20,32 +20,26 @@ const SeatManagement = () => {
   const [isNewOpen, setIsNewOpen] = useState(false)
   //Table
   const actionRef = useRef<ActionType>(null)
-
-  const { data } = useQuery({
-    queryKey: ['seats'],
-    queryFn: () => getSeat()
-  })
-
-  // const data: ISeatItem[] = [
-  //   {
-  //     _id: "HG01",
-  //     name: "Economy Class",
-  //     price: 100,
-  //     description: "Basic seating with standard amenities.",
-  //   },
-  //   {
-  //     _id: "HG02",
-  //     name: "Business Class",
-  //     price: 150,
-  //     description: "Spacious seating with premium services.",
-  //   },
-  //   {
-  //     _id: "HG03",
-  //     name: "First Class",
-  //     price: 200,
-  //     description: "Luxury seating with top-tier comfort and exclusivity.",
-  //   },
-  // ];
+  const data: ISeatItem[] = [
+    {
+      _id: 'HG01',
+      name: 'Economy Class',
+      price: 100,
+      description: 'Basic seating with standard amenities.'
+    },
+    {
+      _id: 'HG02',
+      name: 'Business Class',
+      price: 150,
+      description: 'Spacious seating with premium services.'
+    },
+    {
+      _id: 'HG03',
+      name: 'First Class',
+      price: 200,
+      description: 'Luxury seating with top-tier comfort and exclusivity.'
+    }
+  ]
   const columns: ProColumns<ISeatItem>[] = [
     {
       dataIndex: 'index',
@@ -103,13 +97,6 @@ const SeatManagement = () => {
       )
     }
   ]
-  const handleRequest = async () => {
-    return {
-      data: {}, // Dữ liệu bảng
-      success: true,
-      total: 10
-    }
-  }
   return (
     <>
       <ProTable<ISeatItem>
@@ -117,9 +104,9 @@ const SeatManagement = () => {
         columns={columns}
         actionRef={actionRef}
         cardBordered
+        bordered
         search={false}
         headerTitle='Existing Seat Class'
-        request={handleRequest}
         //Khi ProTable được render hoặc có sự thay đổi ở bộ lọc, tìm kiếm, phân trang, nó sẽ tự động gọi hàm request
         toolBarRender={() => [
           <Button key='button' icon={<PlusOutlined />} type='primary' onClick={() => setIsNewOpen(true)}>

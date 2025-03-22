@@ -5,15 +5,6 @@ interface IProp {
   isNewOpen: boolean
   setIsNewOpen: (value: boolean) => void
 }
-interface INewAccountItem {
-  username: string
-  password: string
-  phone: string
-  fullName: string
-  dob: string
-  gender: string
-  role: string
-}
 const NewAccount = (props: IProp) => {
   const { isNewOpen, setIsNewOpen } = props
   const [date, setDate] = useState<string>('')

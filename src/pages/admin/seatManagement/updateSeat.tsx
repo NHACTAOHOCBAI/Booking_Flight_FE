@@ -9,12 +9,6 @@ interface IProp {
   isUpdateOpen: boolean
   setIsUpdateOpen: (value: boolean) => void
 }
-interface IUpdateSeatItem {
-  _id: string
-  name: string
-  price: number
-  description: string
-}
 const UpdateSeat = (props: IProp) => {
   const { updatedSeat, setUpdatedSeat, isUpdateOpen, setIsUpdateOpen } = props
   const [form] = Form.useForm()
