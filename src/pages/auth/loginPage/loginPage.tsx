@@ -46,7 +46,6 @@ const LoginPage = () => (
               fontWeight: 'bold'
             }}
           >
-            {' '}
             Welcome back
           </div>
           <div
@@ -57,7 +56,6 @@ const LoginPage = () => (
               color: '#95a5a6'
             }}
           >
-            {' '}
             Please enter your credentials to login
           </div>
           <Form
@@ -76,7 +74,6 @@ const LoginPage = () => (
                 marginBottom: 5
               }}
             >
-              {' '}
               Email address
             </div>
             <Form.Item<FieldType> name='username' rules={[{ required: true, message: 'Please input your username!' }]}>
@@ -133,9 +130,8 @@ const LoginPage = () => (
               color: '#95a5a6'
             }}
           >
-            {' '}
-            Or continue with{' '}
-            <Button>
+            Or continue with
+            <Button className='mx-1'>
               <GoogleOutlined />
               Google
             </Button>
@@ -147,8 +143,7 @@ const LoginPage = () => (
               color: '#95a5a6'
             }}
           >
-            {' '}
-            Don't have an account?
+            Don't have an account ?
             <span
               style={{
                 fontSize: 14,
@@ -156,7 +151,9 @@ const LoginPage = () => (
                 cursor: 'pointer'
               }}
             >
-              <Link to='/signup'>Sign up here</Link>
+              <Link to='/signup' className='mx-1'>
+                Sign up here
+              </Link>
             </span>
           </div>
         </div>

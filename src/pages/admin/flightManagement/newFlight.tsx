@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+ 
 import { Button, Col, DatePicker, Form, FormProps, InputNumber, Modal, Row, Select, Space } from "antd";
 import { CloseOutlined } from "@ant-design/icons"
 import dayjs from "dayjs";

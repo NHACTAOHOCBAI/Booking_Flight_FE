@@ -1,6 +1,4 @@
 import { Link } from 'react-router-dom'
-// import './headerStyle.css'
-import { Button } from 'antd'
 const UserHeader = () => {
   return (
     <div className='pb-5 pt-2 bg-blue-300'>

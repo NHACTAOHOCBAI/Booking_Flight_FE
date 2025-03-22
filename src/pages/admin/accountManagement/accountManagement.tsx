@@ -17,14 +17,6 @@ const AccountManagement = () => {
   const [isUpdateOpen, setIsUpdateOpen] = useState(false)
   const [isDetailOpen, setIsDetailOpen] = useState(false)
 
-  // const [account, setAccount] = useState<Account[]>([]);
-  //
-  // useEffect(() => {
-  //   getAccounts().then((res) => {
-  //     setAccount(res.data);
-  //   });
-  // }, []);
-
   // fetching data
   const { data } = useQuery({
     queryKey: ['accounts'],

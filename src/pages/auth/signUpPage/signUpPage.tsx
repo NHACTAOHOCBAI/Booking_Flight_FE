@@ -48,7 +48,6 @@ const SignUpPage = () => (
               fontWeight: 'bold'
             }}
           >
-            {' '}
             Join Us Today!
           </div>
           <div
@@ -59,7 +58,6 @@ const SignUpPage = () => (
               color: '#95a5a6'
             }}
           >
-            {' '}
             Create your free account
           </div>
           <Form
@@ -78,10 +76,9 @@ const SignUpPage = () => (
                 marginBottom: 5
               }}
             >
-              {' '}
               Email address
             </div>
-            <Form.Item<FieldType> name='username' rules={[{ required: true, message: 'Please input your username!' }]}>
+            <Form.Item<FieldType> name='username' rules={[{ required: true, message: 'Please input your email!' }]}>
               <Input placeholder='name@gmail.com' />
             </Form.Item>
 
@@ -161,8 +158,7 @@ const SignUpPage = () => (
               color: '#95a5a6'
             }}
           >
-            {' '}
-            Or continue with{' '}
+            Or continue with
             <Button>
               <GoogleOutlined />
               Google
@@ -175,8 +171,7 @@ const SignUpPage = () => (
               color: '#95a5a6'
             }}
           >
-            {' '}
-            You already had an account?
+            You already had an account ?
             <span
               style={{
                 fontSize: 14,
@@ -184,7 +179,9 @@ const SignUpPage = () => (
                 cursor: 'pointer'
               }}
             >
-              <Link to='/login'>Login here</Link>
+              <Link to='/login' className='mx-1'>
+                Login here
+              </Link>
             </span>
           </div>
         </div>
