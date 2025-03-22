@@ -1,48 +1,75 @@
 import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons';
 import type { ActionType, ProColumns } from '@ant-design/pro-components';
 import { ProTable } from '@ant-design/pro-components';
-import { Button, Popconfirm } from 'antd';
+import { Button, message, Popconfirm, Spin } from 'antd';
 import { useRef, useState } from 'react';
 import NewAirport from './newAirport';
 import UpdateAirport from './updateAirport';
-import { airportData } from '@/globalType';
+import { useDeleteAirport, useGetAllAirports } from '@/hooks/useAirport';
 const AirportManagement = () => {
-    //Table
-    const actionRef = useRef<ActionType>(null);
-    const data: IAirportTable[] = airportData;
+    const [messageApi, contextHolder] = message.useMessage();
     //update
     const [isUpdateOpen, setIsUpdateOpen] = useState(false);
-    const [updatedAirport, setUpdatedAirport] = useState<IAirportTable>({
-        id: "",
-        airportCode: "",
-        airportName: "",
-        cityId: ""
+    const [updatedAirport, setUpdatedAirport] = useState<IAirportItem>({
+        _id: "",
+        name: "",
+        city: "",
+        country: ""
     });
     //New
     const [isNewOpen, setIsNewOpen] = useState(false);
-    // delete
-    const handleDelete = (value: IAirportTable) => {
-        console.log(value);
+    //Table
+    const actionRef = useRef<ActionType>(null);
+    //fetch data
+    const { isPending, error, data } = useGetAllAirports();
+    let fakeData: IAirportItem[] = [];
+    if (data && data.result) {
+        fakeData = data.result.map((value) => {
+            return {
+                _id: value.airportCode,
+                name: value.airportName,
+                city: value.location,
+                country: value.location
+            }
+        })
     }
-    const columns: ProColumns<IAirportTable>[] = [
+    // delete
+    const deleteAirport = useDeleteAirport();
+    const handleDelete = (value: string) => {
+        deleteAirport.mutate(value, {
+            onSuccess: () => {
+                messageApi.open({
+                    type: 'success',
+                    content: 'You have deleted an airport',
+                });
+            }
+        });
+    }
+    const columns: ProColumns<IAirportItem>[] = [
         {
             dataIndex: 'index',
             valueType: 'indexBorder',
             width: 48,
         },
         {
-            title: 'Code',
+            title: 'ID',
+            search: false,
             render: (_, record) => (
-                <a style={{ color: "#3498db" }}>{record.airportCode}</a>
+                <a style={{ color: "#3498db" }}>{record._id}</a>
             )
         },
         {
-            title: 'Airport',
-            dataIndex: 'airportName',
+            title: 'Name',
+            dataIndex: 'name',
+            copyable: true
         },
         {
             title: 'City',
-            dataIndex: 'cityId',
+            dataIndex: 'city',
+        },
+        {
+            title: 'Country',
+            dataIndex: 'country',
         },
         {
             title: 'Action',
@@ -59,14 +86,15 @@ const AirportManagement = () => {
                         onClick={() => {
                             setIsUpdateOpen(true)
                             setUpdatedAirport(record)
-                        }}
+                        }
+                        }
                     />
                     <Popconfirm
                         title="Delete the airport"
                         description="Are you sure to delete this airport?"
                         okText="Delete"
                         cancelText="Cancel"
-                        onConfirm={() => handleDelete(record)}
+                        onConfirm={() => handleDelete(record._id)}
                     >
                         <DeleteOutlined style={{
                             color: "#ee5253"
@@ -76,11 +104,18 @@ const AirportManagement = () => {
             )
         }
     ];
+    if (isPending) return (
+        <div style={{ height: "100%", display: "flex", justifyContent: "center", alignItems: "center" }}>
+            <Spin size="large" />
+        </div>
+    )
+    if (error) return 'An error has occurred: ' + error.message
     return (
         <>
-            <ProTable<IAirportTable
-            >
-                dataSource={data}
+            {contextHolder}
+            <ProTable<IAirportItem>
+                loading={deleteAirport.isPending}
+                dataSource={fakeData}
                 columns={columns}
                 bordered
                 actionRef={actionRef}
