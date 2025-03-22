@@ -1,40 +1,23 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useUpdateAirport } from '@/hooks/useAirport'
-import { Form, FormProps, Input, message, Modal, notification } from 'antd'
-import { useEffect, useState } from 'react'
-import { ExclamationCircleOutlined } from '@ant-design/icons'
+import { Form, FormProps, Input, Modal } from 'antd'
+import { useEffect } from 'react'
+import { HiDotsVertical } from 'react-icons/hi'
+import { LuScanBarcode } from 'react-icons/lu'
+import { MdOutlineDriveFileRenameOutline } from 'react-icons/md'
+import { PiCity } from 'react-icons/pi'
+import { RiArrowRightWideLine, RiArrowRightWideLine } from 'react-icons/ri'
 
 interface IProp {
-  updatedAirport: IAirportItem
-  setUpdatedAirport: (value: IAirportItem) => void
+  updatedAirport: IAirportTable
+  setUpdatedAirport: (value: IAirportTable) => void
   isUpdateOpen: boolean
   setIsUpdateOpen: (value: boolean) => void
 }
 const UpdateAirport = (props: IProp) => {
-  const [messageApi, messContextHolder] = message.useMessage()
-  const [api, notifiContextHolder] = notification.useNotification()
-  const updateAirport = useUpdateAirport()
   const { updatedAirport, setUpdatedAirport, isUpdateOpen, setIsUpdateOpen } = props
-  const [isLoading, setIsloading] = useState(false)
   const [form] = Form.useForm()
-  const onFinish: FormProps<IUpdateAirportItem>['onFinish'] = (value) => {
-    setIsloading(true)
-    updateAirport.mutate(value, {
-      onSuccess: () => {
-        messageApi.success('You have updated an airport')
-        handleCancel()
-        setIsloading(false)
-      },
-      onError: () => {
-        api.info({
-          message: <div style={{ color: '#ee5253', fontWeight: 'bold' }}>Update failed</div>,
-          description: `${updateAirport.error?.response.data.message}  `,
-          icon: <ExclamationCircleOutlined style={{ color: '#ee5253' }} />
-        })
-        handleCancel()
-        setIsloading(false)
-      }
-    })
+  const onFinish: FormProps<IAirportTable>['onFinish'] = (value) => {
+    console.log(value)
   }
   const handleOk = () => {
     form.submit()
@@ -42,63 +25,65 @@ const UpdateAirport = (props: IProp) => {
   const handleCancel = () => {
     form.resetFields()
     setUpdatedAirport({
-      _id: '',
-      name: '',
-      city: '',
-      country: ''
+      id: '',
+      airportCode: '',
+      airportName: '',
+      cityId: ''
     })
     setIsUpdateOpen(false)
   }
   useEffect(() => {
     form.setFieldsValue({
-      _id: updatedAirport._id,
-      name: updatedAirport.name,
-      city: updatedAirport.city,
-      country: updatedAirport.country
+      id: updatedAirport.id,
+      airportCode: updatedAirport.airportCode,
+      airportName: updatedAirport.airportName,
+      cityId: updatedAirport.cityId
     })
   }, [updatedAirport])
   return (
     <>
-      {messContextHolder}
-      {notifiContextHolder}
-      <Modal title='Update Airport' loading={isLoading} open={isUpdateOpen} onOk={handleOk} onCancel={handleCancel}>
+      <Modal title='Update Airport' open={isUpdateOpen} onOk={handleOk} onCancel={handleCancel}>
         <Form layout='vertical' name='basic' onFinish={onFinish} autoComplete='off' form={form}>
-          <Form.Item<IUpdateAirportItem> label='ID' name='_id'>
+          <Form.Item<IAirportTable>
+            label={
+              <div>
+                <HiDotsVertical /> ID
+              </div>
+            }
+            name='id'
+          >
             <Input disabled />
           </Form.Item>
-          <Form.Item<IUpdateAirportItem>
-            label='Airport'
-            name='name'
-            rules={[
-              {
-                required: true,
-                message: "Please input airport's name"
-              }
-            ]}
+          <Form.Item<IAirportTable>
+            label={
+              <div>
+                <LuScanBarcode /> Code
+              </div>
+            }
+            name='airportCode'
+            rules={[{ required: true, message: "Please input airport's code" }]}
           >
             <Input />
           </Form.Item>
-          <Form.Item<IUpdateAirportItem>
-            label='City'
-            name='city'
-            rules={[
-              {
-                required: true,
-                message: "Please input airport's city"
-              }
-            ]}
+          <Form.Item<IAirportTable>
+            label={
+              <div>
+                <MdOutlineDriveFileRenameOutline /> Name
+              </div>
+            }
+            name='airportName'
+            rules={[{ required: true, message: "Please input airport's name" }]}
           >
             <Input />
           </Form.Item>
-          <Form.Item<IUpdateAirportItem>
-            label='Country'
-            name='country'
-            rules={[
-              {
-                required: true,
-                message: "Please input airport's country"
-              }
-            ]}
+          <Form.Item<IAirportTable>
+            label={
+              <div>
+                <PiCity /> City
+              </div>
+            }
+            name='cityId'
+            rules={[{ required: true, message: "Please input airport's city" }]}
           >
             <Input />
           </Form.Item>

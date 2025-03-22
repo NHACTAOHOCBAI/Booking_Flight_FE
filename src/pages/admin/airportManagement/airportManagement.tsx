@@ -1,73 +1,46 @@
 import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons'
 import type { ActionType, ProColumns } from '@ant-design/pro-components'
 import { ProTable } from '@ant-design/pro-components'
-import { Button, message, Popconfirm, Spin } from 'antd'
+import { Button, Popconfirm } from 'antd'
 import { useRef, useState } from 'react'
 import NewAirport from './newAirport'
 import UpdateAirport from './updateAirport'
-import { useDeleteAirport, useGetAllAirports } from '@/hooks/useAirport'
+import { airportData } from '@/globalType'
 const AirportManagement = () => {
-  const [messageApi, contextHolder] = message.useMessage()
+  //Table
+  const actionRef = useRef<ActionType>(null)
+  const data: IAirportTable[] = airportData
   //update
   const [isUpdateOpen, setIsUpdateOpen] = useState(false)
-  const [updatedAirport, setUpdatedAirport] = useState<IAirportItem>({
-    _id: '',
-    name: '',
-    city: '',
-    country: ''
+  const [updatedAirport, setUpdatedAirport] = useState<IAirportTable>({
+    id: '',
+    airportCode: '',
+    airportName: '',
+    cityId: ''
   })
   //New
   const [isNewOpen, setIsNewOpen] = useState(false)
-  //Table
-  const actionRef = useRef<ActionType>(null)
-  //fetch data
-  const { isPending, error, data } = useGetAllAirports()
-  let fakeData: IAirportItem[] = []
-  if (data && data.result) {
-    fakeData = data.result.map((value) => {
-      return {
-        _id: value.airportCode,
-        name: value.airportName,
-        city: value.location,
-        country: value.location
-      }
-    })
-  }
   // delete
-  const deleteAirport = useDeleteAirport()
-  const handleDelete = (value: string) => {
-    deleteAirport.mutate(value, {
-      onSuccess: () => {
-        messageApi.open({
-          type: 'success',
-          content: 'You have deleted an airport'
-        })
-      }
-    })
+  const handleDelete = (value: IAirportTable) => {
+    console.log(value)
   }
-  const columns: ProColumns<IAirportItem>[] = [
+  const columns: ProColumns<IAirportTable>[] = [
     {
       dataIndex: 'index',
       valueType: 'indexBorder',
       width: 48
     },
     {
-      title: 'ID',
-      search: false,
-      render: (_, record) => <a style={{ color: '#3498db' }}>{record._id}</a>
+      title: 'Code',
+      render: (_, record) => <a style={{ color: '#3498db' }}>{record.airportCode}</a>
     },
     {
-      title: 'Name',
-      dataIndex: 'name',
-      copyable: true
+      title: 'Airport',
+      dataIndex: 'airportName'
     },
     {
       title: 'City',
-      dataIndex: 'city'
-    },
-    {
-      title: 'Country',
-      dataIndex: 'country'
+      dataIndex: 'cityId'
     },
     {
       title: 'Action',
@@ -93,7 +66,7 @@ const AirportManagement = () => {
             description='Are you sure to delete this airport?'
             okText='Delete'
             cancelText='Cancel'
-            onConfirm={() => handleDelete(record._id)}
+            onConfirm={() => handleDelete(record)}
           >
             <DeleteOutlined
               style={{
@@ -105,19 +78,10 @@ const AirportManagement = () => {
       )
     }
   ]
-  if (isPending)
-    return (
-      <div style={{ height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-        <Spin size='large' />
-      </div>
-    )
-  if (error) return 'An error has occurred: ' + error.message
   return (
     <>
-      {contextHolder}
-      <ProTable<IAirportItem>
-        loading={deleteAirport.isPending}
-        dataSource={fakeData}
+      <ProTable<IAirportTable>
+        dataSource={data}
         columns={columns}
         bordered
         actionRef={actionRef}

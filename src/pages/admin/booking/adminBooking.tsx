@@ -11,6 +11,8 @@ import React, { useState } from 'react';
 import { Button, Card, message, Steps, theme } from 'antd';
 import FirstStep from './firstStep/firstStep';
 import SecondStep from './secondStep/secondStep';
+import ThirdStep from './thirdStep/thirdStep';
+import { useNavigate } from 'react-router-dom';
 const steps = [
     {
         title: 'Ticket information',
@@ -22,14 +24,14 @@ const steps = [
     },
     {
         title: <div>Complete</div>,
-        content: 'Last-content',
+        content: <ThirdStep />,
     },
 ];
 
 const AdminBooking = () => {
     const { token } = theme.useToken();
     const [current, setCurrent] = useState(0);
-
+    const navigate = useNavigate();
     const next = () => {
         setCurrent(current + 1);
     };
@@ -64,11 +66,14 @@ const AdminBooking = () => {
                         </Button>
                     )}
                     {current === steps.length - 1 && (
-                        <Button type="primary" onClick={() => message.success('Processing complete!')}>
+                        <Button type="primary" onClick={() => {
+                            message.success('Processing complete!')
+                            navigate("/admin/manage-flight")
+                        }}>
                             Done
                         </Button>
                     )}
-                    {current > 0 && (
+                    {(current > 0 && current !== steps.length - 1) && (
                         <Button style={{ margin: '0 8px' }} onClick={() => prev()}>
                             Previous
                         </Button>
