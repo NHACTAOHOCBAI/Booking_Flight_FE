@@ -1,26 +1,38 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 declare global {
-    interface APIResponse<T> {
-        code: number;
-        message: string;
-        result?: T[];
-    }
+  interface APIResponse<T> {
+    code: number
+    message: string
+    result?: T[]
+  }
 }
 
 export const airportData: IAirportTable[] = [
-    { id: "1", airportCode: "SGN", airportName: "Tan Son Nhat International Airport", cityId: "1" },
-    { id: "2", airportCode: "HAN", airportName: "Noi Bai International Airport", cityId: "2" },
-    { id: "3", airportCode: "DAD", airportName: "Da Nang International Airport", cityId: "3" },
-    { id: "4", airportCode: "CXR", airportName: "Cam Ranh International Airport", cityId: "4" },
-    { id: "5", airportCode: "VCS", airportName: "Con Dao Airport", cityId: "5" },
-    { id: "6", airportCode: "PQC", airportName: "Phu Quoc International Airport", cityId: "6" },
-    { id: "7", airportCode: "VII", airportName: "Vinh International Airport", cityId: "7" },
-    { id: "8", airportCode: "HUI", airportName: "Phu Bai International Airport", cityId: "8" },
-    { id: "9", airportCode: "BMV", airportName: "Buon Ma Thuot Airport", cityId: "9" },
-    { id: "10", airportCode: "VCA", airportName: "Can Tho International Airport", cityId: "10" }
-];
+  { id: '1', airportCode: 'SGN', airportName: 'Tan Son Nhat International Airport', cityId: '1' },
+  { id: '2', airportCode: 'HAN', airportName: 'Noi Bai International Airport', cityId: '2' },
+  { id: '3', airportCode: 'DAD', airportName: 'Da Nang International Airport', cityId: '3' },
+  { id: '4', airportCode: 'CXR', airportName: 'Cam Ranh International Airport', cityId: '4' },
+  { id: '5', airportCode: 'VCS', airportName: 'Con Dao Airport', cityId: '5' },
+  { id: '6', airportCode: 'PQC', airportName: 'Phu Quoc International Airport', cityId: '6' },
+  { id: '7', airportCode: 'VII', airportName: 'Vinh International Airport', cityId: '7' },
+  { id: '8', airportCode: 'HUI', airportName: 'Phu Bai International Airport', cityId: '8' },
+  { id: '9', airportCode: 'BMV', airportName: 'Buon Ma Thuot Airport', cityId: '9' },
+  { id: '10', airportCode: 'VCA', airportName: 'Can Tho International Airport', cityId: '10' }
+]
 
-export { };
+export const cityData: ICityTable[] = [
+  { id: '1', cityCode: 'CODE-1', cityName: 'Hà Nội' },
+  { id: '2', cityCode: 'CODE-2', cityName: 'Hồ Chí Minh' },
+  { id: '3', cityCode: 'CODE-3', cityName: 'Đà Nẵng' },
+  { id: '4', cityCode: 'CODE-4', cityName: 'Hải Phòng' },
+  { id: '5', cityCode: 'CODE-5', cityName: 'Cần Thơ' },
+  { id: '6', cityCode: 'CODE-6', cityName: 'Nha Trang' },
+  { id: '7', cityCode: 'CODE-7', cityName: 'Huế' },
+  { id: '8', cityCode: 'CODE-8', cityName: 'Vũng Tàu' },
+  { id: '9', cityCode: 'CODE-9', cityName: 'Đà Lạt' },
+  { id: '10', cityCode: 'CODE-10', cityName: 'Quy Nhơn' }
+]
+
+export {}
 
 // airport
 // interface IFakeAirportItem {

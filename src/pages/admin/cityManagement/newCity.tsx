@@ -1,17 +1,16 @@
 import { Form, FormProps, Input, Modal } from 'antd'
-import { GoLocation } from 'react-icons/go'
 import { LuScanBarcode } from 'react-icons/lu'
 import { MdOutlineDriveFileRenameOutline } from 'react-icons/md'
-import { PiCity } from 'react-icons/pi'
+import { PiCityLight } from 'react-icons/pi'
 interface IProp {
   isNewOpen: boolean
   setIsNewOpen: (value: boolean) => void
 }
 
-const NewAirport = (props: IProp) => {
+const NewCity = (props: IProp) => {
   const { isNewOpen, setIsNewOpen } = props
   const [form] = Form.useForm()
-  const onFinish: FormProps<IAirportTable>['onFinish'] = async (value) => {
+  const onFinish: FormProps<ICityTable>['onFinish'] = async (value) => {
     console.log(value)
     handleCancel()
   }
@@ -30,7 +29,7 @@ const NewAirport = (props: IProp) => {
       <Modal
         title={
           <div>
-            <GoLocation /> New Airport
+            <PiCityLight /> New City
           </div>
         }
         open={isNewOpen}
@@ -38,36 +37,25 @@ const NewAirport = (props: IProp) => {
         onCancel={handleCancel}
       >
         <Form layout='vertical' name='basic' onFinish={onFinish} autoComplete='off' form={form}>
-          <Form.Item<IAirportTable>
+          <Form.Item<ICityTable>
             label={
               <div>
                 <LuScanBarcode /> Code
               </div>
             }
-            name='airportCode'
-            rules={[{ required: true, message: "Please input airport's code" }]}
+            name='cityCode'
+            rules={[{ required: true, message: "Please input city's code" }]}
           >
             <Input />
           </Form.Item>
-          <Form.Item<IAirportTable>
+          <Form.Item<ICityTable>
             label={
               <div>
                 <MdOutlineDriveFileRenameOutline /> Name
               </div>
             }
-            name='airportName'
-            rules={[{ required: true, message: "Please input airport's name" }]}
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item<IAirportTable>
-            label={
-              <div>
-                <PiCity /> City
-              </div>
-            }
-            name='cityId'
-            rules={[{ required: true, message: "Please input airport's city" }]}
+            name='cityName'
+            rules={[{ required: true, message: "Please input city's name" }]}
           >
             <Input />
           </Form.Item>
@@ -77,4 +65,4 @@ const NewAirport = (props: IProp) => {
   )
 }
 
-export default NewAirport
+export default NewCity

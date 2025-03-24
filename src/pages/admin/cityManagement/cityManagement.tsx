@@ -3,28 +3,31 @@ import type { ActionType, ProColumns } from '@ant-design/pro-components'
 import { ProTable } from '@ant-design/pro-components'
 import { Button, Popconfirm } from 'antd'
 import { useRef, useState } from 'react'
-import NewAirport from './newAirport'
-import UpdateAirport from './updateAirport'
-import { airportData } from '@/globalType'
-const AirportManagement = () => {
+
+import { cityData } from '@/globalType'
+import NewCity from './newCity'
+import UpdateCity from './updateCity'
+const CityManagement = () => {
   //Table
   const actionRef = useRef<ActionType>(null)
-  const data: IAirportTable[] = airportData
-  //update
-  const [isUpdateOpen, setIsUpdateOpen] = useState(false)
-  const [updatedAirport, setUpdatedAirport] = useState<IAirportTable>({
-    id: '',
-    airportCode: '',
-    airportName: '',
-    cityId: ''
-  })
+  const data: ICityTable[] = cityData
+
   //New
   const [isNewOpen, setIsNewOpen] = useState(false)
+
+  //update
+  const [isUpdateOpen, setIsUpdateOpen] = useState(false)
+  const [updatedCity, setUpdatedCity] = useState<ICityTable>({
+    id: '',
+    cityCode: '',
+    cityName: ''
+  })
+
   // delete
-  const handleDelete = (value: IAirportTable) => {
+  const handleDelete = (value: ICityTable) => {
     console.log(value)
   }
-  const columns: ProColumns<IAirportTable>[] = [
+  const columns: ProColumns<ICityTable>[] = [
     {
       dataIndex: 'index',
       valueType: 'indexBorder',
@@ -32,15 +35,11 @@ const AirportManagement = () => {
     },
     {
       title: 'Code',
-      render: (_, record) => <a style={{ color: '#3498db' }}>{record.airportCode}</a>
-    },
-    {
-      title: 'Airport',
-      dataIndex: 'airportName'
+      render: (_, record) => <a style={{ color: '#3498db' }}>{record.cityCode}</a>
     },
     {
       title: 'City',
-      dataIndex: 'cityId'
+      dataIndex: 'cityName'
     },
     {
       title: 'Action',
@@ -57,13 +56,13 @@ const AirportManagement = () => {
               color: '#54a0ff'
             }}
             onClick={() => {
+              setUpdatedCity(record)
               setIsUpdateOpen(true)
-              setUpdatedAirport(record)
             }}
           />
           <Popconfirm
-            title='Delete the airport'
-            description='Are you sure to delete this airport?'
+            title='Delete the city'
+            description='Are you sure to delete this city?'
             okText='Delete'
             cancelText='Cancel'
             onConfirm={() => handleDelete(record)}
@@ -80,16 +79,23 @@ const AirportManagement = () => {
   ]
   return (
     <>
-      <ProTable<IAirportTable>
+      <ProTable<ICityTable>
         dataSource={data}
         columns={columns}
         bordered
         actionRef={actionRef}
         cardBordered
-        headerTitle='Airport List'
+        headerTitle='City Table'
         toolBarRender={() => [
-          <Button key='button' icon={<PlusOutlined />} onClick={() => setIsNewOpen(true)} type='primary'>
-            New Airport
+          <Button
+            key='button'
+            icon={<PlusOutlined />}
+            onClick={() => {
+              setIsNewOpen(true)
+            }}
+            type='primary'
+          >
+            New City
           </Button>
         ]}
         pagination={{
@@ -99,14 +105,14 @@ const AirportManagement = () => {
           defaultPageSize: 5
         }}
       />
-      <NewAirport isNewOpen={isNewOpen} setIsNewOpen={setIsNewOpen} />
-      <UpdateAirport
-        updatedAirport={updatedAirport!}
-        setUpdatedAirport={setUpdatedAirport}
+      <NewCity isNewOpen={isNewOpen} setIsNewOpen={setIsNewOpen} />
+      <UpdateCity
         isUpdateOpen={isUpdateOpen}
         setIsUpdateOpen={setIsUpdateOpen}
+        updatedCity={updatedCity}
+        setUpdatedCity={setUpdatedCity}
       />
     </>
   )
 }
-export default AirportManagement
+export default CityManagement
