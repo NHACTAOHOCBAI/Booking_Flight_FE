@@ -4,18 +4,17 @@ import { useEffect } from 'react'
 import { HiDotsVertical } from 'react-icons/hi'
 import { LuScanBarcode } from 'react-icons/lu'
 import { MdOutlineDriveFileRenameOutline } from 'react-icons/md'
-import { PiCity } from 'react-icons/pi'
 
 interface IProp {
-  updatedAirport: IAirportTable
-  setUpdatedAirport: (value: IAirportTable) => void
+  updatedCity: ICityTable
+  setUpdatedCity: (value: ICityTable) => void
   isUpdateOpen: boolean
   setIsUpdateOpen: (value: boolean) => void
 }
-const UpdateAirport = (props: IProp) => {
-  const { updatedAirport, setUpdatedAirport, isUpdateOpen, setIsUpdateOpen } = props
+const UpdateCity = (props: IProp) => {
+  const { updatedCity, setUpdatedCity, isUpdateOpen, setIsUpdateOpen } = props
   const [form] = Form.useForm()
-  const onFinish: FormProps<IAirportTable>['onFinish'] = (value) => {
+  const onFinish: FormProps<ICityTable>['onFinish'] = (value) => {
     console.log(value)
     handleCancel()
   }
@@ -24,27 +23,25 @@ const UpdateAirport = (props: IProp) => {
   }
   const handleCancel = () => {
     form.resetFields()
-    setUpdatedAirport({
+    setUpdatedCity({
       id: '',
-      airportCode: '',
-      airportName: '',
-      cityId: ''
+      cityCode: '',
+      cityName: ''
     })
     setIsUpdateOpen(false)
   }
   useEffect(() => {
     form.setFieldsValue({
-      id: updatedAirport.id,
-      airportCode: updatedAirport.airportCode,
-      airportName: updatedAirport.airportName,
-      cityId: updatedAirport.cityId
+      id: updatedCity.id,
+      cityCode: updatedCity.cityCode,
+      cityName: updatedCity.cityName
     })
-  }, [updatedAirport])
+  }, [updatedCity])
   return (
     <>
-      <Modal title='Update Airport' open={isUpdateOpen} onOk={handleOk} onCancel={handleCancel}>
+      <Modal title='Update City' open={isUpdateOpen} onOk={handleOk} onCancel={handleCancel}>
         <Form layout='vertical' name='basic' onFinish={onFinish} autoComplete='off' form={form}>
-          <Form.Item<IAirportTable>
+          <Form.Item<ICityTable>
             label={
               <div>
                 <HiDotsVertical /> ID
@@ -54,36 +51,25 @@ const UpdateAirport = (props: IProp) => {
           >
             <Input disabled />
           </Form.Item>
-          <Form.Item<IAirportTable>
+          <Form.Item<ICityTable>
             label={
               <div>
                 <LuScanBarcode /> Code
               </div>
             }
-            name='airportCode'
-            rules={[{ required: true, message: "Please input airport's code" }]}
+            name='cityCode'
+            rules={[{ required: true, message: "Please input city's code" }]}
           >
             <Input />
           </Form.Item>
-          <Form.Item<IAirportTable>
+          <Form.Item<ICityTable>
             label={
               <div>
                 <MdOutlineDriveFileRenameOutline /> Name
               </div>
             }
-            name='airportName'
-            rules={[{ required: true, message: "Please input airport's name" }]}
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item<IAirportTable>
-            label={
-              <div>
-                <PiCity /> City
-              </div>
-            }
-            name='cityId'
-            rules={[{ required: true, message: "Please input airport's city" }]}
+            name='cityName'
+            rules={[{ required: true, message: "Please input city's name" }]}
           >
             <Input />
           </Form.Item>
@@ -92,4 +78,4 @@ const UpdateAirport = (props: IProp) => {
     </>
   )
 }
-export default UpdateAirport
+export default UpdateCity

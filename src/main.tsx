@@ -21,6 +21,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import PlaneManagement from './pages/admin/planeManagement/planeManagement'
 import AdminBooking from './pages/admin/booking/adminBooking'
+import CityManagement from './pages/admin/cityManagement/cityManagement'
 const router = createBrowserRouter([
   {
     path: '/',
@@ -47,6 +48,10 @@ const router = createBrowserRouter([
       {
         index: true,
         element: <Dashboard />
+      },
+      {
+        path: 'manage-city',
+        element: <CityManagement />
       },
       {
         path: 'manage-airport',

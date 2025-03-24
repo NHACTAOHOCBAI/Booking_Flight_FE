@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { MenuFoldOutlined, MenuUnfoldOutlined, UserOutlined } from '@ant-design/icons'
 import { Avatar, Badge, Button, Layout, Menu, theme } from 'antd'
 import { IoAirplaneOutline, IoSettingsOutline } from 'react-icons/io5'
-import { PiAirplaneInFlight, PiSeat } from 'react-icons/pi'
+import { PiAirplaneInFlight, PiCityLight, PiSeat } from 'react-icons/pi'
 import { VscAccount } from 'react-icons/vsc'
 import { GoLocation } from 'react-icons/go'
 import { RxDashboard } from 'react-icons/rx'
@@ -37,6 +37,11 @@ const AdminLayout = () => {
               key: 'dashboard',
               icon: <RxDashboard style={{ width: 20, height: 20 }} />,
               label: <Link to={'/admin'}>Dashboard</Link>
+            },
+            {
+              key: 'city',
+              icon: <PiCityLight style={{ width: 20, height: 20 }} />,
+              label: <Link to={'/admin/manage-city'}>City</Link>
             },
             {
               key: 'airport',
