@@ -19,6 +19,188 @@ export const airportData: IAirportTable[] = [
     { id: "9", airportCode: "BMV", airportName: "Buon Ma Thuot Airport", cityId: "9" },
     { id: "10", airportCode: "VCA", airportName: "Can Tho International Airport", cityId: "10" }
 ];
+export const flightData: IFlightTable[] = [
+    {
+        id: "1",
+        flightCode: "FL001",
+        planeId: "1",
+        departureAirportId: "1",
+        arrivalAirportId: "2",
+        departureTime: "2025-04-01T08:00:00Z",
+        arrivalTime: "2025-04-01T10:30:00Z",
+        originPrice: 150,
+        interAirport: [],
+        seat: [
+            { seatId: "1", quantity: 50 }, // Hạng 1
+            { seatId: "2", quantity: 30 }, // Hạng 2
+            { seatId: "3", quantity: 20 }  // Hạng 3
+        ]
+    },
+    {
+        id: "2",
+        flightCode: "FL002",
+        planeId: "2",
+        departureAirportId: "2",
+        arrivalAirportId: "3",
+        departureTime: "2025-04-02T10:00:00Z",
+        arrivalTime: "2025-04-02T12:30:00Z",
+        originPrice: 200,
+        interAirport: [],
+        seat: [
+            { seatId: "1", quantity: 45 },
+            { seatId: "2", quantity: 25 },
+            { seatId: "3", quantity: 15 }
+        ]
+    },
+    {
+        id: "3",
+        flightCode: "FL003",
+        planeId: "3",
+        departureAirportId: "3",
+        arrivalAirportId: "4",
+        departureTime: "2025-04-03T14:00:00Z",
+        arrivalTime: "2025-04-03T16:00:00Z",
+        originPrice: 180,
+        interAirport: [],
+        seat: [
+            { seatId: "1", quantity: 40 },
+            { seatId: "2", quantity: 20 },
+            { seatId: "3", quantity: 10 }
+        ]
+    },
+    {
+        id: "4",
+        flightCode: "FL004",
+        planeId: "4",
+        departureAirportId: "4",
+        arrivalAirportId: "5",
+        departureTime: "2025-04-04T09:00:00Z",
+        arrivalTime: "2025-04-04T11:30:00Z",
+        originPrice: 220,
+        interAirport: [],
+        seat: [
+            { seatId: "1", quantity: 55 },
+            { seatId: "2", quantity: 35 },
+            { seatId: "3", quantity: 25 }
+        ]
+    },
+    {
+        id: "5",
+        flightCode: "FL005",
+        planeId: "5",
+        departureAirportId: "5",
+        arrivalAirportId: "6",
+        departureTime: "2025-04-05T07:30:00Z",
+        arrivalTime: "2025-04-05T09:45:00Z",
+        originPrice: 170,
+        interAirport: [],
+        seat: [
+            { seatId: "1", quantity: 60 },
+            { seatId: "2", quantity: 40 },
+            { seatId: "3", quantity: 30 }
+        ]
+    },
+    {
+        id: "6",
+        flightCode: "FL006",
+        planeId: "6",
+        departureAirportId: "6",
+        arrivalAirportId: "7",
+        departureTime: "2025-04-06T12:00:00Z",
+        arrivalTime: "2025-04-06T14:30:00Z",
+        originPrice: 190,
+        interAirport: [],
+        seat: [
+            { seatId: "1", quantity: 50 },
+            { seatId: "2", quantity: 30 },
+            { seatId: "3", quantity: 15 }
+        ]
+    },
+    {
+        id: "7",
+        flightCode: "FL007",
+        planeId: "7",
+        departureAirportId: "7",
+        arrivalAirportId: "8",
+        departureTime: "2025-04-07T16:00:00Z",
+        arrivalTime: "2025-04-07T18:30:00Z",
+        originPrice: 210,
+        interAirport: [],
+        seat: [
+            { seatId: "1", quantity: 45 },
+            { seatId: "2", quantity: 25 },
+            { seatId: "3", quantity: 10 }
+        ]
+    },
+    {
+        id: "8",
+        flightCode: "FL008",
+        planeId: "8",
+        departureAirportId: "8",
+        arrivalAirportId: "9",
+        departureTime: "2025-04-08T18:00:00Z",
+        arrivalTime: "2025-04-08T20:15:00Z",
+        originPrice: 250,
+        interAirport: [],
+        seat: [
+            { seatId: "1", quantity: 55 },
+            { seatId: "2", quantity: 35 },
+            { seatId: "3", quantity: 20 }
+        ]
+    },
+    {
+        id: "9",
+        flightCode: "FL009",
+        planeId: "9",
+        departureAirportId: "9",
+        arrivalAirportId: "10",
+        departureTime: "2025-04-09T20:00:00Z",
+        arrivalTime: "2025-04-09T22:45:00Z",
+        originPrice: 230,
+        interAirport: [],
+        seat: [
+            { seatId: "1", quantity: 60 },
+            { seatId: "2", quantity: 40 },
+            { seatId: "3", quantity: 30 }
+        ]
+    },
+    {
+        id: "10",
+        flightCode: "FL010",
+        planeId: "10",
+        departureAirportId: "10",
+        arrivalAirportId: "1",
+        departureTime: "2025-04-10T22:00:00Z",
+        arrivalTime: "2025-04-11T00:30:00Z",
+        originPrice: 280,
+        interAirport: [],
+        seat: [
+            { seatId: "1", quantity: 50 },
+            { seatId: "2", quantity: 30 },
+            { seatId: "3", quantity: 20 }
+        ]
+    }
+];
+export const seatData: ISeatTable[] = [
+    {
+        id: "1",
+        seatCode: "ECONOMY",
+        price: 100,
+        description: "Economy class with basic amenities and comfortable seating."
+    },
+    {
+        id: "2",
+        seatCode: "BUSINESS",
+        price: 250,
+        description: "Business class with extra legroom, premium meals, and priority boarding."
+    },
+    {
+        id: "3",
+        seatCode: "FIRST",
+        price: 500,
+        description: "First class with luxurious seating, gourmet meals, and exclusive lounge access."
+    }
+];
 
 export { };
 
