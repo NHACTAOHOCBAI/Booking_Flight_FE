@@ -1,81 +1,85 @@
-import { Form, FormProps, Input, Modal } from "antd";
-import { useEffect } from "react";
+import { Form, FormProps, Input, Modal } from 'antd'
+import { useEffect } from 'react'
+import { LuScanBarcode } from 'react-icons/lu'
+import { MdOutlineAirlines } from 'react-icons/md'
+import { PiAirplaneInFlight } from 'react-icons/pi'
 
 interface IProp {
-    updatedPlane: IPlaneItem
-    setUpdatedPlane: (value: IPlaneItem) => void
-    isUpdateOpen: boolean
-    setIsUpdateOpen: (value: boolean) => void
+  updatedPlane: IPlaneTable
+  setUpdatedPlane: (value: IPlaneTable) => void
+  isUpdateOpen: boolean
+  setIsUpdateOpen: (value: boolean) => void
 }
 const UpdatePlane = (props: IProp) => {
-    const { updatedPlane, setUpdatedPlane, isUpdateOpen, setIsUpdateOpen } = props;
-    const [form] = Form.useForm();
-    const onFinish: FormProps<IUpdatePlaneItem>['onFinish'] = (value) => {
-        console.log(value);
-        handleCancel();
-    }
-    const handleOk = () => {
-        form.submit();
-    };
-    const handleCancel = () => {
-        form.resetFields();
-        setUpdatedPlane({
-            id: "",
-            name: "",
-            airline: ""
-        });
-        setIsUpdateOpen(false);
-    };
-    useEffect(() => {
-        form.setFieldsValue({
-            id: updatedPlane.id,
-            name: updatedPlane.name,
-            airline: updatedPlane.airline
-        })
-    }, [updatedPlane])
-    return (
-        <>
-            <Modal title="Update Plane" open={isUpdateOpen} onOk={handleOk} onCancel={handleCancel}>
-                <Form
-                    layout="vertical"
-                    name="basic"
-                    onFinish={onFinish}
-                    autoComplete="off"
-                    form={form}
-                >
-                    <Form.Item<IUpdatePlaneItem>
-                        label="ID"
-                        name="id"
-                    >
-                        <Input disabled />
-                    </Form.Item>
-                    <Form.Item<IUpdatePlaneItem>
-                        label="Model"
-                        name="name"
-                        rules={[
-                            {
-                                required: true,
-                                message: "Please input airport's name"
-                            }
-                        ]}
-                    >
-                        <Input />
-                    </Form.Item>
-                    <Form.Item<IUpdatePlaneItem>
-                        label="Airline"
-                        name="airline"
-                        rules={[
-                            {
-                                required: true,
-                                message: "Please input airport's name"
-                            }
-                        ]}
-                    >
-                        <Input />
-                    </Form.Item>
-                </Form>
-            </Modal>
-        </>
-    )
+  const { updatedPlane, setUpdatedPlane, isUpdateOpen, setIsUpdateOpen } = props
+  const [form] = Form.useForm()
+  const onFinish: FormProps<IPlaneTable>['onFinish'] = (value) => {
+    console.log(value)
+    handleCancel()
+  }
+  const handleOk = () => {
+    form.submit()
+  }
+  const handleCancel = () => {
+    form.resetFields()
+    setUpdatedPlane({
+      id: '',
+      planeCode: '',
+      planeName: ''
+    })
+    setIsUpdateOpen(false)
+  }
+  useEffect(() => {
+    form.setFieldsValue({
+      id: updatedPlane.id,
+      airlineId: updatedPlane.airlineId,
+      planeCode: updatedPlane.planeCode,
+      planeName: updatedPlane.planeName
+    })
+  }, [form, updatedPlane])
+  return (
+    <>
+      <Modal title='Update Plane' open={isUpdateOpen} onOk={handleOk} onCancel={handleCancel}>
+        <Form layout='vertical' name='basic' onFinish={onFinish} autoComplete='off' form={form}>
+          <Form.Item<IPlaneTable>
+            label={
+              <div>
+                <MdOutlineAirlines />
+                Airline
+              </div>
+            }
+            name='airlineId'
+            rules={[{ required: true, message: "Please input airline's code" }]}
+          >
+            <Input placeholder="Enter airline's code" />
+          </Form.Item>
+          <Form.Item<IPlaneTable>
+            label={
+              <div>
+                <LuScanBarcode />
+                Model
+              </div>
+            }
+            name='planeCode'
+            rules={[{ required: true, message: "Please input plane's code" }]}
+          >
+            <Input placeholder="Enter plane's code" />
+          </Form.Item>
+          <Form.Item<IPlaneTable>
+            label={
+              <div>
+                <PiAirplaneInFlight />
+                PlaneName
+              </div>
+            }
+            name='planeName'
+            rules={[{ required: true, message: "Please input plane's name" }]}
+          >
+            <Input placeholder="Enter plane's name" />
+          </Form.Item>
+        </Form>
+      </Modal>
+    </>
+  )
 }
-export default UpdatePlane;
+export default UpdatePlane

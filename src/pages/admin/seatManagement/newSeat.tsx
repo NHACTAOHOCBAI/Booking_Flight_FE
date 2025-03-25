@@ -1,5 +1,8 @@
-import { Col, Form, FormProps, Input, InputNumber, Modal, Row } from 'antd'
+import { Form, FormProps, Input, InputNumber, Modal } from 'antd'
 import TextArea from 'antd/es/input/TextArea'
+import { IoPricetags } from 'react-icons/io5'
+import { LuScanBarcode } from 'react-icons/lu'
+import { MdAirlineSeatReclineNormal, MdOutlineDescription } from 'react-icons/md'
 
 interface IProp {
   isNewOpen: boolean
@@ -8,7 +11,7 @@ interface IProp {
 const NewSeat = (props: IProp) => {
   const { isNewOpen, setIsNewOpen } = props
   const [form] = Form.useForm()
-  const onFinish: FormProps<INewSeatItem>['onFinish'] = (value) => {
+  const onFinish: FormProps<ISeatTable>['onFinish'] = (value) => {
     console.log(value)
     handleCancel()
   }
@@ -23,38 +26,67 @@ const NewSeat = (props: IProp) => {
     <>
       <Modal title='New Seat' open={isNewOpen} onOk={handleOk} onCancel={handleCancel}>
         <Form layout='vertical' name='basic' onFinish={onFinish} autoComplete='off' form={form}>
-          <Row gutter={10}>
-            <Col span={18}>
-              <Form.Item<INewSeatItem>
-                label='Seat class'
-                name='name'
-                rules={[
-                  {
-                    required: true,
-                    message: "Please input seat class's name"
-                  }
-                ]}
-              >
-                <Input />
-              </Form.Item>
-            </Col>
-            <Col span={6}>
-              <Form.Item<INewSeatItem>
-                label='Price(%)'
-                name='price'
-                rules={[
-                  {
-                    required: true,
-                    message: "Please input seat class's price"
-                  }
-                ]}
-              >
-                <InputNumber addonAfter='%' style={{ width: '100%' }} />
-              </Form.Item>
-            </Col>
-          </Row>
-          <Form.Item<INewSeatItem>
-            label='Description'
+          <Form.Item<ISeatTable>
+            label={
+              <div>
+                <LuScanBarcode />
+                Seat code
+              </div>
+            }
+            name='seatCode'
+            rules={[
+              {
+                required: true,
+                message: "Please input seat's code"
+              }
+            ]}
+          >
+            <Input />
+          </Form.Item>
+
+          <Form.Item<ISeatTable>
+            label={
+              <div>
+                <MdAirlineSeatReclineNormal />
+                Seat name
+              </div>
+            }
+            name='seatName'
+            rules={[
+              {
+                required: true,
+                message: "Please input seat's name"
+              }
+            ]}
+          >
+            <Input />
+          </Form.Item>
+
+          <Form.Item<ISeatTable>
+            label={
+              <div>
+                <IoPricetags />
+                Price(%)
+              </div>
+            }
+            name='price'
+            rules={[
+              {
+                required: true,
+                message: "Please input seat class's price"
+              }
+            ]}
+          >
+            <InputNumber addonAfter='%' style={{ width: '100%' }} />
+          </Form.Item>
+
+          <Form.Item<ISeatTable>
+            label={
+              <div>
+                <MdOutlineDescription />
+                Description
+              </div>
+            }
             name='description'
             rules={[
               {

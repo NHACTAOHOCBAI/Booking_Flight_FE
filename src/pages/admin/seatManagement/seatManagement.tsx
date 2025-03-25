@@ -5,42 +5,35 @@ import { Button, Popconfirm } from 'antd'
 import { useRef, useState } from 'react'
 import NewSeat from './newSeat'
 import UpdateSeat from './updateSeat'
-import { getSeat } from '@/apis/seat.api'
-import { useQuery } from '@tanstack/react-query'
+import { seatData } from '@/globalType'
+import DetailSeat from './detailSeat'
+
 const SeatManagement = () => {
+  //detail
+  const [isDetailOpen, setIsDetailOpen] = useState(false)
+  const [detailSeat, setDetailSeat] = useState<ISeatTable>({
+    id: '',
+    seatCode: '',
+    seatName: '',
+    description: '',
+    price: 0
+  })
+
   //update
   const [isUpdateOpen, setIsUpdateOpen] = useState(false)
-  const [updatedSeat, setUpdatedSeat] = useState<ISeatItem>({
-    _id: '',
-    name: '',
-    price: 0,
-    description: ''
+  const [updatedSeat, setUpdatedSeat] = useState<ISeatTable>({
+    id: '',
+    seatCode: '',
+    seatName: '',
+    description: '',
+    price: 0
   })
   //New
   const [isNewOpen, setIsNewOpen] = useState(false)
   //Table
   const actionRef = useRef<ActionType>(null)
-  const data: ISeatItem[] = [
-    {
-      _id: 'HG01',
-      name: 'Economy Class',
-      price: 100,
-      description: 'Basic seating with standard amenities.'
-    },
-    {
-      _id: 'HG02',
-      name: 'Business Class',
-      price: 150,
-      description: 'Spacious seating with premium services.'
-    },
-    {
-      _id: 'HG03',
-      name: 'First Class',
-      price: 200,
-      description: 'Luxury seating with top-tier comfort and exclusivity.'
-    }
-  ]
-  const columns: ProColumns<ISeatItem>[] = [
+  const data: ISeatTable[] = seatData
+  const columns: ProColumns<ISeatTable>[] = [
     {
       dataIndex: 'index',
       valueType: 'indexBorder',
@@ -49,11 +42,25 @@ const SeatManagement = () => {
     {
       title: 'ID',
       search: false,
-      render: (_, record) => <a style={{ color: '#3498db' }}>{record._id}</a>
+      render: (_, record) => (
+        <a
+          style={{ color: '#3498db' }}
+          onClick={() => {
+            setDetailSeat(record)
+            setIsDetailOpen(true)
+          }}
+        >
+          {record.id}
+        </a>
+      )
     },
     {
-      title: 'Name',
-      dataIndex: 'name'
+      title: 'SeatName',
+      dataIndex: 'seatName'
+    },
+    {
+      title: 'SeatCode',
+      dataIndex: 'seatCode'
     },
     {
       title: 'Price',
@@ -77,12 +84,12 @@ const SeatManagement = () => {
               color: '#54a0ff'
             }}
             onClick={() => {
-              setIsUpdateOpen(true)
               setUpdatedSeat(record)
+              setIsUpdateOpen(true)
             }}
           />
           <Popconfirm
-            title='Delete the airport'
+            title='Delete the seat'
             description='Are you sure to delete this seat?'
             okText='Delete'
             cancelText='Cancel'
@@ -99,17 +106,16 @@ const SeatManagement = () => {
   ]
   return (
     <>
-      <ProTable<ISeatItem>
+      <ProTable<ISeatTable>
         search={{
-          labelWidth: 'auto',
+          labelWidth: 'auto'
         }}
         dataSource={data}
         columns={columns}
         actionRef={actionRef}
         cardBordered
         bordered
-        search={false}
-        headerTitle='Existing Seat Class'
+        headerTitle='Seat table'
         //Khi ProTable được render hoặc có sự thay đổi ở bộ lọc, tìm kiếm, phân trang, nó sẽ tự động gọi hàm request
         toolBarRender={() => [
           <Button key='button' icon={<PlusOutlined />} type='primary' onClick={() => setIsNewOpen(true)}>
@@ -125,10 +131,16 @@ const SeatManagement = () => {
       />
       <NewSeat isNewOpen={isNewOpen} setIsNewOpen={setIsNewOpen} />
       <UpdateSeat
-        updatedSeat={updatedSeat!}
-        setUpdatedSeat={setUpdatedSeat}
         isUpdateOpen={isUpdateOpen}
         setIsUpdateOpen={setIsUpdateOpen}
+        updatedSeat={updatedSeat}
+        setUpdatedSeat={setUpdatedSeat}
+      />
+      <DetailSeat
+        isDetailOpen={isDetailOpen}
+        setIsDetailOpen={setIsDetailOpen}
+        setDetailSeat={setDetailSeat}
+        detailSeat={detailSeat}
       />
     </>
   )
