@@ -1,4 +1,4 @@
-import { airportData, cityData, planeData, seatData } from "@/globalType"
+import { airportData, cityData, flightData, planeData, seatData } from "@/globalType"
 
 const toSeat = (seatId: string): ISeatTable => {
     const result = seatData.filter((value) => seatId === value.id);
@@ -48,4 +48,22 @@ const toPlane = (planeId: string): IPlaneTable => {
     }
     return result[0];
 }
-export { toAirport, toCity, toPlane, toSeat }
+const toFLight = (flightId: string): IFlightTable => {
+    const result = flightData.filter((value) => flightId === value.id);
+    if (result.length == 0) {
+        return {
+            id: "",
+            flightCode: "",
+            planeId: "",
+            departureAirportId: "",
+            arrivalAirportId: "",
+            departureTime: "",
+            arrivalTime: "",
+            originPrice: 0,
+            interAirport: [],
+            seat: []
+        }
+    }
+    return result[0];
+}
+export { toAirport, toCity, toPlane, toSeat, toFLight }

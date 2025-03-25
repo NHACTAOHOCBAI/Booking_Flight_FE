@@ -22,6 +22,8 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import PlaneManagement from './pages/admin/planeManagement/planeManagement'
 import AdminBooking from './pages/admin/booking/adminBooking'
 import CityManagement from './pages/admin/cityManagement/cityManagement'
+import { Provider } from 'react-redux'
+import { store } from './redux/store'
 const router = createBrowserRouter([
   {
     path: '/',
@@ -62,6 +64,10 @@ const router = createBrowserRouter([
         element: <FlightManagement />
       },
       {
+        path: 'manage-flight/booking/:flightId',
+        element: <AdminBooking />
+      },
+      {
         path: 'manage-seat',
         element: <SeatManagement />
       },
@@ -74,10 +80,6 @@ const router = createBrowserRouter([
         element: <PlaneManagement />
       }
     ]
-  },
-  {
-    path: '/admin/manage-flight/booking/:flightId',
-    element: <AdminBooking />
   },
   {
     path: '/login',
@@ -93,8 +95,10 @@ createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <ConfigProvider locale={enUS}>
       <QueryClientProvider client={queryClient}>
-        <RouterProvider router={router} />
-        <ReactQueryDevtools initialIsOpen={false} />
+        <Provider store={store}>
+          <RouterProvider router={router} />
+          <ReactQueryDevtools initialIsOpen={false} />
+        </Provider>
       </QueryClientProvider>
     </ConfigProvider>
   </StrictMode>

@@ -1,34 +1,20 @@
-// import { useParams } from "react-router-dom";
-
-// const AdminBooking = () => {
-//     const { flightId } = useParams();
-//     return (
-//         <>{flightId}</>
-//     )
-// }
-// export default AdminBooking
 import React, { useState } from 'react';
 import { Button, Card, message, Steps, theme } from 'antd';
 import FirstStep from './firstStep/firstStep';
 import SecondStep from './secondStep/secondStep';
 import ThirdStep from './thirdStep/thirdStep';
 import { useNavigate } from 'react-router-dom';
-const steps = [
-    {
-        title: 'Ticket information',
-        content: <FirstStep />,
-    },
-    {
-        title: 'Review',
-        content: <SecondStep />,
-    },
-    {
-        title: <div>Complete</div>,
-        content: <ThirdStep />,
-    },
-];
 
 const AdminBooking = () => {
+    const [tickets, setTickets] = useState<ITicketTable>({
+        id: "",
+        flightId: "",
+        seatId: "",
+        passengerName: "",
+        passengerPhone: "",
+        passengerIDCard: "",
+        passengerEmail: "",
+    })
     const { token } = theme.useToken();
     const [current, setCurrent] = useState(0);
     const navigate = useNavigate();
@@ -40,8 +26,6 @@ const AdminBooking = () => {
         setCurrent(current - 1);
     };
 
-    const items = steps.map((item) => ({ key: item.title, title: item.title }));
-
     const contentStyle: React.CSSProperties = {
         lineHeight: '260px',
         textAlign: 'center',
@@ -51,10 +35,27 @@ const AdminBooking = () => {
         border: `1px dashed ${token.colorBorder}`,
         marginTop: 16,
     };
-
+    const steps = [
+        {
+            title: 'Ticket information',
+            content: <FirstStep
+                tickets={tickets}
+                setTickets={setTickets}
+            />,
+        },
+        {
+            title: 'Review',
+            content: <SecondStep />,
+        },
+        {
+            title: <div>Complete</div>,
+            content: <ThirdStep />,
+        },
+    ];
+    const items = steps.map((item) => ({ key: item.title, title: item.title }));
     return (
         <>
-            <div style={{ padding: 40 }}>
+            <div style={{ padding: 10 }}>
                 <Card variant="borderless" style={{ width: "auto" }}>
                     <Steps current={current} items={items} />
                 </Card>

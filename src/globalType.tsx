@@ -25,14 +25,14 @@ export const flightData: IFlightTable[] = [
     planeId: '1',
     departureAirportId: '1',
     arrivalAirportId: '2',
-    departureTime: '2025-04-01T08:00:00Z',
-    arrivalTime: '2025-04-01T10:30:00Z',
+    departureTime: '2025-04-01T00:30:00Z',
+    arrivalTime: '2025-04-01T22:00:00Z',
     originPrice: 150,
     interAirport: [
       {
         airportId: "2",
-        arrivalTime: "2025-04-10T22:00:00Z",
-        departureTime: "2025-04-11T00:30:00Z",
+        arrivalTime: "2025-04-01T08:00:00Z",
+        departureTime: "2025-04-01T10:30:00Z",
         note: "Unfortunately, there are some problem with my plane, so we have to stop by nearly airport to take off. I hope you will understand for us"
       }
     ],
