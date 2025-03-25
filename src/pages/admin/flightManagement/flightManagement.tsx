@@ -12,6 +12,8 @@ import { flightData } from '@/globalType'
 import dayjs from 'dayjs'
 import { toAirport } from '@/utils/convert'
 import { airportOptions } from '@/utils/select'
+import { useAppDispatch } from '@/redux/hooks'
+import { setBookingFlight } from '@/redux/features/bookingFlight/bookingFlightSlice'
 const FlightManagement = () => {
   //detail
   const [detailFlight, setDetailFlight] = useState<IFlightTable>({
@@ -44,6 +46,7 @@ const FlightManagement = () => {
   //New
   const [isNewOpen, setIsNewOpen] = useState(false)
   //Table
+  const dispatch = useAppDispatch();
   const navigate = useNavigate()
   const actionRef = useRef<ActionType>(null)
   const data: IFlightTable[] = flightData
@@ -151,6 +154,7 @@ const FlightManagement = () => {
           <Button
             type='dashed'
             onClick={() => {
+              dispatch(setBookingFlight(record));
               navigate(`booking/${record.id}`)
             }}
           >

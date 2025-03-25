@@ -1,8 +1,8 @@
-export {}
+export { };
 
 declare global {
   interface ITicketTable {
-    id?: string
+    id: string
     flightId: string
     seatId: string
     passengerName: string

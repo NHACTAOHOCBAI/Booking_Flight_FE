@@ -1,3 +1,4 @@
+import { seatOptions } from '@/utils/select';
 import { Card, Form, Input, Select } from 'antd';
 import { BsFillTicketPerforatedFill } from 'react-icons/bs';
 import { FiPhone } from 'react-icons/fi';
@@ -12,18 +13,13 @@ interface ITicket {
     customerID: string,
     customerEmail: string
 }
-const TicketInformation = () => {
-    const seats = [
-        { _id: "S001", name: "Economy", price: 200, description: "Basic economy class seat" },
-        { _id: "S002", name: "Business", price: 500, description: "Premium business class seat" },
-        { _id: "S003", name: "First Class", price: 1000, description: "Luxury first-class seat" }
-    ];
-    const seatOptions = seats.map((value) => {
-        return {
-            value: value._id,
-            label: value.name,
-        }
-    })
+interface IProp {
+    tickets: ITicketTable,
+    setTickets: (value: ITicketTable) => void
+}
+const TicketInformation = (props: IProp) => {
+    const { tickets, setTickets } = props;
+    console.log(tickets, setTickets)
     return (
         <Card headStyle={{ textAlign: "left" }} variant="borderless" style={{ width: "100%" }}>
             <div style={{ fontWeight: "bold", fontSize: 18, textAlign: "left", marginBottom: 10 }}>
@@ -60,28 +56,28 @@ const TicketInformation = () => {
                     name="customerName"
                     rules={[{ required: true, message: 'Please input your username!' }]}
                 >
-                    <Input />
+                    <Input placeholder='Enter a name' />
                 </Form.Item>
                 <Form.Item<ITicket>
                     label={<div><FiPhone style={{ width: 20, height: 20, verticalAlign: "middle" }} /> Phone</div>}
                     name="customerPhone"
                     rules={[{ required: true, message: 'Please input your username!' }]}
                 >
-                    <Input />
+                    <Input placeholder='Enter a phone' />
                 </Form.Item>
                 <Form.Item<ITicket>
                     label={<div><MdOutlineMail style={{ width: 20, height: 20, verticalAlign: "middle" }} /> Email</div>}
                     name="customerEmail"
                     rules={[{ required: true, message: 'Please input your username!' }]}
                 >
-                    <Input />
+                    <Input placeholder='Enter a email' />
                 </Form.Item>
                 <Form.Item<ITicket>
                     label={<div><HiOutlineIdentification style={{ width: 20, height: 20, verticalAlign: "middle" }} /> Identify card</div>}
                     name="customerID"
                     rules={[{ required: true, message: 'Please input your username!' }]}
                 >
-                    <Input />
+                    <Input placeholder='Enter a ID' />
                 </Form.Item>
             </Form>
         </Card>
