@@ -81,6 +81,9 @@ const CityManagement = () => {
   return (
     <>
       <ProTable<ICityTable>
+        search={{
+          labelWidth: 'auto',
+        }}
         dataSource={data}
         columns={columns}
         bordered

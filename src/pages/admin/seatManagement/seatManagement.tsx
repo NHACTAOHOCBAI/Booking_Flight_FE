@@ -100,6 +100,9 @@ const SeatManagement = () => {
   return (
     <>
       <ProTable<ISeatItem>
+        search={{
+          labelWidth: 'auto',
+        }}
         dataSource={data}
         columns={columns}
         actionRef={actionRef}

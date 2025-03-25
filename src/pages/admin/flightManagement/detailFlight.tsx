@@ -1,10 +1,11 @@
+import { toAirport, toPlane, toSeat } from "@/utils/convert"
 import { Descriptions, Drawer, Popover, Table, TableProps } from "antd"
 import { DescriptionsProps } from "antd/lib"
 import dayjs from "dayjs"
 
 interface IProps {
-    detailFlight: IFlightItem
-    setDetailFlight: (value: IFlightItem) => void
+    detailFlight: IFlightTable
+    setDetailFlight: (value: IFlightTable) => void
     isDetailOpen: boolean
     setIsDetailOpen: (open: boolean) => void
 }
@@ -13,18 +14,16 @@ const DetailFlight = (props: IProps) => {
     const handleClose = () => {
         setIsDetailOpen(false);
         setDetailFlight({
-            _id: "",
+            id: "",
+            flightCode: "",
             planeId: "",
-            planeName: "",
-            departureId: "",
-            departureName: "",
-            arrivalId: "",
-            arrivalName: "",
+            departureAirportId: "",
+            arrivalAirportId: "",
             departureTime: "",
             arrivalTime: "",
-            price: 0,
-            ticket: [],
-            interAirport: []
+            originPrice: 0,
+            interAirport: [],
+            seat: []
         });
     }
     const Content = (value: string) => {
@@ -36,105 +35,55 @@ const DetailFlight = (props: IProps) => {
     }
     const flightItems: DescriptionsProps['items'] = [
         {
-            key: '_id',
-            label: 'ID',
+            key: 'flightCode',
+            label: 'Flight Code',
             span: 4,
-            children: detailFlight?._id,
+            children: detailFlight?.flightCode,
         },
         {
             key: 'arrivalName',
             label: 'Arrival airport',
             span: 2,
-            children: <Popover content={Content(detailFlight.arrivalId)} trigger="hover" >
-                {detailFlight.arrivalName}
+            children: <Popover content={Content(toAirport(detailFlight.arrivalAirportId).airportCode as string)} trigger="hover" >
+                {toAirport(detailFlight.arrivalAirportId).airportName}
             </Popover>
         },
         {
             key: 'departureName',
             label: 'Departure airport',
             span: 2,
-            children: <Popover content={Content(detailFlight.departureId)} trigger="hover" >
-                {detailFlight.departureName}
+            children: <Popover content={Content(toAirport(detailFlight.departureAirportId).airportCode as string)} trigger="hover" >
+                {toAirport(detailFlight.departureAirportId).airportName}
             </Popover>
         },
         {
             key: 'departureTime',
             label: 'Departure time',
             span: 2,
-            children: dayjs(detailFlight?.departureTime).format('DD/MM/YYYY HH:mm:ss')
+            children: dayjs(detailFlight?.departureTime).format('HH:mm DD/MM/YYYY')
         },
         {
             key: 'arrivalTime',
             label: 'Arrival time',
             span: 2,
-            children: dayjs(detailFlight?.arrivalTime).format('DD/MM/YYYY HH:mm:ss')
+            children: dayjs(detailFlight?.arrivalTime).format('HH:mm DD/MM/YYYY')
         },
         {
             key: 'plane',
             label: 'Plane',
             span: 2,
-            children: <Popover content={Content(detailFlight.planeId)} trigger="hover" >
-                {detailFlight.planeName}
+            children: <Popover content={Content(toPlane(detailFlight.planeId).planeCode as string)} trigger="hover" >
+                {toPlane(detailFlight.planeId).planeName}
             </Popover>
         },
         {
             key: 'initialPrice',
             label: 'Price',
             span: 2,
-            children: `${detailFlight?.price} VNĐ`,
+            children: `${detailFlight?.originPrice} VNĐ`,
         },
     ];
-    //fake data
-    const airports = [
-        { _id: "SGN", name: "Tan Son Nhat International Airport", city: "Ho Chi Minh City", country: "Vietnam" },
-        { _id: "HAN", name: "Noi Bai International Airport", city: "Hanoi", country: "Vietnam" },
-        { _id: "DAD", name: "Da Nang International Airport", city: "Da Nang", country: "Vietnam" },
-        { _id: "PQC", name: "Phu Quoc International Airport", city: "Phu Quoc", country: "Vietnam" },
-        { _id: "CXR", name: "Cam Ranh International Airport", city: "Nha Trang", country: "Vietnam" },
-        { _id: "BKK", name: "Suvarnabhumi Airport", city: "Bangkok", country: "Thailand" },
-        { _id: "SIN", name: "Changi Airport", city: "Singapore", country: "Singapore" },
-        { _id: "HKG", name: "Hong Kong International Airport", city: "Hong Kong", country: "China" },
-        { _id: "NRT", name: "Narita International Airport", city: "Tokyo", country: "Japan" },
-        { _id: "ICN", name: "Incheon International Airport", city: "Seoul", country: "South Korea" }
-    ];
-    const seats = [
-        { _id: "S001", name: "Economy", price: 100, description: "Basic economy class seat" },
-        { _id: "S002", name: "Business", price: 120, description: "Premium business class seat" },
-        { _id: "S003", name: "First Class", price: 170, description: "Luxury first-class seat" }
-    ];
-    interface IInterData {
-        id: string,
-        nameAirport: string,
-        arrivalTime: string,
-        departureTime: string
-    }
-    interface ITicketData {
-        id: string,
-        seatName: string
-        quantity: number
-        price: number
-    }
-    const interData: IInterData[] = detailFlight.interAirport.map((value) => {
-        // Tìm object sân bay trong data
-        const foundAirport = airports.find((item) => item._id === value._id);
-        return {
-            id: value._id,
-            nameAirport: foundAirport!.name,
-            arrivalTime: value.arrivalTime,
-            departureTime: value.departureTime
-        }
-    });
-    const ticketData: ITicketData[] = detailFlight.ticket.map((value) => {
-        // Tìm object sân bay trong data
-        const foundSeat = seats.find((item) => item._id === value.type._id);
-        return {
-            id: value.type._id,
-            seatName: foundSeat?.name as string,
-            quantity: value.quantity,
-            price: foundSeat?.price as number
-        }
-    });
-    const interColumns: TableProps<IInterData>['columns'] = [
+    const interColumns: TableProps<IInterAirport>['columns'] = [
         {
             title: 'Intermediate airport',
             dataIndex: 'index',
@@ -149,10 +98,10 @@ const DetailFlight = (props: IProps) => {
                 {
                     title: 'Airport',
                     dataIndex: '',
-                    key: 'nameAirport',
+                    key: 'airportName',
                     render: (_, value) => (
-                        < Popover content={Content(value.id)} trigger="hover" >
-                            {value.nameAirport}
+                        < Popover content={Content(toAirport(value.airportId).airportCode as string)} trigger="hover" >
+                            {toAirport(value.airportId).airportName}
                         </ Popover>
                     ),
                 },
@@ -161,7 +110,7 @@ const DetailFlight = (props: IProps) => {
                     dataIndex: '',
                     key: 'arrivalTime',
                     render: (_, value) => (
-                        dayjs(value?.arrivalTime).format('DD/MM/YYYY HH:mm:ss')
+                        dayjs(value.arrivalTime).format('HH:mm DD/MM/YYYY')
                     )
                 },
                 {
@@ -169,13 +118,17 @@ const DetailFlight = (props: IProps) => {
                     dataIndex: '',
                     key: 'departureTime',
                     render: (_, value) => (
-                        dayjs(value?.departureTime).format('DD/MM/YYYY HH:mm:ss')
+                        dayjs(value.departureTime).format('HH:mm DD/MM/YYYY')
                     )
                 },
+                {
+                    title: "Note",
+                    dataIndex: "note"
+                }
             ]
         },
     ];
-    const seatColumns: TableProps<ITicketData>['columns'] = [
+    const seatColumns: TableProps<ISeat>['columns'] = [
         {
             title: 'Available tickets',
             dataIndex: 'index',
@@ -192,8 +145,8 @@ const DetailFlight = (props: IProps) => {
                     dataIndex: '',
                     key: 'seatName',
                     render: (_, value) => (
-                        < Popover content={Content(value.id)} trigger="hover" >
-                            {value.seatName}
+                        < Popover content={Content(toSeat(value.seatId).seatCode as string)} trigger="hover" >
+                            {toSeat(value.seatId).seatName}
                         </ Popover>
                     ),
                 },
@@ -205,11 +158,10 @@ const DetailFlight = (props: IProps) => {
                 {
                     title: 'Actual price',
                     key: 'price',
-                    render: (_, record) => {
-                        console.log(detailFlight.price, record.price)
-                        return detailFlight.price * record.price / 100;
+                    render: (_, value) => {
+                        return detailFlight.originPrice * (toSeat(value.seatId).price as number) / 100;
                     }
-                },
+                }
             ]
         },
     ];
@@ -219,20 +171,20 @@ const DetailFlight = (props: IProps) => {
                 <Descriptions
                     size="middle" column={4} bordered items={flightItems} />
                 {
-                    (interData.length != 0) ?
+                    (detailFlight.interAirport.length != 0) ?
                         <>
                             <div style={{ height: 10 }}></div>
-                            <Table<IInterData>
+                            <Table<IInterAirport>
                                 bordered
-                                size="small" columns={interColumns} dataSource={interData} pagination={false} />
+                                size="small" columns={interColumns} dataSource={detailFlight.interAirport} pagination={false} />
                         </>
                         :
                         <></>
                 }
                 <div style={{ height: 10 }}></div>
-                <Table<ITicketData>
+                <Table<ISeat>
                     bordered
-                    size="small" columns={seatColumns} dataSource={ticketData} pagination={false} />
+                    size="small" columns={seatColumns} dataSource={detailFlight.seat} pagination={false} />
             </Drawer>
         </>
     )

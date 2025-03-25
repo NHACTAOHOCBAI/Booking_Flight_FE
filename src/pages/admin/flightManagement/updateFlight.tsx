@@ -1,27 +1,33 @@
- 
-import { Button, Col, DatePicker, Form, FormProps, InputNumber, Modal, Row, Select, Space } from "antd";
+
+import { Button, Col, DatePicker, Form, FormProps, Input, InputNumber, Modal, Row, Select, Space } from "antd";
 import { CloseOutlined } from "@ant-design/icons"
 import dayjs from "dayjs";
 import { useEffect } from "react";
+import TextArea from "antd/es/input/TextArea";
+import { airportOptions, planeOptions, seatOptions } from "@/utils/select";
 interface IProp {
     isUpdateOpen: boolean
     setIsUpdateOpen: (value: boolean) => void
-    updatedFlight: IUpdateFlightItem
-    setUpdatedFlight: (value: IUpdateFlightItem) => void
+    updatedFlight: IFlightTable
+    setUpdatedFlight: (value: IFlightTable) => void
 }
 const UpdateFlight = (props: IProp) => {
     const { isUpdateOpen, setIsUpdateOpen, setUpdatedFlight, updatedFlight } = props;
     const [form] = Form.useForm();
-    const onFinish: FormProps<IUpdateFlightItem>['onFinish'] = (value) => {
-        value.departureTime = dayjs(value.departureTime).format("DD/MM/YYYY HH:mm:ss");
-        value.arrivalTime = dayjs(value.arrivalTime).format("DD/MM/YYYY HH:mm:ss");
-        value.interAirport = value.interAirport.map((values) => {
-            return {
-                _id: values._id,
-                arrivalTime: dayjs(values.arrivalTime).format("DD/MM/YYYY HH:mm:ss"),
-                departureTime: dayjs(values.departureTime).format("DD/MM/YYYY HH:mm:ss"),
-            }
-        })
+    const onFinish: FormProps<IFlightTable>['onFinish'] = (value) => {
+        value.departureTime = dayjs(value.departureTime).format("HH:mm DD/MM/YYYY");
+        value.arrivalTime = dayjs(value.arrivalTime).format("HH:mm DD/MM/YYYY");
+        if (value.interAirport) {
+            value.interAirport = value.interAirport.map((values) => {
+                return {
+                    airportId: values.airportId,
+                    arrivalTime: dayjs(values.arrivalTime).format("HH:mm DD/MM/YYYY"),
+                    departureTime: dayjs(values.departureTime).format("HH:mm DD/MM/YYYY"),
+                    note: values.note ? values.note : "nothing"
+                }
+            })
+        }
+        value.seat = value.seat ? value.seat : [];
         console.log(value)
         handleCancel();
     }
@@ -32,80 +38,40 @@ const UpdateFlight = (props: IProp) => {
         // form.resetFields();
         // subForm.resetFields();
         setUpdatedFlight({
-            _id: "",
+            id: "",
+            flightCode: "",
             planeId: "",
-            departureId: "",
-            arrivalId: "",
-            departureTime: "01/01/2000 00:00:00",
-            arrivalTime: "01/01/2000 00:00:00",
-            price: 0,
-            ticket: [],
+            departureAirportId: "",
+            arrivalAirportId: "",
+            departureTime: "",
+            arrivalTime: "",
+            originPrice: 0,
             interAirport: [],
+            seat: []
         })
         setIsUpdateOpen(false);
     };
     useEffect(() => {
-        console.log(updatedFlight);
-        const interAirport = updatedFlight.interAirport.map((value) => {
-            return {
-                _id: value._id,
-                arrivalTime: value.arrivalTime ? dayjs(value.arrivalTime) : null,
-                departureTime: value.departureTime ? dayjs(value.departureTime) : null,
-            }
-        })
         form.setFieldsValue({
-            _id: updatedFlight._id,
+            id: updatedFlight.id,
+            flightCode: updatedFlight.flightCode,
             planeId: updatedFlight.planeId,
-            departureId: updatedFlight.departureId,
-            arrivalId: updatedFlight.arrivalId,
+            departureAirportId: updatedFlight.departureAirportId,
+            arrivalAirportId: updatedFlight.arrivalAirportId,
             departureTime: updatedFlight.departureTime ? dayjs(updatedFlight.departureTime) : null,
             arrivalTime: updatedFlight.arrivalTime ? dayjs(updatedFlight.arrivalTime) : null,
-            price: updatedFlight.price,
-            ticket: updatedFlight.ticket,
-            interAirport: interAirport,
+            originPrice: updatedFlight.originPrice,
+            interAirport: updatedFlight.interAirport.map((value) => {
+                return {
+                    airportId: value.airportId,
+                    arrivalTime: value.arrivalTime ? dayjs(value.arrivalTime) : null,
+                    departureTime: value.departureTime ? dayjs(value.departureTime) : null,
+                    note: value.note
+                }
+            }),
+            seat: updatedFlight.seat
         })
     }, [updatedFlight])
-    //fake data
-    const planes = [
-        { _id: "001", plane: "Boeing 747" },
-        { _id: "002", plane: "Airbus A320" }
-    ]
-    const airports = [
-        { _id: "SGN", name: "Tan Son Nhat International Airport", city: "Ho Chi Minh City", country: "Vietnam" },
-        { _id: "HAN", name: "Noi Bai International Airport", city: "Hanoi", country: "Vietnam" },
-        { _id: "DAD", name: "Da Nang International Airport", city: "Da Nang", country: "Vietnam" },
-        { _id: "PQC", name: "Phu Quoc International Airport", city: "Phu Quoc", country: "Vietnam" },
-        { _id: "CXR", name: "Cam Ranh International Airport", city: "Nha Trang", country: "Vietnam" },
-        { _id: "BKK", name: "Suvarnabhumi Airport", city: "Bangkok", country: "Thailand" },
-        { _id: "SIN", name: "Changi Airport", city: "Singapore", country: "Singapore" },
-        { _id: "HKG", name: "Hong Kong International Airport", city: "Hong Kong", country: "China" },
-        { _id: "NRT", name: "Narita International Airport", city: "Tokyo", country: "Japan" },
-        { _id: "ICN", name: "Incheon International Airport", city: "Seoul", country: "South Korea" }
-    ];
-    const seats = [
-        { _id: "S001", name: "Economy", price: 200, description: "Basic economy class seat" },
-        { _id: "S002", name: "Business", price: 500, description: "Premium business class seat" },
-        { _id: "S003", name: "First Class", price: 1000, description: "Luxury first-class seat" }
-    ];
-    //
-    const planeOptions = planes.map((value) => {
-        return {
-            value: value._id,
-            label: value.plane,
-        }
-    })
-    const airportOptions = airports.map((value) => {
-        return {
-            value: value._id,
-            label: value.name,
-        }
-    })
-    const seatOptions = seats.map((value) => {
-        return {
-            value: value._id,
-            label: value.name,
-        }
-    })
     return (
         <>
             <Modal width={1050} open={isUpdateOpen} onOk={handleOk} onCancel={handleCancel}>
@@ -123,7 +89,20 @@ const UpdateFlight = (props: IProp) => {
                                 fontWeight: "bold", color: "#95a5a6"
                             }}> Flight information</div>
 
-                            <Form.Item<IUpdateFlightItem>
+                            <Form.Item<IFlightTable>
+                                label="Flight code"
+                                name="flightCode"
+                                rules={[
+                                    {
+                                        required: true,
+                                        message: "Please input flight code"
+                                    }
+                                ]}
+                            >
+                                <Input placeholder="Enter a code" />
+                            </Form.Item>
+
+                            <Form.Item<IFlightTable>
                                 label="Plane"
                                 name="planeId"
                                 rules={[
@@ -141,9 +120,9 @@ const UpdateFlight = (props: IProp) => {
                                 />
                             </Form.Item>
 
-                            <Form.Item<IUpdateFlightItem>
+                            <Form.Item<IFlightTable>
                                 label="Departure airport"
-                                name="departureId"
+                                name="departureAirportId"
                                 rules={[
                                     {
                                         required: true,
@@ -159,9 +138,9 @@ const UpdateFlight = (props: IProp) => {
                                 />
                             </Form.Item>
 
-                            <Form.Item<IUpdateFlightItem>
+                            <Form.Item<IFlightTable>
                                 label="Arrival airport"
-                                name="arrivalId"
+                                name="arrivalAirportId"
                                 rules={[
                                     {
                                         required: true,
@@ -179,7 +158,7 @@ const UpdateFlight = (props: IProp) => {
 
                             <Row>
                                 <Col span={12}>
-                                    <Form.Item<IUpdateFlightItem>
+                                    <Form.Item<IFlightTable>
                                         label="Departure time"
                                         name="departureTime"
                                         rules={[
@@ -191,7 +170,7 @@ const UpdateFlight = (props: IProp) => {
                                     >
                                         <DatePicker
                                             format={{
-                                                format: 'DD-MM-YYYY HH:mm:ss',
+                                                format: 'HH:mm DD/MM/YYYY',
                                             }}
                                             placeholder="Select departure time"
                                             showTime
@@ -200,7 +179,7 @@ const UpdateFlight = (props: IProp) => {
                                 </Col>
 
                                 <Col span={12}>
-                                    <Form.Item<IUpdateFlightItem>
+                                    <Form.Item<IFlightTable>
                                         label="Arrival time"
                                         name="arrivalTime"
                                         rules={[
@@ -212,7 +191,7 @@ const UpdateFlight = (props: IProp) => {
                                     >
                                         <DatePicker
                                             format={{
-                                                format: 'DD-MM-YYYY HH:mm:ss',
+                                                format: 'HH:mm DD/MM/YYYY',
                                             }}
                                             placeholder="Select arrival time"
                                             showTime
@@ -220,74 +199,84 @@ const UpdateFlight = (props: IProp) => {
                                     </Form.Item>
                                 </Col>
                             </Row>
-                            <Form.Item<IUpdateFlightItem>
-                                label="Intermediate Airport "
+                            <Form.Item<IFlightTable>
+                                label="Intermediate airport"
                             >
                                 <Form.List name="interAirport">
                                     {(subFields, subOpt) => (
                                         <div style={{ display: 'flex', flexDirection: 'column', rowGap: 16 }}>
                                             {subFields.map((subField) => (
                                                 <Space key={subField.key}>
-                                                    <Row gutter={10}>
-                                                        <Col span={8}>
-                                                            <Form.Item
-                                                                rules={[
-                                                                    {
-                                                                        required: true,
-                                                                        message: "Please input airport"
-                                                                    }
-                                                                ]}
-                                                                noStyle name={[subField.name, '_id']}>
-                                                                <Select style={{ width: "100%" }}
-                                                                    showSearch
-                                                                    placeholder="Airport"
-                                                                    optionFilterProp="label"
-                                                                    options={airportOptions}
-                                                                />
-                                                            </Form.Item>
-                                                        </Col>
-                                                        <Col span={8}>
-                                                            <Form.Item
-                                                                rules={[
-                                                                    {
-                                                                        required: true,
-                                                                        message: "Please input arrival time"
-                                                                    }
-                                                                ]}
-                                                                noStyle name={[subField.name, 'arrivalTime']}>
-                                                                <DatePicker
-                                                                    format={{
-                                                                        format: 'DD-MM-YYYY HH:mm:ss',
+                                                    <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                                                        <Row gutter={20}>
+                                                            <Col span={7}>
+                                                                <Form.Item
+                                                                    rules={[
+                                                                        {
+                                                                            required: true,
+                                                                            message: "Please input airport"
+                                                                        }
+                                                                    ]}
+                                                                    noStyle name={[subField.name, 'airportId']}>
+                                                                    <Select style={{ width: "100%" }}
+                                                                        showSearch
+                                                                        placeholder="Airport"
+                                                                        optionFilterProp="label"
+                                                                        options={airportOptions}
+                                                                    />
+                                                                </Form.Item>
+                                                            </Col>
+                                                            <Col span={8}>
+                                                                <Form.Item
+                                                                    rules={[
+                                                                        {
+                                                                            required: true,
+                                                                            message: "Please input arrival time"
+                                                                        }
+                                                                    ]}
+                                                                    noStyle name={[subField.name, 'arrivalTime']}>
+                                                                    <DatePicker
+                                                                        format={{
+                                                                            format: 'HH:mm DD/MM/YYYY',
+                                                                        }}
+                                                                        placeholder="Select arrival time"
+                                                                        showTime
+                                                                    />
+                                                                </Form.Item>
+                                                            </Col>
+                                                            <Col span={8}>
+                                                                <Form.Item
+                                                                    rules={[
+                                                                        {
+                                                                            required: true,
+                                                                            message: "Please input departure time"
+                                                                        }
+                                                                    ]}
+                                                                    noStyle name={[subField.name, 'departureTime']}>
+                                                                    <DatePicker
+                                                                        format={{
+                                                                            format: 'HH:mm DD/MM/YYYY',
+                                                                        }}
+                                                                        placeholder="Select departure time"
+                                                                        showTime
+                                                                    />
+                                                                </Form.Item>
+                                                            </Col>
+                                                            <Col span={1}>
+                                                                <CloseOutlined
+                                                                    onClick={() => {
+                                                                        subOpt.remove(subField.name);
                                                                     }}
-                                                                    placeholder="Select arrival time"
-                                                                    showTime
                                                                 />
-                                                            </Form.Item>
-                                                        </Col>
-                                                        <Col span={8}>
+                                                            </Col>
+                                                        </Row>
+                                                        <Row>
                                                             <Form.Item
-                                                                rules={[
-                                                                    {
-                                                                        required: true,
-                                                                        message: "Please input departure time"
-                                                                    }
-                                                                ]}
-                                                                noStyle name={[subField.name, 'departureTime']}>
-                                                                <DatePicker
-                                                                    format={{
-                                                                        format: 'DD-MM-YYYY HH:mm:ss',
-                                                                    }}
-                                                                    placeholder="Select departure time"
-                                                                    showTime
-                                                                />
+                                                                noStyle name={[subField.name, 'note']}>
+                                                                <TextArea rows={3} placeholder="Note: Max length is 250 characters" maxLength={250} />
                                                             </Form.Item>
-                                                        </Col>
-                                                    </Row>
-                                                    <CloseOutlined
-                                                        onClick={() => {
-                                                            subOpt.remove(subField.name);
-                                                        }}
-                                                    />
+                                                        </Row>
+                                                    </div>
                                                 </Space>
                                             ))}
                                             <Button type="dashed" onClick={() => subOpt.add()} block>
@@ -306,10 +295,10 @@ const UpdateFlight = (props: IProp) => {
                                 fontSize: 20,
                                 fontWeight: "bold", color: "#95a5a6"
                             }}> Manage Tickets</div>
-                            <Form.Item<IUpdateFlightItem>
+                            <Form.Item<IFlightTable>
                                 label=" "
                             >
-                                <Form.List name="ticket">
+                                <Form.List name="seat">
                                     {(subFields, subOpt) => (
                                         <div style={{ display: 'flex', flexDirection: 'column', rowGap: 16 }}>
                                             {subFields.map((subField) => (
@@ -323,7 +312,7 @@ const UpdateFlight = (props: IProp) => {
                                                                         message: "Please input seat class"
                                                                     }
                                                                 ]}
-                                                                noStyle name={[subField.name, 'ticketId']}>
+                                                                noStyle name={[subField.name, 'seatId']}>
                                                                 <Select style={{ width: "100%" }}
                                                                     showSearch
                                                                     placeholder="Seat class"
@@ -360,9 +349,9 @@ const UpdateFlight = (props: IProp) => {
                                     )}
                                 </Form.List>
                             </Form.Item>
-                            <Form.Item<IUpdateFlightItem>
+                            <Form.Item<IFlightTable>
                                 label="Original price"
-                                name="price"
+                                name="originPrice"
                                 rules={[
                                     {
                                         required: true,

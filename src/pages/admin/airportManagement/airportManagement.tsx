@@ -81,6 +81,9 @@ const AirportManagement = () => {
   return (
     <>
       <ProTable<IAirportTable>
+        search={{
+          labelWidth: 'auto',
+        }}
         dataSource={data}
         columns={columns}
         bordered
