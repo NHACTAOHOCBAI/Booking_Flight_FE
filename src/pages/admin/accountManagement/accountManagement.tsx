@@ -7,11 +7,24 @@ import { useRef, useState } from 'react'
 import { accountData } from '@/globalType'
 import NewAccount from './newAccount'
 import UpdateAccount from './updateAccount.tsx'
+import DetailAccount from './detailAccount.tsx'
 
 const AccountManagement = () => {
   //table
   const actionRef = useRef<ActionType>(null)
   const data: IAccountTable[] = accountData
+
+  //detail
+  const [isDetailOpen, setIsDetailOpen] = useState(false)
+  const [detailAccount, setDetailAccount] = useState<IAccountTable>({
+    id: '',
+    email: '',
+    fullName: '',
+    password: '',
+    phone: '',
+    role: 3,
+    username: ''
+  })
 
   //new
   const [isNewOpen, setIsNewOpen] = useState(false)
@@ -42,22 +55,30 @@ const AccountManagement = () => {
     {
       title: 'Id',
       search: false,
-      render: (_, record) => <a style={{ color: '#3498db' }}>{record.id}</a>
+      render: (_, record) => (
+        <a
+          style={{ color: '#3498db' }}
+          onClick={() => {
+            setDetailAccount(record)
+            setIsDetailOpen(true)
+          }}
+        >
+          {record.id}
+        </a>
+      )
     },
     {
       title: 'Username',
-      dataIndex: 'username',
-      copyable: true
+      dataIndex: 'username'
     },
     {
       title: 'Password',
       dataIndex: 'password',
-      copyable: true
+      search: false
     },
     {
       title: 'Email',
-      dataIndex: 'email',
-      copyable: true
+      dataIndex: 'email'
     },
     {
       title: 'Full name',
@@ -76,7 +97,7 @@ const AccountManagement = () => {
       valueType: 'select',
       valueEnum: {
         admin: { text: 'Admin' },
-        user: { text: 'User' },
+        employee: { text: 'Employee' },
         client: { text: 'Client' }
       }
     },
@@ -142,6 +163,7 @@ const AccountManagement = () => {
         dataSource={data}
         columns={columns}
         actionRef={actionRef}
+        bordered
         cardBordered
         headerTitle='Accounts List'
         // request={handleRequest}
@@ -171,6 +193,12 @@ const AccountManagement = () => {
         isUpdateOpen={isUpdateOpen}
         setIsUpdateOpen={setIsUpdateOpen}
         updatedAccount={updatedAccount}
+      />
+      <DetailAccount
+        isDetailOpen={isDetailOpen}
+        setIsDetailOpen={setIsDetailOpen}
+        setDetailAccount={setDetailAccount}
+        detailAccount={detailAccount}
       />
     </>
   )

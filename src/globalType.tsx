@@ -28,14 +28,7 @@ export const flightData: IFlightTable[] = [
     departureTime: '2025-04-01T08:00:00Z',
     arrivalTime: '2025-04-01T10:30:00Z',
     originPrice: 150,
-    interAirport: [
-      {
-        airportId: '2',
-        arrivalTime: '2025-04-10T22:00:00Z',
-        departureTime: '2025-04-11T00:30:00Z',
-        note: 'Unfortunately, there are some problem with my plane, so we have to stop by nearly airport to take off. I hope you will understand for us'
-      }
-    ],
+    interAirport: [],
     seat: [
       { seatId: '1', quantity: 50 }, // Hạng 1
       { seatId: '2', quantity: 30 }, // Hạng 2
@@ -179,14 +172,7 @@ export const flightData: IFlightTable[] = [
     departureTime: '2025-04-10T22:00:00Z',
     arrivalTime: '2025-04-11T00:30:00Z',
     originPrice: 280,
-    interAirport: [
-      {
-        airportId: '6',
-        arrivalTime: '2025-04-10T22:00:00Z',
-        departureTime: '2025-04-11T00:30:00Z',
-        note: 'Nothing'
-      }
-    ],
+    interAirport: [],
     seat: [
       { seatId: '1', quantity: 50 },
       { seatId: '2', quantity: 30 },
@@ -197,26 +183,24 @@ export const flightData: IFlightTable[] = [
 export const seatData: ISeatTable[] = [
   {
     id: '1',
-    seatName: 'ECONOMY',
-    seatCode: 'ECO',
+    seatCode: 'ECONOMY',
     price: 100,
     description: 'Economy class with basic amenities and comfortable seating.'
   },
   {
     id: '2',
-    seatName: 'BUSINESS',
-    seatCode: 'BUS',
+    seatCode: 'BUSINESS',
     price: 250,
     description: 'Business class with extra legroom, premium meals, and priority boarding.'
   },
   {
     id: '3',
-    seatName: 'FIRST',
-    seatCode: 'FIR',
+    seatCode: 'FIRST',
     price: 500,
     description: 'First class with luxurious seating, gourmet meals, and exclusive lounge access.'
   }
 ]
+
 export const cityData: ICityTable[] = [
   { id: '1', cityCode: 'CODE-1', cityName: 'Hà Nội' },
   { id: '2', cityCode: 'CODE-2', cityName: 'Hồ Chí Minh' },
@@ -229,13 +213,269 @@ export const cityData: ICityTable[] = [
   { id: '9', cityCode: 'CODE-9', cityName: 'Đà Lạt' },
   { id: '10', cityCode: 'CODE-10', cityName: 'Quy Nhơn' }
 ]
+
 export const planeData: IPlaneTable[] = [
-  { id: '1', planeCode: 'VN-A861', planeName: 'Airbus A350-900', airlineId: '1' },
-  { id: '2', planeCode: 'VN-A601', planeName: 'Airbus A321neo', airlineId: '2' },
-  { id: '3', planeCode: 'VJ-A678', planeName: 'Airbus A320-200', airlineId: '3' },
-  { id: '4', planeCode: 'QH-ACF', planeName: 'Boeing 787-9 Dreamliner', airlineId: '4' },
-  { id: '5', planeCode: 'BL-F012', planeName: 'Airbus A320neo', airlineId: '5' }
+  {
+    id: '1',
+    planeCode: 'VN123',
+    planeName: 'Máy bay Airbus A321',
+    airlineId: 'VNA'
+  },
+  {
+    id: '2',
+    planeCode: 'VN456',
+    planeName: 'Máy bay Boeing 787 Dreamliner',
+    airlineId: 'VNA'
+  },
+  {
+    id: '3',
+    planeCode: 'BL789',
+    planeName: 'Máy bay Airbus A350 XWB',
+    airlineId: 'BAM'
+  },
+  {
+    id: '4',
+    planeCode: 'VJ012',
+    planeName: 'Máy bay ATR 72-600',
+    airlineId: 'VJC'
+  },
+  {
+    id: '5',
+    planeCode: 'QH345',
+    planeName: 'Máy bay Embraer E190',
+    airlineId: 'QH'
+  },
+  {
+    id: '6',
+    planeCode: 'VN678',
+    planeName: 'Máy bay Airbus A330',
+    airlineId: 'VNA'
+  },
+  {
+    id: '7',
+    planeCode: 'BL901',
+    planeName: 'Máy bay Boeing 777-300ER',
+    airlineId: 'BAM'
+  },
+  {
+    id: '8',
+    planeCode: 'VJ234',
+    planeName: 'Máy bay Airbus A320neo',
+    airlineId: 'VJC'
+  },
+  {
+    id: '9',
+    planeCode: 'QH567',
+    planeName: 'Máy bay Boeing 737 MAX',
+    airlineId: 'QH'
+  },
+  {
+    id: '10',
+    planeCode: 'VN890',
+    planeName: 'Máy bay Airbus A380',
+    airlineId: 'VNA'
+  }
 ]
+
+export const accountData: IAccountTable[] = [
+  {
+    id: '1',
+    username: 'nguyenvanA',
+    password: 'Matkhau@123',
+    email: 'nguyenvana@gmail.com',
+    fullName: 'Nguyễn Văn A',
+    phone: '0912345678',
+    role: 1
+  },
+  {
+    id: '2',
+    username: 'tranthiB',
+    password: 'Thi@456789',
+    email: 'tranthib@gmail.com',
+    fullName: 'Trần Thị B',
+    phone: '0987654321',
+    role: 2
+  },
+  {
+    id: '3',
+    username: 'lehoangC',
+    password: 'Hoang#7890',
+    email: 'lehoangc@gmail.com',
+    fullName: 'Lê Hoàng C',
+    phone: '0909123456',
+    role: 1
+  },
+  {
+    id: '4',
+    username: 'phamthuyD',
+    password: 'ThuyD@1234',
+    email: 'phamthuyd@gmail.com',
+    fullName: 'Phạm Thùy D',
+    phone: '0978123456',
+    role: 3
+  },
+  {
+    id: '5',
+    username: 'vuvantaiE',
+    password: 'VuvanTai@99',
+    email: 'vuvantai@gmail.com',
+    fullName: 'Vũ Văn Tài',
+    phone: '0911223344',
+    role: 2
+  },
+  {
+    id: '6',
+    username: 'dangthuyF',
+    password: 'F@12345678',
+    email: 'dangthuyf@gmail.com',
+    fullName: 'Đặng Thúy F',
+    phone: '0988776655',
+    role: 1
+  },
+  {
+    id: '7',
+    username: 'buiquangG',
+    password: 'QuangG!123',
+    email: 'buiquangg@gmail.com',
+    fullName: 'Bùi Quang G',
+    phone: '0901122334',
+    role: 3
+  },
+  {
+    id: '8',
+    username: 'hoangthuH',
+    password: 'ThuH@2023',
+    email: 'hoangthuh@gmail.com',
+    fullName: 'Hoàng Thu H',
+    phone: '0912345000',
+    role: 2
+  },
+  {
+    id: '9',
+    username: 'lyvanK',
+    password: 'VanK#9999',
+    email: 'lyvank@gmail.com',
+    fullName: 'Lý Văn K',
+    phone: '0988999888',
+    role: 1
+  },
+  {
+    id: '10',
+    username: 'maithiL',
+    password: 'MaiL@12345',
+    email: 'maithil@gmail.com',
+    fullName: 'Mai Thị L',
+    phone: '0900111222',
+    role: 2
+  }
+]
+
+export const ticketData: ITicketTable[] = [
+  {
+    id: '1',
+    flightId: 'VN123',
+    seatId: 'A1',
+    passengerName: 'Nguyễn Văn An',
+    passengerPhone: '0912345678',
+    passengerIDCard: '123456789',
+    passengerEmail: 'nguyenvana@gmail.com'
+  },
+  {
+    id: '2',
+    flightId: 'VN456',
+    seatId: 'B3',
+    passengerName: 'Trần Thị Bình',
+    passengerPhone: '0987654321',
+    passengerIDCard: '987654321',
+    passengerEmail: 'tranthib@gmail.com'
+  },
+  {
+    id: '3',
+    flightId: 'BL789',
+    seatId: 'C5',
+    passengerName: 'Lê Hoàng Cường',
+    passengerPhone: '0909123456',
+    passengerIDCard: '456123789',
+    passengerEmail: 'lehoangc@gmail.com'
+  },
+  {
+    id: '4',
+    flightId: 'VJ012',
+    seatId: 'D7',
+    passengerName: 'Phạm Thùy Dung',
+    passengerPhone: '0978123456',
+    passengerIDCard: '321654987',
+    passengerEmail: 'phamthuyd@gmail.com'
+  },
+  {
+    id: '5',
+    flightId: 'QH345',
+    seatId: 'E9',
+    passengerName: 'Vũ Văn Tài',
+    passengerPhone: '0911223344',
+    passengerIDCard: '654987321',
+    passengerEmail: 'vuvantai@gmail.com'
+  },
+  {
+    id: '6',
+    flightId: 'VN678',
+    seatId: 'F2',
+    passengerName: 'Đặng Thúy Hằng',
+    passengerPhone: '0988776655',
+    passengerIDCard: '789456123',
+    passengerEmail: 'dangthuyh@gmail.com'
+  },
+  {
+    id: '7',
+    flightId: 'BL901',
+    seatId: 'G4',
+    passengerName: 'Bùi Quang Huy',
+    passengerPhone: '0901122334',
+    passengerIDCard: '147258369',
+    passengerEmail: 'buiquangh@gmail.com'
+  },
+  {
+    id: '8',
+    flightId: 'VJ234',
+    seatId: 'H6',
+    passengerName: 'Hoàng Thu Hiền',
+    passengerPhone: '0912345000',
+    passengerIDCard: '369258147',
+    passengerEmail: 'hoangthuh@gmail.com'
+  },
+  {
+    id: '9',
+    flightId: 'QH567',
+    seatId: 'K8',
+    passengerName: 'Lý Văn Khánh',
+    passengerPhone: '0988999888',
+    passengerIDCard: '258147369',
+    passengerEmail: 'lyvank@gmail.com'
+  },
+  {
+    id: '10',
+    flightId: 'VN890',
+    seatId: 'L10',
+    passengerName: 'Mai Thị Linh',
+    passengerPhone: '0900111222',
+    passengerIDCard: '951753824',
+    passengerEmail: 'maithil@gmail.com'
+  }
+]
+
+export const airlines: IAirlineTable[] = [
+  { id: '1', airlineCode: 'VNA', airlineName: 'Vietnam Airlines' },
+  { id: '2', airlineCode: 'VJ', airlineName: 'VietJet Air' },
+  { id: '3', airlineCode: 'BBA', airlineName: 'Bamboo Airways' },
+  { id: '4', airlineCode: 'HVN', airlineName: 'Hãng hàng không Hải Vân' },
+  { id: '5', airlineCode: 'VPA', airlineName: 'Vasco Airlines' },
+  { id: '6', airlineCode: 'DDA', airlineName: 'Đông Dương Airlines' },
+  { id: '7', airlineCode: 'SKY', airlineName: 'Sky Airlines Việt Nam' },
+  { id: '8', airlineCode: 'TNA', airlineName: 'Thanh Nam Airlines' },
+  { id: '9', airlineCode: 'SAO', airlineName: 'Sao Việt Airlines' },
+  { id: '10', airlineCode: 'MKA', airlineName: 'Mekong Airlines' }
+]
+
 export {}
 
 // airport

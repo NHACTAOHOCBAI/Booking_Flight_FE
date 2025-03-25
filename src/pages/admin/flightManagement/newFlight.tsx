@@ -1,9 +1,13 @@
-import { Button, Col, DatePicker, Form, FormProps, Input, InputNumber, Modal, Row, Select, Space } from 'antd'
+import { Button, Col, DatePicker, Flex, Form, FormProps, Input, InputNumber, Modal, Row, Select, Space } from 'antd'
 import { CloseOutlined } from '@ant-design/icons'
 import dayjs from 'dayjs'
-import { airportData, planeData, seatData } from '@/globalType'
 import TextArea from 'antd/es/input/TextArea'
 import { airportOptions, planeOptions, seatOptions } from '@/utils/select'
+import { LuScanBarcode } from 'react-icons/lu'
+import { PiAirplaneInFlight } from 'react-icons/pi'
+import { TbPlaneArrival, TbPlaneDeparture } from 'react-icons/tb'
+import { SlCalender } from 'react-icons/sl'
+import { AiOutlineDollarCircle } from 'react-icons/ai'
 interface IProp {
   isNewOpen: boolean
   setIsNewOpen: (value: boolean) => void
@@ -49,12 +53,15 @@ const NewFlight = (props: IProp) => {
                   color: '#95a5a6'
                 }}
               >
-                {' '}
                 Flight information
               </div>
 
               <Form.Item<IFlightTable>
-                label='Flight code'
+                label={
+                  <div>
+                    <LuScanBarcode /> Flight code
+                  </div>
+                }
                 name='flightCode'
                 rules={[
                   {
@@ -67,7 +74,11 @@ const NewFlight = (props: IProp) => {
               </Form.Item>
 
               <Form.Item<IFlightTable>
-                label='Plane'
+                label={
+                  <div>
+                    <PiAirplaneInFlight /> Plane
+                  </div>
+                }
                 name='planeId'
                 rules={[
                   {
@@ -80,7 +91,11 @@ const NewFlight = (props: IProp) => {
               </Form.Item>
 
               <Form.Item<IFlightTable>
-                label='Departure airport'
+                label={
+                  <div>
+                    <TbPlaneDeparture /> Departure airport
+                  </div>
+                }
                 name='departureAirportId'
                 rules={[
                   {
@@ -98,7 +113,11 @@ const NewFlight = (props: IProp) => {
               </Form.Item>
 
               <Form.Item<IFlightTable>
-                label='Arrival airport'
+                label={
+                  <div>
+                    <TbPlaneArrival /> Arrival airport
+                  </div>
+                }
                 name='arrivalAirportId'
                 rules={[
                   {
@@ -118,7 +137,11 @@ const NewFlight = (props: IProp) => {
               <Row>
                 <Col span={12}>
                   <Form.Item<IFlightTable>
-                    label='Departure time'
+                    label={
+                      <div>
+                        <SlCalender /> Departure time
+                      </div>
+                    }
                     name='departureTime'
                     rules={[
                       {
@@ -139,7 +162,11 @@ const NewFlight = (props: IProp) => {
 
                 <Col span={12}>
                   <Form.Item<IFlightTable>
-                    label='Arrival time'
+                    label={
+                      <div>
+                        <SlCalender /> Arrival time
+                      </div>
+                    }
                     name='arrivalTime'
                     rules={[
                       {
@@ -261,7 +288,6 @@ const NewFlight = (props: IProp) => {
                   color: '#95a5a6'
                 }}
               >
-                {' '}
                 Manage Tickets
               </div>
               <Form.Item<IFlightTable> label=' '>
@@ -326,7 +352,17 @@ const NewFlight = (props: IProp) => {
                 </Form.List>
               </Form.Item>
               <Form.Item<IFlightTable>
-                label='Original price'
+                label={
+                  <div>
+                    <AiOutlineDollarCircle
+                      style={{
+                        width: 17,
+                        height: 17
+                      }}
+                    />
+                    Original price
+                  </div>
+                }
                 name='originPrice'
                 rules={[
                   {

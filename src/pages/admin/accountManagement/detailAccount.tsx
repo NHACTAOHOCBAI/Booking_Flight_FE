@@ -1,9 +1,8 @@
 import { Avatar, Badge, Descriptions, DescriptionsProps, Drawer } from 'antd'
 import { UserOutlined } from '@ant-design/icons'
-import dayjs from 'dayjs'
 interface IProps {
-  detailAccount: IAccountItem
-  setDetailAccount: (value: IAccountItem) => void
+  detailAccount: IAccountTable
+  setDetailAccount: (value: IAccountTable) => void
   isDetailOpen: boolean
   setIsDetailOpen: (open: boolean) => void
 }
@@ -12,45 +11,39 @@ const DetailAccount = (props: IProps) => {
   const handleClose = () => {
     setIsDetailOpen(false)
     setDetailAccount({
-      _id: '',
-      username: '',
-      phone: '',
+      id: '',
+      email: '',
       fullName: '',
-      dob: '',
-      gender: '',
-      role: '',
-      createdAt: '',
-      updatedAt: ''
+      password: '',
+      phone: '',
+      role: 3,
+      username: ''
     })
   }
   const accountItems: DescriptionsProps['items'] = [
     {
       key: '_id',
       label: 'ID',
-      span: 4,
-      children: detailAccount?._id
+      span: 3,
+      children: detailAccount?.id
+    },
+    {
+      key: 'username',
+      label: 'Username',
+      span: 1,
+      children: detailAccount?.username
     },
     {
       key: 'email',
       label: 'Email',
       span: 3,
-      children: detailAccount?.username
+      children: detailAccount?.email
     },
     {
       key: 'role',
       label: 'Role',
       span: 1,
       children: <Badge status='processing' text={`${detailAccount?.role}`} />
-    },
-    {
-      key: 'createdAt',
-      label: 'Created At',
-      children: dayjs(detailAccount?.createdAt).format('DD/MM/YYYY')
-    },
-    {
-      key: 'updatedAt',
-      label: 'Updated At',
-      children: dayjs(detailAccount?.updatedAt).format('DD/MM/YYYY')
     }
   ]
   const personalItems: DescriptionsProps['items'] = [
@@ -61,23 +54,11 @@ const DetailAccount = (props: IProps) => {
       children: detailAccount?.fullName
     },
     {
-      key: 'dob',
-      label: 'Date of birth',
-      children: detailAccount?.dob
-    },
-    {
       key: 'avatar',
       label: 'Avatar',
       span: 2,
       children: <Avatar icon={<UserOutlined />} size={'large'} />
     },
-    {
-      key: 'gender',
-      label: 'Gender',
-      span: 2,
-      children: detailAccount?.gender
-    },
-
     {
       key: 'phone',
       label: 'Phone',
