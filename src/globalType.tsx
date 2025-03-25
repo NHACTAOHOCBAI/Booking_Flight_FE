@@ -181,10 +181,10 @@ export const flightData: IFlightTable[] = [
     originPrice: 280,
     interAirport: [
       {
-        airportId: "6",
-        arrivalTime: "2025-04-10T22:00:00Z",
-        departureTime: "2025-04-11T00:30:00Z",
-        note: "Nothing"
+        airportId: '6',
+        arrivalTime: '2025-04-10T22:00:00Z',
+        departureTime: '2025-04-11T00:30:00Z',
+        note: 'Nothing'
       }
     ],
     seat: [
@@ -197,21 +197,21 @@ export const flightData: IFlightTable[] = [
 export const seatData: ISeatTable[] = [
   {
     id: '1',
-    seatName: "ECONOMY",
+    seatName: 'ECONOMY',
     seatCode: 'ECO',
     price: 100,
     description: 'Economy class with basic amenities and comfortable seating.'
   },
   {
     id: '2',
-    seatName: "BUSINESS",
+    seatName: 'BUSINESS',
     seatCode: 'BUS',
     price: 250,
     description: 'Business class with extra legroom, premium meals, and priority boarding.'
   },
   {
     id: '3',
-    seatName: "FIRST",
+    seatName: 'FIRST',
     seatCode: 'FIR',
     price: 500,
     description: 'First class with luxurious seating, gourmet meals, and exclusive lounge access.'
@@ -230,12 +230,12 @@ export const cityData: ICityTable[] = [
   { id: '10', cityCode: 'CODE-10', cityName: 'Quy Nhơn' }
 ]
 export const planeData: IPlaneTable[] = [
-  { id: "1", planeCode: "VN-A861", planeName: "Airbus A350-900", airlineId: "1" },
-  { id: "2", planeCode: "VN-A601", planeName: "Airbus A321neo", airlineId: "2" },
-  { id: "3", planeCode: "VJ-A678", planeName: "Airbus A320-200", airlineId: "3" },
-  { id: "4", planeCode: "QH-ACF", planeName: "Boeing 787-9 Dreamliner", airlineId: "4" },
-  { id: "5", planeCode: "BL-F012", planeName: "Airbus A320neo", airlineId: "5" }
-];
+  { id: '1', planeCode: 'VN-A861', planeName: 'Airbus A350-900', airlineId: '1' },
+  { id: '2', planeCode: 'VN-A601', planeName: 'Airbus A321neo', airlineId: '2' },
+  { id: '3', planeCode: 'VJ-A678', planeName: 'Airbus A320-200', airlineId: '3' },
+  { id: '4', planeCode: 'QH-ACF', planeName: 'Boeing 787-9 Dreamliner', airlineId: '4' },
+  { id: '5', planeCode: 'BL-F012', planeName: 'Airbus A320neo', airlineId: '5' }
+]
 export { }
 
 // airport
