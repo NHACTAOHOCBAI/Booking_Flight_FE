@@ -82,6 +82,9 @@ const PlaneManagement = () => {
     return (
         <>
             <ProTable<IPlaneItem>
+                search={{
+                    labelWidth: 'auto',
+                }}
                 dataSource={data}
                 columns={columns}
                 actionRef={actionRef}

@@ -28,7 +28,14 @@ export const flightData: IFlightTable[] = [
     departureTime: '2025-04-01T08:00:00Z',
     arrivalTime: '2025-04-01T10:30:00Z',
     originPrice: 150,
-    interAirport: [],
+    interAirport: [
+      {
+        airportId: "2",
+        arrivalTime: "2025-04-10T22:00:00Z",
+        departureTime: "2025-04-11T00:30:00Z",
+        note: "Unfortunately, there are some problem with my plane, so we have to stop by nearly airport to take off. I hope you will understand for us"
+      }
+    ],
     seat: [
       { seatId: '1', quantity: 50 }, // Hạng 1
       { seatId: '2', quantity: 30 }, // Hạng 2
@@ -172,7 +179,14 @@ export const flightData: IFlightTable[] = [
     departureTime: '2025-04-10T22:00:00Z',
     arrivalTime: '2025-04-11T00:30:00Z',
     originPrice: 280,
-    interAirport: [],
+    interAirport: [
+      {
+        airportId: "6",
+        arrivalTime: "2025-04-10T22:00:00Z",
+        departureTime: "2025-04-11T00:30:00Z",
+        note: "Nothing"
+      }
+    ],
     seat: [
       { seatId: '1', quantity: 50 },
       { seatId: '2', quantity: 30 },
@@ -183,24 +197,26 @@ export const flightData: IFlightTable[] = [
 export const seatData: ISeatTable[] = [
   {
     id: '1',
-    seatCode: 'ECONOMY',
+    seatName: "ECONOMY",
+    seatCode: 'ECO',
     price: 100,
     description: 'Economy class with basic amenities and comfortable seating.'
   },
   {
     id: '2',
-    seatCode: 'BUSINESS',
+    seatName: "BUSINESS",
+    seatCode: 'BUS',
     price: 250,
     description: 'Business class with extra legroom, premium meals, and priority boarding.'
   },
   {
     id: '3',
-    seatCode: 'FIRST',
+    seatName: "FIRST",
+    seatCode: 'FIR',
     price: 500,
     description: 'First class with luxurious seating, gourmet meals, and exclusive lounge access.'
   }
 ]
-
 export const cityData: ICityTable[] = [
   { id: '1', cityCode: 'CODE-1', cityName: 'Hà Nội' },
   { id: '2', cityCode: 'CODE-2', cityName: 'Hồ Chí Minh' },
@@ -213,8 +229,14 @@ export const cityData: ICityTable[] = [
   { id: '9', cityCode: 'CODE-9', cityName: 'Đà Lạt' },
   { id: '10', cityCode: 'CODE-10', cityName: 'Quy Nhơn' }
 ]
-
-export {}
+export const planeData: IPlaneTable[] = [
+  { id: "1", planeCode: "VN-A861", planeName: "Airbus A350-900", airlineId: "1" },
+  { id: "2", planeCode: "VN-A601", planeName: "Airbus A321neo", airlineId: "2" },
+  { id: "3", planeCode: "VJ-A678", planeName: "Airbus A320-200", airlineId: "3" },
+  { id: "4", planeCode: "QH-ACF", planeName: "Boeing 787-9 Dreamliner", airlineId: "4" },
+  { id: "5", planeCode: "BL-F012", planeName: "Airbus A320neo", airlineId: "5" }
+];
+export { }
 
 // airport
 // interface IFakeAirportItem {

@@ -10,15 +10,17 @@ declare global {
         departureTime: string
         arrivalTime: string
         originPrice: number
-        interAirport: {
-            airportId: string
-            departureTime: string
-            arrivalTime: string
-            note: string
-        }[]
-        seat: {
-            seatId: string,
-            quantity: number
-        }[]
+        interAirport: IInterAirport[]
+        seat: ISeat[]
+    }
+    interface IInterAirport {
+        airportId: string
+        departureTime: string
+        arrivalTime: string
+        note: string
+    }
+    interface ISeat {
+        seatId: string,
+        quantity: number
     }
 }
