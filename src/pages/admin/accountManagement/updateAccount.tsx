@@ -1,20 +1,17 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { Col, DatePicker, Form, FormProps, Input, Modal, Row, Select } from 'antd'
-import dayjs from 'dayjs'
-import { useEffect, useState } from 'react'
+import { Col, Form, FormProps, Input, Modal, Row, Select } from 'antd'
+import { useEffect } from 'react'
 
 interface IProp {
-  updatedAccount: IAccountItem
-  setUpdatedAccount: (value: IAccountItem) => void
+  updatedAccount: IAccountTable
+  setUpdatedAccount: (value: IAccountTable) => void
   isUpdateOpen: boolean
   setIsUpdateOpen: (value: boolean) => void
 }
 const UpdateAccount = (props: IProp) => {
   const { updatedAccount, setUpdatedAccount, isUpdateOpen, setIsUpdateOpen } = props
-  const [date, setDate] = useState<string>('')
   const [form] = Form.useForm()
-  const onFinish: FormProps<IUpdateAccountItem>['onFinish'] = (value) => {
-    value.dob = date
+  const onFinish: FormProps<IAccountTable>['onFinish'] = (value) => {
     console.log(value)
     handleCancel()
   }
@@ -22,30 +19,26 @@ const UpdateAccount = (props: IProp) => {
     form.submit()
   }
   const handleCancel = () => {
-    setDate('')
     form.resetFields()
     setUpdatedAccount({
-      _id: '',
+      id: '',
       username: '',
       phone: '',
       fullName: '',
-      dob: '',
-      gender: '',
-      role: '',
-      createdAt: '',
-      updatedAt: ''
+      email: '',
+      password: '',
+      role: 3
     })
     setIsUpdateOpen(false)
   }
   useEffect(() => {
     form.setFieldsValue({
-      _id: updatedAccount._id,
+      id: updatedAccount.id,
       username: updatedAccount.username,
-      password: '',
+      password: updatedAccount.password,
+      email: updatedAccount.email,
       phone: updatedAccount.phone,
       fullName: updatedAccount.fullName,
-      dob: updatedAccount.dob ? dayjs(updatedAccount.dob) : null,
-      gender: updatedAccount.gender,
       role: updatedAccount.role
     })
   }, [updatedAccount])
@@ -55,29 +48,24 @@ const UpdateAccount = (props: IProp) => {
         <Modal title='Update Account' open={isUpdateOpen} onOk={handleOk} onCancel={handleCancel}>
           <Form layout='vertical' name='basic' onFinish={onFinish} autoComplete='off' form={form}>
             <Row gutter={16}>
-              <Col span={24}>
-                <Form.Item<IUpdateAccountItem> label='ID' name='_id'>
+              <Col span={20}>
+                <Form.Item<IAccountTable> label='ID' name='id'>
                   <Input disabled />
-                </Form.Item>
-              </Col>
-            </Row>
-            <Row gutter={16}>
-              <Col span={12}>
-                <Form.Item<IUpdateAccountItem> label='Email' name='username'>
-                  <Input disabled />
-                </Form.Item>
-              </Col>
-              <Col span={12}>
-                <Form.Item<IUpdateAccountItem> label='Password' name='password'>
-                  <Input />
                 </Form.Item>
               </Col>
             </Row>
             <Row>
-              <Col span={24}>
-                <Form.Item<IUpdateAccountItem>
-                  label='Full name'
-                  name='fullName'
+              <Col span={20}>
+                <Form.Item<IAccountTable> label='Email' name='email'>
+                  <Input disabled />
+                </Form.Item>
+              </Col>
+            </Row>
+            <Row>
+              <Col span={20}>
+                <Form.Item<IAccountTable>
+                  label='Username'
+                  name='username'
                   rules={[
                     {
                       required: true,
@@ -89,9 +77,25 @@ const UpdateAccount = (props: IProp) => {
                 </Form.Item>
               </Col>
             </Row>
+            <Row>
+              <Col span={20}>
+                <Form.Item<IAccountTable>
+                  label='Password'
+                  name='password'
+                  rules={[
+                    {
+                      required: true,
+                      message: 'Please input full name'
+                    }
+                  ]}
+                >
+                  <Input.Password />
+                </Form.Item>
+              </Col>
+            </Row>
             <Row gutter={16}>
               <Col span={10}>
-                <Form.Item<IUpdateAccountItem>
+                <Form.Item<IAccountTable>
                   label='Phone'
                   name='phone'
                   rules={[
@@ -104,27 +108,9 @@ const UpdateAccount = (props: IProp) => {
                   <Input />
                 </Form.Item>
               </Col>
-              <Col span={7}>
-                <Form.Item<IUpdateAccountItem>
-                  label='Gender'
-                  name='gender'
-                  rules={[
-                    {
-                      required: true,
-                      message: 'Please input gender'
-                    }
-                  ]}
-                >
-                  <Select
-                    options={[
-                      { value: 'male', label: 'Male' },
-                      { value: 'female', label: 'Female' }
-                    ]}
-                  />
-                </Form.Item>
-              </Col>
-              <Col span={7}>
-                <Form.Item<IUpdateAccountItem>
+
+              <Col span={10}>
+                <Form.Item<IAccountTable>
                   label='Role'
                   name='role'
                   rules={[
@@ -144,24 +130,18 @@ const UpdateAccount = (props: IProp) => {
               </Col>
             </Row>
             <Row>
-              <Col span={7}>
-                <Form.Item<IUpdateAccountItem>
-                  label='Date of birth'
-                  name='dob'
+              <Col span={24}>
+                <Form.Item<IAccountTable>
+                  label='Full name'
+                  name='fullName'
                   rules={[
                     {
                       required: true,
-                      message: 'Please input date of birth'
+                      message: 'Please input full name'
                     }
                   ]}
                 >
-                  <DatePicker
-                    format={{
-                      format: 'DD-MM-YYYY',
-                      type: 'mask'
-                    }}
-                    onChange={(date) => setDate(date.format('DD/MM/YYYY'))}
-                  />
+                  <Input />
                 </Form.Item>
               </Col>
             </Row>

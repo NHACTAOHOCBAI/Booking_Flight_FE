@@ -27,6 +27,7 @@ const CityManagement = () => {
   const handleDelete = (value: ICityTable) => {
     console.log(value)
   }
+
   const columns: ProColumns<ICityTable>[] = [
     {
       dataIndex: 'index',
