@@ -132,21 +132,6 @@ const AccountManagement = () => {
       )
     }
   ]
-  // const handleRequest = async (
-  //   params: {
-  //     pageSize: number
-  //     current: number
-  //   },
-  //   sort: Record<string, SortOrder>,
-  //   filter: Record<string, (string | number)[] | null>
-  // ) => {
-  //   console.log(params)
-  //   return {
-  //     data: {}, // Dữ liệu bảng
-  //     success: true,
-  //     total: 10
-  //   }
-  // }
   return (
     <>
       <ProTable<IAccountTable>

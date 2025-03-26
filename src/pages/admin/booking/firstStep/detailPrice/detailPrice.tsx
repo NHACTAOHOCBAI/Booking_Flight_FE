@@ -1,3 +1,6 @@
+import { seatData } from '@/globalType';
+import { useAppSelector } from '@/redux/hooks';
+import { toFLight } from '@/utils/convert';
 import { Card, Table } from 'antd';
 import { TableProps } from 'antd/lib';
 import { FaMoneyCheckAlt } from 'react-icons/fa';
@@ -8,6 +11,7 @@ interface IDetailPrice {
     price: number,
 }
 const DetailPrice = () => {
+    const bookingTicketsList = useAppSelector(state => state.bookingTicketsList)
     const detailPriceColumns: TableProps<IDetailPrice>['columns'] = [
         {
             title: '',
@@ -29,18 +33,20 @@ const DetailPrice = () => {
             ),
         },
     ];
-    const detailPriceData: IDetailPrice[] = [
-        {
-            seatName: "Business",
-            quantity: 1,
-            price: 1000000
-        },
-        {
-            seatName: "Economy",
-            quantity: 2,
-            price: 1200000
-        }
-    ]
+    // Bước 1: Nhóm số lượng vé theo `seatId`
+    const seatCount: Record<string, number> = {};
+    bookingTicketsList.forEach(ticket => {
+        seatCount[ticket.seatId] = (seatCount[ticket.seatId] || 0) + 1;
+    });
+
+    // Bước 2: Chuyển dữ liệu sang danh sách chi tiết giá
+    const detailPriceData: IDetailPrice[] = seatData
+        .filter(seat => seatCount[seat.id!]) // Lọc ghế có số lượng vé
+        .map(seat => ({
+            seatName: seat.seatName as string,
+            quantity: seatCount[seat.id!] as number,
+            price: seat.price! * toFLight(bookingTicketsList[0].flightId).originPrice / 100
+        }));
     return (
         <Card
             title={<div><ImPriceTags style={{ width: 20, height: 20, verticalAlign: "middle" }} /> Detail price</div>}

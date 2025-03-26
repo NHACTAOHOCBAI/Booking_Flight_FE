@@ -190,19 +190,22 @@ export const flightData: IFlightTable[] = [
 export const seatData: ISeatTable[] = [
   {
     id: '1',
-    seatCode: 'ECONOMY',
+    seatCode: 'ECO',
+    seatName: "ECONOMY",
     price: 100,
     description: 'Economy class with basic amenities and comfortable seating.'
   },
   {
     id: '2',
-    seatCode: 'BUSINESS',
-    price: 250,
+    seatCode: 'BUS',
+    seatName: "BUSINESS",
+    price: 150,
     description: 'Business class with extra legroom, premium meals, and priority boarding.'
   },
   {
     id: '3',
-    seatCode: 'FIRST',
+    seatCode: 'FIR',
+    seatName: "FIRST",
     price: 500,
     description: 'First class with luxurious seating, gourmet meals, and exclusive lounge access.'
   }

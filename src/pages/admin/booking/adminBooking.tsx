@@ -3,18 +3,16 @@ import { Button, Card, message, Steps, theme } from 'antd';
 import FirstStep from './firstStep/firstStep';
 import SecondStep from './secondStep/secondStep';
 import ThirdStep from './thirdStep/thirdStep';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
+import { toFLight } from '@/utils/convert';
+import { useAppDispatch } from '@/redux/hooks';
+import { setBookingFlight } from '@/redux/features/bookingFlight/bookingFlightSlice';
 
 const AdminBooking = () => {
-    const [tickets, setTickets] = useState<ITicketTable>({
-        id: "",
-        flightId: "",
-        seatId: "",
-        passengerName: "",
-        passengerPhone: "",
-        passengerIDCard: "",
-        passengerEmail: "",
-    })
+    const { flightId } = useParams();
+    const bookingFlight = toFLight(flightId as string);
+    const dispatch = useAppDispatch()
+    dispatch(setBookingFlight(bookingFlight));
     const { token } = theme.useToken();
     const [current, setCurrent] = useState(0);
     const navigate = useNavigate();
@@ -39,8 +37,6 @@ const AdminBooking = () => {
         {
             title: 'Ticket information',
             content: <FirstStep
-                tickets={tickets}
-                setTickets={setTickets}
             />,
         },
         {
