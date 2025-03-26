@@ -53,8 +53,7 @@ const AccountManagement = () => {
       width: 48
     },
     {
-      title: 'Id',
-      search: false,
+      title: 'Username',
       render: (_, record) => (
         <a
           style={{ color: '#3498db' }}
@@ -63,18 +62,9 @@ const AccountManagement = () => {
             setIsDetailOpen(true)
           }}
         >
-          {record.id}
+          {record.username}
         </a>
       )
-    },
-    {
-      title: 'Username',
-      dataIndex: 'username'
-    },
-    {
-      title: 'Password',
-      dataIndex: 'password',
-      search: false
     },
     {
       title: 'Email',
