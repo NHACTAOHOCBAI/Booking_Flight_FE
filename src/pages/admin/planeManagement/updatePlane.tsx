@@ -1,8 +1,10 @@
-import { Form, FormProps, Input, Modal } from 'antd'
+
+import { airlineOptions } from '@/utils/select'
+import { Form, FormProps, Input, Modal, Select } from 'antd'
 import { useEffect } from 'react'
 import { LuScanBarcode } from 'react-icons/lu'
 import { MdOutlineAirlines } from 'react-icons/md'
-import { PiAirplaneInFlight } from 'react-icons/pi'
+import { SlPlane } from 'react-icons/sl'
 
 interface IProp {
   updatedPlane: IPlaneTable
@@ -44,18 +46,6 @@ const UpdatePlane = (props: IProp) => {
           <Form.Item<IPlaneTable>
             label={
               <div>
-                <MdOutlineAirlines />
-                Airline
-              </div>
-            }
-            name='airlineId'
-            rules={[{ required: true, message: "Please input airline's code" }]}
-          >
-            <Input placeholder="Enter airline's code" />
-          </Form.Item>
-          <Form.Item<IPlaneTable>
-            label={
-              <div>
                 <LuScanBarcode />
                 Model
               </div>
@@ -68,14 +58,26 @@ const UpdatePlane = (props: IProp) => {
           <Form.Item<IPlaneTable>
             label={
               <div>
-                <PiAirplaneInFlight />
-                PlaneName
+                <SlPlane />
+                Name
               </div>
             }
             name='planeName'
             rules={[{ required: true, message: "Please input plane's name" }]}
           >
             <Input placeholder="Enter plane's name" />
+          </Form.Item>
+          <Form.Item<IPlaneTable>
+            label={
+              <div>
+                <MdOutlineAirlines />
+                Airline
+              </div>
+            }
+            name='airlineId'
+            rules={[{ required: true, message: "Please input airline's code" }]}
+          >
+            <Select options={airlineOptions} />
           </Form.Item>
         </Form>
       </Modal>

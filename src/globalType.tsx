@@ -226,61 +226,61 @@ export const planeData: IPlaneTable[] = [
     id: '1',
     planeCode: 'VN123',
     planeName: 'Máy bay Airbus A321',
-    airlineId: 'VNA'
+    airlineId: '1'
   },
   {
     id: '2',
     planeCode: 'VN456',
     planeName: 'Máy bay Boeing 787 Dreamliner',
-    airlineId: 'VNA'
+    airlineId: '1'
   },
   {
     id: '3',
     planeCode: 'BL789',
     planeName: 'Máy bay Airbus A350 XWB',
-    airlineId: 'BAM'
+    airlineId: '2'
   },
   {
     id: '4',
     planeCode: 'VJ012',
     planeName: 'Máy bay ATR 72-600',
-    airlineId: 'VJC'
+    airlineId: '2'
   },
   {
     id: '5',
     planeCode: 'QH345',
     planeName: 'Máy bay Embraer E190',
-    airlineId: 'QH'
+    airlineId: '3'
   },
   {
     id: '6',
     planeCode: 'VN678',
     planeName: 'Máy bay Airbus A330',
-    airlineId: 'VNA'
+    airlineId: '3'
   },
   {
     id: '7',
     planeCode: 'BL901',
     planeName: 'Máy bay Boeing 777-300ER',
-    airlineId: 'BAM'
+    airlineId: '4'
   },
   {
     id: '8',
     planeCode: 'VJ234',
     planeName: 'Máy bay Airbus A320neo',
-    airlineId: 'VJC'
+    airlineId: '4'
   },
   {
     id: '9',
     planeCode: 'QH567',
     planeName: 'Máy bay Boeing 737 MAX',
-    airlineId: 'QH'
+    airlineId: '5'
   },
   {
     id: '10',
     planeCode: 'VN890',
     planeName: 'Máy bay Airbus A380',
-    airlineId: 'VNA'
+    airlineId: '5'
   }
 ]
 
@@ -470,7 +470,7 @@ export const ticketData: ITicketTable[] = [
   }
 ]
 
-export const airlines: IAirlineTable[] = [
+export const airlineData: IAirlineTable[] = [
   { id: '1', airlineCode: 'VNA', airlineName: 'Vietnam Airlines' },
   { id: '2', airlineCode: 'VJ', airlineName: 'VietJet Air' },
   { id: '3', airlineCode: 'BBA', airlineName: 'Bamboo Airways' },
@@ -482,149 +482,5 @@ export const airlines: IAirlineTable[] = [
   { id: '9', airlineCode: 'SAO', airlineName: 'Sao Việt Airlines' },
   { id: '10', airlineCode: 'MKA', airlineName: 'Mekong Airlines' }
 ]
-export {}
+export { }
 
-// airport
-// interface IFakeAirportItem {
-//     airportCode: string,
-//     airportName: string,
-//     location: string
-// }
-// interface IAirportItem {
-//     _id: string,
-//     name: string,
-//     city: string,
-//     country: string
-// }
-// interface INewAirportItem {
-//     name: string,
-//     city: string,
-//     country: string
-// }
-// interface IUpdateAirportItem {
-//     _id: string,
-//     name: string,
-//     city: string,
-//     country: string
-// }
-// //account
-// interface IAccountItem {
-//     _id: string,
-//     username: string,
-//     phone: string,
-//     fullName: string,
-//     dob: string,
-//     createdAt: string,
-//     updatedAt: string,
-//     gender: string,
-//     role: string,
-// }
-// interface INewAccountItem {
-//     username: string,
-//     password: string,
-//     phone: string,
-//     fullName: string,
-//     dob: string,
-//     gender: string,
-//     role: string,
-// }
-// interface IUpdateAccountItem {
-//     _id: string,
-//     username: string,
-//     password: string,
-//     phone: string,
-//     fullName: string,
-//     dob: string,
-//     gender: string,
-//     role: string,
-// }
-// //seat
-// interface ISeatItem {
-//     _id: string,
-//     name: string,
-//     price: number,
-//     description: string,
-// }
-// interface INewSeatItem {
-//     name: string,
-//     price: number,
-//     description: string,
-// }
-// interface IUpdateSeatItem {
-//     _id: string,
-//     name: string,
-//     price: number,
-//     description: string,
-// }
-// //Flight
-// interface IFlightItem {
-//     _id: string,
-//     planeId: string,
-//     planeName: string,
-//     departureId: string,
-//     departureName: string,
-//     arrivalId: string,
-//     arrivalName: string,
-//     departureTime: string,
-//     arrivalTime: string,
-//     price: number,
-//     ticket: {
-//         type: ISeatItem,
-//         quantity: number
-//     }[],
-//     interAirport: {
-//         _id: string,
-//         arrivalTime: string,
-//         departureTime: string
-//     }[]
-// }
-// interface INewFlightItem {
-//     planeId: string,
-//     departureId: string,
-//     arrivalId: string,
-//     departureTime: string,
-//     arrivalTime: string,
-//     price: number,
-//     ticket: {
-//         ticketId: string,
-//         quantity: number
-//     }[]
-//     interAirport: {
-//         _id: string,
-//         arrivalTime: string,
-//         departureTime: string
-//     }[]
-// }
-// interface IUpdateFlightItem {
-//     _id: string,
-//     planeId: string,
-//     departureId: string,
-//     arrivalId: string,
-//     departureTime: string,
-//     arrivalTime: string,
-//     price: number,
-//     ticket: {
-//         ticketId: string,
-//         quantity: number
-//     }[]
-//     interAirport: {
-//         _id: string,
-//         arrivalTime: string,
-//         departureTime: string
-//     }[]
-// }
-// //plane
-// interface IPlaneItem {
-//     id: string,
-//     name: string,
-//     airline: string
-// }
-// interface INewPlaneItem {
-//     name: string,
-//     airline: string
-// }
-// interface IUpdatePlaneItem {
-//     id: string,
-//     name: string,
-//     airline: string
-// }

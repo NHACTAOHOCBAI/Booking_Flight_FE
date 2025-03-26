@@ -1,4 +1,4 @@
-import { airportData, cityData, planeData, seatData } from "@/globalType"
+import { airlineData, airportData, cityData, planeData, seatData } from "@/globalType"
 
 const planeOptions = planeData.map((value) => {
     return {
@@ -24,6 +24,12 @@ const cityOptions = cityData.map((value) => {
         label: value.cityName,
     }
 })
+const airlineOptions = airlineData.map((value) => {
+    return {
+        value: value.id,
+        label: value.airlineName,
+    }
+})
 export {
-    planeOptions, airportOptions, seatOptions, cityOptions
+    planeOptions, airportOptions, seatOptions, cityOptions, airlineOptions
 }

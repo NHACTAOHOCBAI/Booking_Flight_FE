@@ -6,6 +6,7 @@ import NewPlane from './newPlane'
 import UpdatePlane from './updatePlane'
 import { planeData } from '@/globalType'
 import DetailPlane from './detailPlane'
+import { toAirline } from '@/utils/convert'
 const PlaneManagement = () => {
   //detail
   const [isDetailOpen, setIsDetailOpen] = useState(false)
@@ -36,7 +37,7 @@ const PlaneManagement = () => {
       width: 48
     },
     {
-      title: 'ID',
+      title: 'Code',
       search: false,
       render: (_, record) => (
         <a
@@ -46,17 +47,15 @@ const PlaneManagement = () => {
             setIsDetailOpen(true)
           }}
         >
-          {record.id}
+          {record.planeCode}
         </a>
       )
     },
     {
       title: 'Airline',
-      dataIndex: 'airlineId'
-    },
-    {
-      title: 'Model',
-      dataIndex: 'planeCode'
+      render: (_, record) => (
+        <div>{toAirline(record.airlineId as string).airlineName}</div>
+      )
     },
     {
       title: 'PlaneName',
