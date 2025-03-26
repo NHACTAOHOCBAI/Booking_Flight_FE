@@ -27,7 +27,7 @@ export const flightData: IFlightTable[] = [
     arrivalAirportId: '2',
     departureTime: '2025-04-01T00:30:00Z',
     arrivalTime: '2025-04-01T22:00:00Z',
-    originPrice: 150,
+    originPrice: 1000000,
     interAirport: [
       {
         airportId: '2',
@@ -82,7 +82,7 @@ export const flightData: IFlightTable[] = [
     arrivalAirportId: '5',
     departureTime: '2025-04-04T09:00:00Z',
     arrivalTime: '2025-04-04T11:30:00Z',
-    originPrice: 220,
+    originPrice: 1000000,
     interAirport: [],
     seat: [
       { seatId: '1', quantity: 55 },

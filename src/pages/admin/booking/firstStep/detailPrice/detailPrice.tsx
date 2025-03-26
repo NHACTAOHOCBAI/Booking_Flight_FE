@@ -12,6 +12,8 @@ interface IDetailPrice {
 }
 const DetailPrice = () => {
     const bookingTicketsList = useAppSelector(state => state.bookingTicketsList)
+    const bookingFlight = useAppSelector(state => state.bookingFlight)
+    console.log(toFLight(bookingFlight.id).originPrice);
     const detailPriceColumns: TableProps<IDetailPrice>['columns'] = [
         {
             title: '',
@@ -29,7 +31,7 @@ const DetailPrice = () => {
             title: 'Total',
             key: 'total',
             render: (_, value) => (
-                `${value.price * value.quantity} VNĐ`
+                < div > {(value.price * value.quantity).toLocaleString('vi-VN')} VNĐ</div>
             ),
         },
     ];
@@ -45,8 +47,13 @@ const DetailPrice = () => {
         .map(seat => ({
             seatName: seat.seatName as string,
             quantity: seatCount[seat.id!] as number,
-            price: seat.price! * toFLight(bookingTicketsList[0].flightId).originPrice / 100
+            price: seat.price! * toFLight(bookingFlight.id).originPrice / 100
         }));
+    console.log(detailPriceData);
+    let totalAmount = 0;
+    detailPriceData.forEach((value) => {
+        totalAmount += value.price * value.quantity
+    })
     return (
         <Card
             title={<div><ImPriceTags style={{ width: 20, height: 20, verticalAlign: "middle" }} /> Detail price</div>}
@@ -57,7 +64,7 @@ const DetailPrice = () => {
                 <div style={{ fontWeight: "bold" }}>
                     <FaMoneyCheckAlt style={{ width: 20, height: 20, verticalAlign: "middle", marginBottom: 4 }} /> Total Amount:
                 </div>
-                <div>3,600,000 VNĐ</div>
+                <div>{totalAmount.toLocaleString('vi-VN')} VNĐ</div>
             </div>
         </Card>
     )
