@@ -6,6 +6,7 @@ import { useRef, useState } from 'react'
 import NewAirport from './newAirport'
 import UpdateAirport from './updateAirport'
 import { airportData } from '@/globalType'
+import { toCity } from '@/utils/convert'
 const AirportManagement = () => {
   //Table
   const actionRef = useRef<ActionType>(null)
@@ -40,7 +41,7 @@ const AirportManagement = () => {
     },
     {
       title: 'City',
-      dataIndex: 'cityId'
+      render: (_, record) => <div>{toCity(record.cityId as string).cityName}</div>
     },
     {
       title: 'Action',
@@ -89,7 +90,7 @@ const AirportManagement = () => {
         bordered
         actionRef={actionRef}
         cardBordered
-        headerTitle='Airport List'
+        headerTitle='Airport Table'
         toolBarRender={() => [
           <Button key='button' icon={<PlusOutlined />} onClick={() => setIsNewOpen(true)} type='primary'>
             New Airport

@@ -1,4 +1,5 @@
-import { Form, FormProps, Input, Modal } from 'antd'
+import { cityOptions } from '@/utils/select'
+import { Form, FormProps, Input, Modal, Select } from 'antd'
 import { GoLocation } from 'react-icons/go'
 import { LuScanBarcode } from 'react-icons/lu'
 import { MdOutlineDriveFileRenameOutline } from 'react-icons/md'
@@ -69,7 +70,7 @@ const NewAirport = (props: IProp) => {
             name='cityId'
             rules={[{ required: true, message: "Please input airport's city" }]}
           >
-            <Input />
+            <Select options={cityOptions} />
           </Form.Item>
         </Form>
       </Modal>
