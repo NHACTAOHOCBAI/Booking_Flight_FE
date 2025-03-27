@@ -13,7 +13,6 @@ interface IDetailPrice {
 const DetailPrice = () => {
     const bookingTicketsList = useAppSelector(state => state.bookingTicketsList)
     const bookingFlight = useAppSelector(state => state.bookingFlight)
-    console.log(toFLight(bookingFlight.id).originPrice);
     const detailPriceColumns: TableProps<IDetailPrice>['columns'] = [
         {
             title: '',
@@ -49,7 +48,6 @@ const DetailPrice = () => {
             quantity: seatCount[seat.id!] as number,
             price: seat.price! * toFLight(bookingFlight.id).originPrice / 100
         }));
-    console.log(detailPriceData);
     let totalAmount = 0;
     detailPriceData.forEach((value) => {
         totalAmount += value.price * value.quantity

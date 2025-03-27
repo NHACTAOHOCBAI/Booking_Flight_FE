@@ -8,6 +8,8 @@ import { PiSeatBold } from 'react-icons/pi';
 import { CloseOutlined } from '@ant-design/icons';
 import { Button } from 'antd';
 import { FormProps } from 'antd/lib';
+import { useAppDispatch, useAppSelector } from '@/redux/hooks';
+import { setBookingTicketsList } from '@/redux/features/bookingTicket/bookingTicketsList';
 interface TicketInfo {
     seatId: string;
     passengerName: string;
@@ -20,8 +22,21 @@ interface FormValues {
     tickets: TicketInfo[];
 }
 const TicketInformation = () => {
+    const dispatch = useAppDispatch();
+    const bookingFlight = useAppSelector(state => state.bookingFlight);
     const [form] = Form.useForm();
     const onFinish: FormProps<FormValues>['onFinish'] = (values) => {
+        const data: ITicketTable[] = values.tickets.map((value: TicketInfo) => {
+            return {
+                flightId: bookingFlight.id,
+                seatId: value.seatId,
+                passengerName: value.passengerName,
+                passengerPhone: value.passengerPhone,
+                passengerIDCard: value.passengerIDCard,
+                passengerEmail: value.passengerEmail
+            }
+        })
+        dispatch(setBookingTicketsList(data));
         console.log(values);
     };
     return (

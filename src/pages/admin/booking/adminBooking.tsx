@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button, Card, message, Steps, theme } from 'antd';
 import FirstStep from './firstStep/firstStep';
 import SecondStep from './secondStep/secondStep';
@@ -7,12 +7,12 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { toFLight } from '@/utils/convert';
 import { useAppDispatch } from '@/redux/hooks';
 import { setBookingFlight } from '@/redux/features/bookingFlight/bookingFlightSlice';
+import { setBookingTicketsList } from '@/redux/features/bookingTicket/bookingTicketsList';
 
 const AdminBooking = () => {
     const { flightId } = useParams();
     const bookingFlight = toFLight(flightId as string);
     const dispatch = useAppDispatch()
-    dispatch(setBookingFlight(bookingFlight));
     const { token } = theme.useToken();
     const [current, setCurrent] = useState(0);
     const navigate = useNavigate();
@@ -23,7 +23,10 @@ const AdminBooking = () => {
     const prev = () => {
         setCurrent(current - 1);
     };
-
+    useEffect(() => {
+        dispatch(setBookingFlight(bookingFlight));
+        dispatch(setBookingTicketsList([]));
+    }, [])
     const contentStyle: React.CSSProperties = {
         lineHeight: '260px',
         textAlign: 'center',
