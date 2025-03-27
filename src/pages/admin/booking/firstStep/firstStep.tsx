@@ -3,13 +3,18 @@ import TicketInformation from "./ticketInformation/ticketInformation"
 import DetailPrice from "./detailPrice/detailPrice"
 import DetailFlight from "./detailFlight/detailFlight"
 
-const FirstStep = () => {
+interface IProp {
+    openNotification: () => void
+}
+const FirstStep = (prop: IProp) => {
+    const { openNotification } = prop;
     return (
         <>
             <Row gutter={10} style={{ margin: 10 }}>
                 <Col span={15}>
                     <Row>
                         <TicketInformation
+                            openNotification={openNotification}
                         />
                     </Row>
 

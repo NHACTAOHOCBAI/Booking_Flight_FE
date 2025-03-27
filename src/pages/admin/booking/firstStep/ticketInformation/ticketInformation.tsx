@@ -10,6 +10,7 @@ import { Button } from 'antd';
 import { FormProps } from 'antd/lib';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { setBookingTicketsList } from '@/redux/features/bookingTicket/bookingTicketsList';
+import { useEffect } from 'react';
 interface TicketInfo {
     seatId: string;
     passengerName: string;
@@ -21,11 +22,20 @@ interface TicketInfo {
 interface FormValues {
     tickets: TicketInfo[];
 }
-const TicketInformation = () => {
+interface IProp {
+    openNotification: () => void
+}
+const TicketInformation = (prop: IProp) => {
+    const { openNotification } = prop;
     const dispatch = useAppDispatch();
     const bookingFlight = useAppSelector(state => state.bookingFlight);
+    const bookingTicketsList = useAppSelector(state => state.bookingTicketsList)
     const [form] = Form.useForm();
     const onFinish: FormProps<FormValues>['onFinish'] = (values) => {
+        if (values.tickets.length === 0) {
+            openNotification()
+            return;
+        }
         const data: ITicketTable[] = values.tickets.map((value: TicketInfo) => {
             return {
                 flightId: bookingFlight.id,
@@ -39,6 +49,21 @@ const TicketInformation = () => {
         dispatch(setBookingTicketsList(data));
         console.log(values);
     };
+    useEffect(() => {
+        const data = bookingTicketsList.map((value) => {
+            return ({
+                seatId: value.seatId,
+                passengerName: value.passengerName,
+                passengerPhone: value.passengerPhone,
+                passengerEmail: value.passengerEmail,
+                passengerIDCard: value.passengerIDCard,
+            }
+            )
+        })
+        form.setFieldsValue({
+            tickets: data
+        })
+    }, [])
     return (
         <Form
             style={{ width: "100%" }}

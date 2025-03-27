@@ -1,15 +1,17 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Card, message, Steps, theme } from 'antd';
+import { Button, Card, message, notification, Steps, theme } from 'antd';
 import FirstStep from './firstStep/firstStep';
 import SecondStep from './secondStep/secondStep';
 import ThirdStep from './thirdStep/thirdStep';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toFLight } from '@/utils/convert';
-import { useAppDispatch } from '@/redux/hooks';
+import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { setBookingFlight } from '@/redux/features/bookingFlight/bookingFlightSlice';
 import { setBookingTicketsList } from '@/redux/features/bookingTicket/bookingTicketsList';
 
 const AdminBooking = () => {
+    const [api, contextHolder] = notification.useNotification();
+    const bookingTicketsList = useAppSelector(state => state.bookingTicketsList)
     const { flightId } = useParams();
     const bookingFlight = toFLight(flightId as string);
     const dispatch = useAppDispatch()
@@ -27,6 +29,15 @@ const AdminBooking = () => {
         dispatch(setBookingFlight(bookingFlight));
         dispatch(setBookingTicketsList([]));
     }, [])
+    const openNotification = () => {
+        api.open({
+            message: 'Notification Title',
+            description:
+                'I will never close automatically. This is a purposely very very long description that has many many characters and words.',
+            duration: 0,
+        });
+    };
+
     const contentStyle: React.CSSProperties = {
         lineHeight: '260px',
         textAlign: 'center',
@@ -40,6 +51,7 @@ const AdminBooking = () => {
         {
             title: 'Ticket information',
             content: <FirstStep
+                openNotification={openNotification}
             />,
         },
         {
@@ -54,6 +66,7 @@ const AdminBooking = () => {
     const items = steps.map((item) => ({ key: item.title, title: item.title }));
     return (
         <>
+            {contextHolder}
             <div style={{ padding: 10 }}>
                 <Card variant="borderless" style={{ width: "auto" }}>
                     <Steps current={current} items={items} />
@@ -61,7 +74,13 @@ const AdminBooking = () => {
                 <div style={contentStyle}>{steps[current].content}</div>
                 <div style={{ marginTop: 24 }}>
                     {current < steps.length - 1 && (
-                        <Button type="primary" onClick={() => next()}>
+                        <Button type="primary" onClick={() => {
+                            if (bookingTicketsList.length === 0) {
+                                openNotification();
+                                return
+                            }
+                            next()
+                        }}>
                             Next
                         </Button>
                     )}
