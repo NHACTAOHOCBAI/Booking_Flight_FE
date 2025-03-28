@@ -2,7 +2,8 @@ import { Form, FormProps, Input, InputNumber, Modal } from 'antd'
 import TextArea from 'antd/es/input/TextArea'
 import { IoPricetags } from 'react-icons/io5'
 import { LuScanBarcode } from 'react-icons/lu'
-import { MdAirlineSeatReclineNormal, MdOutlineDescription } from 'react-icons/md'
+import { MdOutlineDescription } from 'react-icons/md'
+import { PiSeatLight } from 'react-icons/pi'
 
 interface IProp {
   isNewOpen: boolean
@@ -41,13 +42,13 @@ const NewSeat = (props: IProp) => {
               }
             ]}
           >
-            <Input />
+            <Input placeholder='Seat Code' />
           </Form.Item>
 
           <Form.Item<ISeatTable>
             label={
               <div>
-                <MdAirlineSeatReclineNormal />
+                <PiSeatLight />
                 Seat name
               </div>
             }
@@ -59,7 +60,7 @@ const NewSeat = (props: IProp) => {
               }
             ]}
           >
-            <Input />
+            <Input placeholder='Seat Name' />
           </Form.Item>
 
           <Form.Item<ISeatTable>
@@ -77,7 +78,7 @@ const NewSeat = (props: IProp) => {
               }
             ]}
           >
-            <InputNumber addonAfter='%' style={{ width: '100%' }} />
+            <InputNumber addonAfter='%' style={{ width: '100%' }} placeholder='Seat class price' />
           </Form.Item>
 
           <Form.Item<ISeatTable>
@@ -95,7 +96,7 @@ const NewSeat = (props: IProp) => {
               }
             ]}
           >
-            <TextArea rows={4} />
+            <TextArea rows={4} placeholder="Seat class's description" />
           </Form.Item>
         </Form>
       </Modal>

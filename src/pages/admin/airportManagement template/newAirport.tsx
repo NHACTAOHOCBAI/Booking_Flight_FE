@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+ 
 import { useCreateAirport } from "@/hooks/useAirport";
 import { Form, FormProps, Input, message, Modal, notification } from "antd";
 import { useState } from "react";

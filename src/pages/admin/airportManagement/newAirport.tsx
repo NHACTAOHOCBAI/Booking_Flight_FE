@@ -48,7 +48,7 @@ const NewAirport = (props: IProp) => {
             name='airportCode'
             rules={[{ required: true, message: "Please input airport's code" }]}
           >
-            <Input />
+            <Input placeholder="Airport's code" />
           </Form.Item>
           <Form.Item<IAirportTable>
             label={
@@ -59,7 +59,7 @@ const NewAirport = (props: IProp) => {
             name='airportName'
             rules={[{ required: true, message: "Please input airport's name" }]}
           >
-            <Input />
+            <Input placeholder="Airport's name" />
           </Form.Item>
           <Form.Item<IAirportTable>
             label={
@@ -70,7 +70,7 @@ const NewAirport = (props: IProp) => {
             name='cityId'
             rules={[{ required: true, message: "Please input airport's city" }]}
           >
-            <Select options={cityOptions} />
+            <Select options={cityOptions} placeholder="Airport's city" />
           </Form.Item>
         </Form>
       </Modal>

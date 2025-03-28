@@ -46,7 +46,7 @@ const NewCity = (props: IProp) => {
             name='cityCode'
             rules={[{ required: true, message: "Please input city's code" }]}
           >
-            <Input />
+            <Input placeholder="City's code" />
           </Form.Item>
           <Form.Item<ICityTable>
             label={
@@ -57,7 +57,7 @@ const NewCity = (props: IProp) => {
             name='cityName'
             rules={[{ required: true, message: "Please input city's name" }]}
           >
-            <Input />
+            <Input placeholder="City's name" />
           </Form.Item>
         </Form>
       </Modal>

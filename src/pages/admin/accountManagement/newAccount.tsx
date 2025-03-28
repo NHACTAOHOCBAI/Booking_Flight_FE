@@ -53,7 +53,7 @@ const NewAccount = (props: IProp) => {
                   }
                 ]}
               >
-                <Input />
+                <Input placeholder='Email' />
               </Form.Item>
 
               <Form.Item<IAccountTable>
@@ -70,7 +70,7 @@ const NewAccount = (props: IProp) => {
                   }
                 ]}
               >
-                <Input />
+                <Input placeholder='Username' />
               </Form.Item>
 
               <Form.Item<IAccountTable>
@@ -87,7 +87,7 @@ const NewAccount = (props: IProp) => {
                   }
                 ]}
               >
-                <Input />
+                <Input placeholder='Password' />
               </Form.Item>
             </Col>
             <Col span={1}>
@@ -118,7 +118,7 @@ const NewAccount = (props: IProp) => {
                     }
                   ]}
                 >
-                  <Input />
+                  <Input placeholder='Full name' />
                 </Form.Item>
               </Col>
               <Col span={15}>
@@ -136,7 +136,7 @@ const NewAccount = (props: IProp) => {
                     }
                   ]}
                 >
-                  <Input />
+                  <Input placeholder='Phone' />
                 </Form.Item>
               </Col>
               <Col span={15}>
@@ -160,6 +160,7 @@ const NewAccount = (props: IProp) => {
                       { value: 'admin', label: 'Admin' },
                       { value: 'client', label: 'Client' }
                     ]}
+                    placeholder='Role'
                   />
                 </Form.Item>
               </Col>

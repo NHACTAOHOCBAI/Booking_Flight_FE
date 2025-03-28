@@ -4,16 +4,16 @@ import { MenuFoldOutlined, MenuUnfoldOutlined, UserOutlined } from '@ant-design/
 import { Avatar, Badge, Button, Layout, Menu, theme } from 'antd'
 import { IoAirplaneOutline, IoSettingsOutline } from 'react-icons/io5'
 import { PiAirplaneInFlight, PiCityLight, PiSeat } from 'react-icons/pi'
-import { FaMapLocationDot } from "react-icons/fa6";
+import { FaMapLocationDot } from 'react-icons/fa6'
 import { VscAccount } from 'react-icons/vsc'
 import { GoLocation } from 'react-icons/go'
 import { RxDashboard } from 'react-icons/rx'
-import { MdDashboard, MdFlight } from 'react-icons/md'
+import { MdDashboard, MdFlight, MdOutlineAirlines } from 'react-icons/md'
 const { Header, Sider, Content } = Layout
 
 const AdminLayout = () => {
   const [collapsed, setCollapsed] = useState(false)
-  const navigate = useNavigate();
+  const navigate = useNavigate()
   const {
     token: { colorBgContainer, borderRadiusLG }
   } = theme.useToken()
@@ -29,10 +29,17 @@ const AdminLayout = () => {
         collapsible
         collapsed={collapsed}
       >
-        <div className='demo-logo-vertical' style={{ display: "flex", alignItems: "center", justifyContent: "center", width: "100%" }}>
-          <img src="../../logo.png" alt="Logo"
-            style={{ width: "100%" }}
-            onClick={() => { navigate("/") }}
+        <div
+          className='demo-logo-vertical'
+          style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%' }}
+        >
+          <img
+            src='../../logo.png'
+            alt='Logo'
+            style={{ width: '100%' }}
+            onClick={() => {
+              navigate('/')
+            }}
           />
         </div>
         <Menu
@@ -51,8 +58,8 @@ const AdminLayout = () => {
                   key: 'dashboard',
                   icon: <RxDashboard style={{ width: 20, height: 20 }} />,
                   label: <Link to={'/admin'}>Dashboard</Link>
-                },
-              ],
+                }
+              ]
             },
             {
               key: 'location',
@@ -68,8 +75,8 @@ const AdminLayout = () => {
                   key: 'airport',
                   icon: <GoLocation style={{ width: 20, height: 20 }} />,
                   label: <Link to={'/admin/manage-airport'}>Airport</Link>
-                },
-              ],
+                }
+              ]
             },
             {
               key: 'flight',
@@ -82,7 +89,7 @@ const AdminLayout = () => {
                   label: <Link to={'/admin/manage-plane'}>Plane</Link>
                 },
                 {
-                  key: 'flight',
+                  key: 'flight2',
                   icon: <PiAirplaneInFlight style={{ width: 20, height: 20 }} />,
                   label: <Link to={'/admin/manage-flight'}>Flight</Link>
                 },
@@ -91,7 +98,12 @@ const AdminLayout = () => {
                   icon: <PiSeat style={{ width: 20, height: 20 }} />,
                   label: <Link to={'/admin/manage-seat'}>Seat Class</Link>
                 },
-              ],
+                {
+                  key: 'airline',
+                  icon: <MdOutlineAirlines style={{ width: 20, height: 20 }} />,
+                  label: <Link to={'/admin/manage-airline'}>Airline</Link>
+                }
+              ]
             },
             {
               key: 'other',
@@ -108,9 +120,8 @@ const AdminLayout = () => {
                   icon: <IoSettingsOutline style={{ width: 20, height: 20 }} />,
                   label: <Link to={'/admin/manage-airport'}>Setting</Link>
                 }
-              ],
-            },
-
+              ]
+            }
           ]}
         />
       </Sider>
@@ -159,7 +170,7 @@ const AdminLayout = () => {
           <Outlet />
         </Content>
       </Layout>
-    </Layout >
+    </Layout>
   )
 }
 

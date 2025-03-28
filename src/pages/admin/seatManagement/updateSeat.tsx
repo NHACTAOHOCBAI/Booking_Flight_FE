@@ -4,7 +4,8 @@ import TextArea from 'antd/es/input/TextArea'
 import { useEffect } from 'react'
 import { IoPricetags } from 'react-icons/io5'
 import { LuScanBarcode } from 'react-icons/lu'
-import { MdAirlineSeatReclineNormal, MdOutlineDescription } from 'react-icons/md'
+import { MdOutlineDescription } from 'react-icons/md'
+import { PiSeatLight } from 'react-icons/pi'
 
 interface IProp {
   updatedSeat: ISeatTable
@@ -67,7 +68,7 @@ const UpdateSeat = (props: IProp) => {
           <Form.Item<ISeatTable>
             label={
               <div>
-                <MdAirlineSeatReclineNormal />
+                <PiSeatLight />
                 Seat name
               </div>
             }

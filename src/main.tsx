@@ -25,6 +25,7 @@ import CityManagement from './pages/admin/cityManagement/cityManagement'
 import { Provider } from 'react-redux'
 import { store } from './redux/store'
 import NotFoundPage from './pages/error/notFoundPage'
+import AirlineManagement from './pages/admin/airlineManagement/airlineManagement'
 const router = createBrowserRouter([
   {
     path: '/',
@@ -79,6 +80,10 @@ const router = createBrowserRouter([
       {
         path: 'manage-plane',
         element: <PlaneManagement />
+      },
+      {
+        path: 'manage-airline',
+        element: <AirlineManagement />
       }
     ]
   },

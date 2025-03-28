@@ -17,13 +17,13 @@ import { setBookingFlight } from '@/redux/features/bookingFlight/bookingFlightSl
 const FlightManagement = () => {
   //detail
   const [detailFlight, setDetailFlight] = useState<IFlightTable>({
-    id: "",
-    flightCode: "",
-    planeId: "",
-    departureAirportId: "",
-    arrivalAirportId: "",
-    departureTime: "",
-    arrivalTime: "",
+    id: '',
+    flightCode: '',
+    planeId: '',
+    departureAirportId: '',
+    arrivalAirportId: '',
+    departureTime: '',
+    arrivalTime: '',
     originPrice: 0,
     interAirport: [],
     seat: []
@@ -32,13 +32,13 @@ const FlightManagement = () => {
   //update
   const [isUpdateOpen, setIsUpdateOpen] = useState(false)
   const [updatedFlight, setUpdatedFlight] = useState<IFlightTable>({
-    id: "",
-    flightCode: "",
-    planeId: "",
-    departureAirportId: "",
-    arrivalAirportId: "",
-    departureTime: "",
-    arrivalTime: "",
+    id: '',
+    flightCode: '',
+    planeId: '',
+    departureAirportId: '',
+    arrivalAirportId: '',
+    departureTime: '',
+    arrivalTime: '',
     originPrice: 0,
     interAirport: [],
     seat: []
@@ -46,7 +46,7 @@ const FlightManagement = () => {
   //New
   const [isNewOpen, setIsNewOpen] = useState(false)
   //Table
-  const dispatch = useAppDispatch();
+  const dispatch = useAppDispatch()
   const navigate = useNavigate()
   const actionRef = useRef<ActionType>(null)
   const data: IFlightTable[] = flightData
@@ -74,8 +74,8 @@ const FlightManagement = () => {
       title: 'Departure Airport',
       search: false,
       render: (_, record) => {
-        return (<div>{toAirport(record.departureAirportId).airportName}</div>)
-      },
+        return <div>{toAirport(record.departureAirportId).airportName}</div>
+      }
     },
     {
       title: 'Departure Airport',
@@ -83,15 +83,15 @@ const FlightManagement = () => {
       valueType: 'select',
       fieldProps: {
         showSearch: true,
-        options: airportOptions, // Dữ liệu dropdown
-      },
+        options: airportOptions // Dữ liệu dropdown
+      }
     },
     {
       title: 'Arrival Airport',
       search: false,
       render: (_, record) => {
-        return (<div>{toAirport(record.arrivalAirportId).airportName}</div>)
-      },
+        return <div>{toAirport(record.arrivalAirportId).airportName}</div>
+      }
     },
     {
       title: 'Arrival Airport',
@@ -99,8 +99,8 @@ const FlightManagement = () => {
       valueType: 'select',
       fieldProps: {
         showSearch: true,
-        options: airportOptions, // Dữ liệu dropdown
-      },
+        options: airportOptions // Dữ liệu dropdown
+      }
     },
     {
       title: 'Departure Time ',
@@ -154,7 +154,7 @@ const FlightManagement = () => {
           <Button
             type='dashed'
             onClick={() => {
-              dispatch(setBookingFlight(record));
+              dispatch(setBookingFlight(record))
               navigate(`booking/${record.id}`)
             }}
           >
@@ -169,7 +169,7 @@ const FlightManagement = () => {
     <>
       <ProTable<IFlightTable>
         search={{
-          labelWidth: 'auto',
+          labelWidth: 'auto'
         }}
         bordered
         dataSource={data}
