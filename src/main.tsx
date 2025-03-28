@@ -24,6 +24,7 @@ import AdminBooking from './pages/admin/booking/adminBooking'
 import CityManagement from './pages/admin/cityManagement/cityManagement'
 import { Provider } from 'react-redux'
 import { store } from './redux/store'
+import NotFoundPage from './pages/error/notFoundPage'
 const router = createBrowserRouter([
   {
     path: '/',
@@ -88,6 +89,10 @@ const router = createBrowserRouter([
   {
     path: '/signup',
     element: <SignUpPage />
+  },
+  {
+    path: '*',
+    element: <NotFoundPage />
   }
 ])
 const queryClient = new QueryClient()
