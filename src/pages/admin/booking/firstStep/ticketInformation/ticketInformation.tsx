@@ -34,6 +34,17 @@ const TicketInformation = (prop: IProp) => {
   const onFinish: FormProps<FormValues>['onFinish'] = (values) => {
     if (values.tickets.length === 0) {
       openNotification()
+      const data: ITicketTable[] = values.tickets.map((value: TicketInfo) => {
+        return {
+          flightId: '',
+          seatId: '',
+          passengerName: '',
+          passengerPhone: '',
+          passengerIDCard: '',
+          passengerEmail: ''
+        }
+      })
+      dispatch(setBookingTicketsList(data))
       return
     }
     const data: ITicketTable[] = values.tickets.map((value: TicketInfo) => {
@@ -114,7 +125,7 @@ const TicketInformation = (prop: IProp) => {
                 <Form.Item
                   label={
                     <div>
-                      <MdOutlineDriveFileRenameOutline style={{ width: 20, height: 20, verticalAlign: 'middle' }} />{' '}
+                      <MdOutlineDriveFileRenameOutline style={{ width: 20, height: 20, verticalAlign: 'middle' }} />
                       Name
                     </div>
                   }

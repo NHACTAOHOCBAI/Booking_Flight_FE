@@ -29,7 +29,13 @@ const AdminBooking = () => {
     dispatch(setBookingFlight(bookingFlight))
     dispatch(setBookingTicketsList([]))
   }, [])
+  useEffect(() => {
+    if (bookingTicketsList.length === 0) setNextButtonStyle({ cursor: 'not-allowed' })
+    else setNextButtonStyle({ cursor: 'default' })
+  }, [bookingTicketsList])
+
   const openNotification = () => {
+    setNextButtonStyle({ cursor: 'not-allowed' })
     api.open({
       message: 'No ticket found',
       description: 'Please add at least a ticket',
@@ -37,6 +43,9 @@ const AdminBooking = () => {
     })
   }
 
+  const [nextButtonStyle, setNextButtonStyle] = useState<React.CSSProperties>({
+    cursor: 'default'
+  })
   const contentStyle: React.CSSProperties = {
     lineHeight: '260px',
     textAlign: 'center',
@@ -73,13 +82,16 @@ const AdminBooking = () => {
           {current < steps.length - 1 && (
             <Button
               type='primary'
+              disabled={nextButtonStyle.cursor !== 'default'}
               onClick={() => {
                 if (bookingTicketsList.length === 0) {
                   openNotification()
                   return
                 }
+
                 next()
               }}
+              style={nextButtonStyle}
             >
               Next
             </Button>
