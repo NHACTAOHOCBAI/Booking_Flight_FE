@@ -16,6 +16,7 @@ const NewFlight = (props: IProp) => {
   const { isNewOpen, setIsNewOpen } = props
   const [form] = Form.useForm()
   const onFinish: FormProps<IFlightTable>['onFinish'] = (value) => {
+    console.log(value.departureTime)
     value.departureTime = dayjs(value.departureTime).format('HH:mm DD/MM/YYYY')
     value.arrivalTime = dayjs(value.arrivalTime).format('HH:mm DD/MM/YYYY')
     if (value.interAirport) {

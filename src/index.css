@@ -11,3 +11,26 @@ body {
   font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
   font-weight: 400;
 }
+
+@layer base {
+  :root {
+    --scrollbar-thumb: #c1c1c1;
+    --scrollbar-track: #f1f1f1;
+  }
+
+  ::-webkit-scrollbar {
+    @apply w-1 h-1;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply rounded-full bg-[var(--scrollbar-thumb)];
+  }
+  ::-webkit-scrollbar-track {
+    @apply bg-[var(--scrollbar-track)];
+  }
+
+  /* Firefox */
+  html {
+    scrollbar-width: none;
+    scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+  }
+}

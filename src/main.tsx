@@ -2,7 +2,7 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import UserLayout from 'pages/client/userLayout/userLayout'
-import HomePage from 'pages/client/homePage/homePage'
+
 import AboutUsPage from 'pages/client/aboutUsPage/aboutUsPage'
 import BookingPage from 'pages/client/bookingPage/bookingPage'
 import LoginPage from 'pages/auth/loginPage/loginPage'
@@ -26,6 +26,7 @@ import { Provider } from 'react-redux'
 import { store } from './redux/store'
 import NotFoundPage from './pages/error/notFoundPage'
 import AirlineManagement from './pages/admin/airlineManagement/airlineManagement'
+import HomePage from './pages/client/homePage/homePage'
 const router = createBrowserRouter([
   {
     path: '/',

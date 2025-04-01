@@ -116,7 +116,7 @@ const LoginPage = () => (
           >
             <Link to='/'>
               <ArrowLeftOutlined />
-              <span> Go to homepage</span>
+              <span> Go to HomePage</span>
             </Link>
           </div>
           <Divider
