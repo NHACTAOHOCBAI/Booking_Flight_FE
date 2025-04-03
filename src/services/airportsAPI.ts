@@ -1,25 +1,17 @@
 import axios from '@/utils/customAxios'
 const fetchAllAirports = async () => {
     const url = '/airports'
-    const res = await axios.get<APIResponse<IFakeAirportItem>>(url);
+    const res = await axios.get<APIResponse<IAirportTable>>(url);
     return res.data;
 };
-const createAirport = async (value: INewAirportItem) => {
-    const data = {
-        airportName: value.name,
-        location: value.country
-    }
+const createAirport = async (data: IAirportTable) => {
     const url = '/airports'
-    const res = await axios.post<APIResponse<IFakeAirportItem>>(url, data);
+    const res = await axios.post<APIResponse<IAirportTable>>(url, data);
     return res.data;
 };
-const updateAirport = async (value: IUpdateAirportItem) => {
-    const url = `/airports/${value._id}`;
-    const data = {
-        airportName: value.name,
-        location: value.country
-    }
-    const res = await axios.put<APIResponse<IFakeAirportItem>>(url, data);
+const updateAirport = async (data: IAirportTable) => {
+    const url = '/airports'
+    const res = await axios.put<APIResponse<IAirportTable>>(url, data);
     return res.data;
 };
 const deleteUser = async (value: string) => {

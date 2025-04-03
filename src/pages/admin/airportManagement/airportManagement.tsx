@@ -5,12 +5,11 @@ import { Button, Popconfirm } from 'antd'
 import { useRef, useState } from 'react'
 import NewAirport from './newAirport'
 import UpdateAirport from './updateAirport'
-import { airportData } from '@/globalType'
 import { toCity } from '@/utils/convert'
+import { useGetAllAirports } from '@/hooks/useAirport'
 const AirportManagement = () => {
   //Table
   const actionRef = useRef<ActionType>(null)
-  const data: IAirportTable[] = airportData
   //update
   const [isUpdateOpen, setIsUpdateOpen] = useState(false)
   const [updatedAirport, setUpdatedAirport] = useState<IAirportTable>({
@@ -79,6 +78,9 @@ const AirportManagement = () => {
       )
     }
   ]
+  //fetch data
+  const { isPending, error, data } = useGetAllAirports();
+
   return (
     <>
       <ProTable<IAirportTable>

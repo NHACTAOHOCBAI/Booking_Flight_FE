@@ -143,21 +143,17 @@ export default function HomePage() {
                 <Input
                   type='text'
                   placeholder='Tên của bạn'
-                  className='w-full bg-white/100 text-black border-gray-700 placeholder:text-black'
                 />
                 <Input
                   type='text'
                   placeholder='Số điện thoại'
-                  className='w-full bg-white/100 text-black border-gray-700 placeholder:text-black'
                 />
                 <Input
                   type='text'
                   placeholder='Địa chỉ email'
-                  className='w-full bg-white/100 text-black border-gray-700 placeholder:text-black'
                 />
                 <TextArea
                   placeholder='Lời nhắn cho FlyTime'
-                  className='w-full bg-white/100 text-black border-gray-700 placeholder:text-black min-h-[100px]'
                 />
                 <Button className='w-full bg-transparent/65 text-white font-bold' size='large'>
                   Gửi ngay
