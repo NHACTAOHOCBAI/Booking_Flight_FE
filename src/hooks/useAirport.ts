@@ -9,35 +9,35 @@ export const useGetAllAirports = () => {
     });
 };
 
-export const useCreateAirport = () => {
-    const queryClient = useQueryClient();
-    return useMutation({
-        mutationFn: createAirport,
-        onSuccess: async (data, variables, context: any) => {
-            await queryClient.invalidateQueries({ queryKey: ['getAllAirports'] });
-            if (context?.onSuccess) context.onSuccess();
-        },
-    });
-};
+// export const useCreateAirport = () => {
+//     const queryClient = useQueryClient();
+//     return useMutation({
+//         mutationFn: createAirport,
+//         onSuccess: async (data, variables, context: any) => {
+//             await queryClient.invalidateQueries({ queryKey: ['getAllAirports'] });
+//             if (context?.onSuccess) context.onSuccess();
+//         },
+//     });
+// };
 
-export const useUpdateAirport = () => {
-    const queryClient = useQueryClient();
-    return useMutation({
-        mutationFn: (value: IUpdateAirportItem) => updateAirport(value),
-        onSuccess: async (data, variables, context: any) => {
-            await queryClient.invalidateQueries({ queryKey: ['getAllAirports'] });
-            if (context?.onSuccess) context.onSuccess();
-        },
-    });
-};
+// export const useUpdateAirport = () => {
+//     const queryClient = useQueryClient();
+//     return useMutation({
+//         mutationFn: (value: IUpdateAirportItem) => updateAirport(value),
+//         onSuccess: async (data, variables, context: any) => {
+//             await queryClient.invalidateQueries({ queryKey: ['getAllAirports'] });
+//             if (context?.onSuccess) context.onSuccess();
+//         },
+//     });
+// };
 
-export const useDeleteAirport = () => {
-    const queryClient = useQueryClient();
-    return useMutation({
-        mutationFn: (value: string) => deleteUser(value),
-        onSuccess: async (data, variables, context: any) => {
-            await queryClient.invalidateQueries({ queryKey: ['getAllAirports'] });
-            if (context?.onSuccess) context.onSuccess();
-        },
-    });
-};
+// export const useDeleteAirport = () => {
+//     const queryClient = useQueryClient();
+//     return useMutation({
+//         mutationFn: (value: string) => deleteUser(value),
+//         onSuccess: async (data, variables, context: any) => {
+//             await queryClient.invalidateQueries({ queryKey: ['getAllAirports'] });
+//             if (context?.onSuccess) context.onSuccess();
+//         },
+//     });
+// };

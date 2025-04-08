@@ -24,7 +24,7 @@ const AdminLayout = () => {
       }}
     >
       <Sider
-        style={{ background: colorBgContainer, borderRight: '3px solid #dcdde1' }}
+        style={{ background: colorBgContainer, boxShadow: "0 4px 8px 0 rgba(0, 0, 0, 0.2)" }}
         trigger={null}
         collapsible
         collapsed={collapsed}
@@ -133,7 +133,7 @@ const AdminLayout = () => {
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
-            height: 40
+            height: 50
           }}
         >
           <Button
@@ -146,7 +146,10 @@ const AdminLayout = () => {
               height: 64
             }}
           />
-          <div style={{ marginRight: 40, marginBottom: 10, display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <div style={{ justifySelf: "start" }}>
+            Cities
+          </div>
+          <div style={{ marginRight: 40, display: 'flex', alignItems: 'center', gap: '8px' }}>
             <Avatar size={35} icon={<UserOutlined />} />
             <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', lineHeight: '1.2' }}>
               <span style={{ fontWeight: 'bold', fontSize: '14px' }}>John Doe</span>
@@ -160,7 +163,7 @@ const AdminLayout = () => {
         <Content
           style={{
             margin: '24px 16px',
-            padding: 24,
+            padding: 0,
             minHeight: 280,
             background: colorBgContainer,
             borderRadius: borderRadiusLG,

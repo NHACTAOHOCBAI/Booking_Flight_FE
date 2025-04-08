@@ -81,14 +81,10 @@ const CityManagement = () => {
   return (
     <>
       <ProTable<ICityTable>
-        search={{
-          labelWidth: 'auto',
-        }}
+        search={false}
         dataSource={data}
         columns={columns}
-        bordered
         actionRef={actionRef}
-        cardBordered
         headerTitle='City Table'
         toolBarRender={() => [
           <Button
