@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+ 
 import { createAirport, deleteUser, fetchAllAirports, updateAirport } from "@/services/airportsAPI";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 

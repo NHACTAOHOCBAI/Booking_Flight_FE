@@ -7,10 +7,19 @@ import { useRef, useState } from 'react'
 import { cityData } from '@/globalType'
 import NewCity from './newCity'
 import UpdateCity from './updateCity'
+import { useQuery } from '@tanstack/react-query'
+import cityApi from '@/apis/city.api'
 const CityManagement = () => {
   //Table
   const actionRef = useRef<ActionType>(null)
-  const data: ICityTable[] = cityData
+
+  const { data } = useQuery({
+    queryKey: ['City'],
+    queryFn: () => cityApi.getCities()
+  })
+
+  console.log(data)
+  const data2: ICityTable[] = cityData
 
   //New
   const [isNewOpen, setIsNewOpen] = useState(false)
@@ -82,7 +91,7 @@ const CityManagement = () => {
     <>
       <ProTable<ICityTable>
         search={false}
-        dataSource={data}
+        dataSource={data2}
         columns={columns}
         actionRef={actionRef}
         headerTitle='City Table'

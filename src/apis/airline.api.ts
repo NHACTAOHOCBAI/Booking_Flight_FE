@@ -1,5 +1,5 @@
 import http from '@/utils/http'
-import { SuccessResponse } from '@/utils/util.type'
+import { SuccessResponse } from '@/globalType/util.type'
 
 const URL = 'airline'
 const airlineApi = {
