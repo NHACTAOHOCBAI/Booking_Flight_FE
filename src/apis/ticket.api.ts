@@ -1,6 +1,10 @@
 import http from '@/utils/http'
+import { SuccessResponse } from '@/utils/util.type'
 
-export const getTickets = async () => {
-  const response = await http.get('tickets', {})
-  return response.data
+const URL = 'tickets'
+const ticketApi = {
+  getTickets: () => {
+    return http.get<SuccessResponse<ITicketTable[]>>(URL)
+  }
 }
+export default ticketApi

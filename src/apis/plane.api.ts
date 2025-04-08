@@ -1,6 +1,10 @@
 import http from '@/utils/http'
+import { SuccessResponse } from '@/utils/util.type'
 
-export const getPlanes = async () => {
-  const response = await http.get('planes', {})
-  return response.data
+const URL = 'planes'
+const planeApi = {
+  getPlanes: () => {
+    return http.get<SuccessResponse<IPlaneTable[]>>(URL)
+  }
 }
+export default planeApi

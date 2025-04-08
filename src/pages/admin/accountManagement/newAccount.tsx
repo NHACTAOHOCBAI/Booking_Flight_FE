@@ -4,6 +4,8 @@ import { MdOutlineDriveFileRenameOutline, MdOutlinePhone } from 'react-icons/md'
 import { TfiEmail } from 'react-icons/tfi'
 import { RiLockPasswordLine } from 'react-icons/ri'
 import { GrUserAdmin } from 'react-icons/gr'
+import { useMutation } from '@tanstack/react-query'
+import accountApi from '@/apis/account.api'
 interface IProp {
   isNewOpen: boolean
   setIsNewOpen: (value: boolean) => void
@@ -12,13 +14,26 @@ const NewAccount = (props: IProp) => {
   const { isNewOpen, setIsNewOpen } = props
   const [form] = Form.useForm()
 
+  const loginMutation = useMutation({
+    mutationFn: (body: IAccountTable) => accountApi.createAccounts(body)
+  })
+
   const onFinish: FormProps<IAccountTable>['onFinish'] = (value) => {
-    console.log(value)
+    loginMutation.mutate(value, {
+      onSuccess: (data) => {
+        console.log(data)
+      },
+      onError: (error) => {
+        console.log(error)
+      }
+    })
+
     handleCancel()
   }
   const handleOk = () => {
     form.submit()
   }
+
   const handleCancel = () => {
     form.resetFields()
     setIsNewOpen(false)

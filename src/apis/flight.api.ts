@@ -1,6 +1,10 @@
 import http from '@/utils/http'
+import { SuccessResponse } from '@/utils/util.type'
 
-export const getFlight = async () => {
-  const response = http.get('flights', {})
-  return (await response).data
+const URL = 'flights'
+const flightApi = {
+  getFlights: () => {
+    return http.get<SuccessResponse<IFlightTable[]>>(URL)
+  }
 }
+export default flightApi

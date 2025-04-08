@@ -4,15 +4,21 @@ import { ProTable } from '@ant-design/pro-components'
 import { Button, Popconfirm } from 'antd'
 
 import { useRef, useState } from 'react'
-import { accountData } from '@/globalType'
 import NewAccount from './newAccount'
 import UpdateAccount from './updateAccount.tsx'
 import DetailAccount from './detailAccount.tsx'
+import { useQuery } from '@tanstack/react-query'
+import accountApi from '@/apis/account.api.ts'
 
 const AccountManagement = () => {
   //table
   const actionRef = useRef<ActionType>(null)
-  const data: IAccountTable[] = accountData
+  // const data: IAccountTable[] = accountData
+
+  const { data: accountData } = useQuery({
+    queryKey: ['accounts'],
+    queryFn: () => accountApi.getAccounts()
+  })
 
   //detail
   const [isDetailOpen, setIsDetailOpen] = useState(false)
@@ -135,7 +141,7 @@ const AccountManagement = () => {
   return (
     <>
       <ProTable<IAccountTable>
-        dataSource={data}
+        dataSource={accountData?.data.data}
         columns={columns}
         actionRef={actionRef}
         bordered
