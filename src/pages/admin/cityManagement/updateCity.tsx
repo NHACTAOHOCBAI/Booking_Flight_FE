@@ -1,4 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+import cityApi from '@/apis/city.api'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Form, FormProps, Input, Modal } from 'antd'
 import { useEffect } from 'react'
 import { HiDotsVertical } from 'react-icons/hi'
@@ -14,10 +16,23 @@ interface IProp {
 const UpdateCity = (props: IProp) => {
   const { updatedCity, setUpdatedCity, isUpdateOpen, setIsUpdateOpen } = props
   const [form] = Form.useForm()
-  const onFinish: FormProps<ICityTable>['onFinish'] = (value) => {
-    console.log(value)
+  const queryClient = useQueryClient()
+  const newCitiesMutation = useMutation({
+    mutationFn: (body: ICityTable) => cityApi.updateCity(body),
+    onSuccess: (data) => {
+      console.log('Cập nhật thành phố thành công:', data)
+      queryClient.invalidateQueries({ queryKey: ['cities'] })
+    },
+    onError: (error) => {
+      console.log('Lỗi cập nhật thành phố:', error)
+    }
+  })
+
+  const onFinish: FormProps<ICityTable>['onFinish'] = async (value) => {
+    newCitiesMutation.mutate(value)
     handleCancel()
   }
+
   const handleOk = () => {
     form.submit()
   }

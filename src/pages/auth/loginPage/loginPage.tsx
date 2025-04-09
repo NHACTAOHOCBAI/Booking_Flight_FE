@@ -2,13 +2,15 @@ import type { FormProps } from 'antd'
 import { Button, Checkbox, Col, Divider, Flex, Form, Input } from 'antd'
 import { ArrowLeftOutlined, GoogleOutlined } from '@ant-design/icons'
 import { Link, useNavigate } from 'react-router-dom'
-import { useState } from 'react'
+import { useContext, useState } from 'react'
 import { useMutation } from '@tanstack/react-query'
 import classNames from 'classnames'
 
 import authApi from '@/apis/auth.api'
 import { isAxiosUnprocessableEntityError } from '@/utils/utils'
 import { ErrorResponse } from '@/globalType/util.type'
+import { AppContext } from '@/context/app.context'
+import { getProfileFromLS } from '@/utils/auth'
 
 type FieldType = {
   username?: string
@@ -17,6 +19,7 @@ type FieldType = {
 }
 
 const LoginPage = () => {
+  const { setIsAuthenticated, setProfile } = useContext(AppContext)
   const [errorLogin, setErrorLogin] = useState(false)
   const navigate = useNavigate()
 
@@ -28,8 +31,8 @@ const LoginPage = () => {
     const body = { username: values.username as string, password: values.password as string }
     loginMutation.mutate(body, {
       onSuccess: (data) => {
-        // setIsAuthenticated(true)
-        // setProfile(data.data.data.user)
+        setIsAuthenticated(true)
+        setProfile(getProfileFromLS())
         console.log(data)
         navigate('/', { replace: true })
       },
@@ -44,7 +47,6 @@ const LoginPage = () => {
   const onFinishFailed: FormProps<FieldType>['onFinishFailed'] = (errorInfo) => {
     console.log('Failed:', errorInfo)
   }
-  console.log(errorLogin)
   return (
     <div>
       <div

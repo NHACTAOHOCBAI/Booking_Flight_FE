@@ -11,7 +11,10 @@ const cityApi = {
     return http.post<SuccessResponse<ICityTable>>(URL, param)
   },
   deleteCity: (id: string) => {
-    return http.post<SuccessResponse<string>>(URL, id)
+    return http.delete<SuccessResponse<string>>(`${URL}/${id}`)
+  },
+  updateCity: (param: ICityTable) => {
+    return http.put<SuccessResponse<string>>(`${URL}/${param.id}`, param)
   }
 }
 export default cityApi

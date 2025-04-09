@@ -1,5 +1,21 @@
-import { useEffect, useState } from 'react'
+import { AppContext } from '@/context/app.context'
+import { MenuProps, Dropdown, Space, theme, Button, Divider } from 'antd'
+import React from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+
+const items: MenuProps['items'] = [
+  {
+    key: '1',
+    label: <Link to='/'> My profile</Link>
+  },
+  {
+    key: '2',
+    label: <Link to='/'> Logout</Link>
+  }
+]
+const { useToken } = theme
+
 const UserHeader = () => {
   const [isScroll, setIsScroll] = useState(false)
   useEffect(() => {
@@ -12,7 +28,14 @@ const UserHeader = () => {
       window.removeEventListener('scroll', handleScroll)
     }
   }, [])
-  console.log(isScroll)
+  const { profile } = useContext(AppContext)
+
+  const { token } = useToken()
+
+  const menuStyle: React.CSSProperties = {
+    padding: '8px 15px',
+    cursor: 'pointer'
+  }
   return (
     <div className={`pb-2 pt-2  fixed w-full z-50 ${isScroll ? 'bg-white' : 'bg-transparent'}`}>
       <div className='container'>
@@ -58,7 +81,27 @@ const UserHeader = () => {
                 <div className='text-xl font-bold'>0857311444</div>
               </div>
               <Link to='/login' className='mx-1'>
-                login
+                {profile ? (
+                  <Dropdown
+                    menu={{ items }}
+                    dropdownRender={(menu) => (
+                      <div className='bg-transparent'>
+                        {React.cloneElement(
+                          menu as React.ReactElement<{
+                            style: React.CSSProperties
+                          }>,
+                          { style: menuStyle }
+                        )}
+                      </div>
+                    )}
+                  >
+                    <a onClick={(e) => e.preventDefault()}>
+                      <Space>{profile}</Space>
+                    </a>
+                  </Dropdown>
+                ) : (
+                  'login'
+                )}
               </Link>
             </div>
           </div>

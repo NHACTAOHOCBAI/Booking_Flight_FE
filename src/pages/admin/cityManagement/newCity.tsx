@@ -1,3 +1,5 @@
+import cityApi from '@/apis/city.api'
+import { useMutation } from '@tanstack/react-query'
 import { Form, FormProps, Input, Modal } from 'antd'
 import { LuScanBarcode } from 'react-icons/lu'
 import { MdOutlineDriveFileRenameOutline } from 'react-icons/md'
@@ -10,8 +12,21 @@ interface IProp {
 const NewCity = (props: IProp) => {
   const { isNewOpen, setIsNewOpen } = props
   const [form] = Form.useForm()
+
+  const newCitiesMutation = useMutation({
+    mutationFn: (body: { cityCode: string; cityName: string }) => cityApi.createCity(body)
+  })
+
   const onFinish: FormProps<ICityTable>['onFinish'] = async (value) => {
-    console.log(value)
+    const body = { cityCode: value.cityCode as string, cityName: value.cityName as string }
+    newCitiesMutation.mutate(body, {
+      onSuccess(data) {
+        console.log(data)
+      },
+      onError(error) {
+        console.log(error)
+      }
+    })
     handleCancel()
   }
 

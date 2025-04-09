@@ -1,6 +1,6 @@
-import { StrictMode } from 'react'
+import { StrictMode, useContext } from 'react'
 import { createRoot } from 'react-dom/client'
-import { createBrowserRouter, RouterProvider } from 'react-router-dom'
+import { createBrowserRouter, Navigate, Outlet, RouterProvider } from 'react-router-dom'
 import UserLayout from 'pages/client/userLayout/userLayout'
 
 import AboutUsPage from 'pages/client/aboutUsPage/aboutUsPage'
@@ -27,6 +27,18 @@ import { store } from './redux/store'
 import NotFoundPage from './pages/error/notFoundPage'
 import AirlineManagement from './pages/admin/airlineManagement/airlineManagement'
 import HomePage from './pages/client/homePage/homePage'
+import { AppContext, AppProvider } from './context/app.context'
+
+function ProtectedRoute() {
+  const { isAuthenticated } = useContext(AppContext)
+  return isAuthenticated ? <Outlet /> : <Navigate to='/login' />
+}
+
+function RejectedRoute() {
+  const { isAuthenticated } = useContext(AppContext)
+  console.log(isAuthenticated)
+  return !isAuthenticated ? <Outlet /> : <Navigate to='/' />
+}
 const router = createBrowserRouter([
   {
     path: '/',
@@ -90,7 +102,13 @@ const router = createBrowserRouter([
   },
   {
     path: '/login',
-    element: <LoginPage />
+    element: <RejectedRoute />,
+    children: [
+      {
+        index: true,
+        element: <LoginPage />
+      }
+    ]
   },
   {
     path: '/signup',
@@ -106,10 +124,12 @@ createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <ConfigProvider locale={enUS}>
       <QueryClientProvider client={queryClient}>
-        <Provider store={store}>
-          <RouterProvider router={router} />
-          <ReactQueryDevtools initialIsOpen={false} />
-        </Provider>
+        <AppProvider>
+          <Provider store={store}>
+            <RouterProvider router={router} />
+            <ReactQueryDevtools initialIsOpen={false} />
+          </Provider>
+        </AppProvider>
       </QueryClientProvider>
     </ConfigProvider>
   </StrictMode>

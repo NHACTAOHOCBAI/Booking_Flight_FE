@@ -1,9 +1,10 @@
-export function setLocalStorage(token: string) {
+export function saveAccessTokenToLS(token: string) {
   localStorage.setItem('access_token', token)
 }
 
 export const getAccessTokenFromLS = () => {
-  return localStorage.getItem('access_token')
+  const data = localStorage.getItem('access_token')
+  return data
 }
 
 export const clearLocalStorage = () => {

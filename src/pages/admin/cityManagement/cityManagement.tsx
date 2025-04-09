@@ -2,24 +2,15 @@ import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons'
 import type { ActionType, ProColumns } from '@ant-design/pro-components'
 import { ProTable } from '@ant-design/pro-components'
 import { Button, Popconfirm } from 'antd'
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
-import { cityData } from '@/globalType'
 import NewCity from './newCity'
 import UpdateCity from './updateCity'
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import cityApi from '@/apis/city.api'
 const CityManagement = () => {
   //Table
   const actionRef = useRef<ActionType>(null)
-
-  const { data } = useQuery({
-    queryKey: ['City'],
-    queryFn: () => cityApi.getCities()
-  })
-
-  console.log(data)
-  const data2: ICityTable[] = cityData
 
   //New
   const [isNewOpen, setIsNewOpen] = useState(false)
@@ -33,8 +24,34 @@ const CityManagement = () => {
   })
 
   // delete
+  const queryClient = useQueryClient()
+  const deleteCityMuTation = useMutation({
+    mutationFn: (id: string) => cityApi.deleteCity(id),
+    onSuccess(data) {
+      console.log(data)
+      queryClient.invalidateQueries({ queryKey: ['cities'] })
+    },
+    onError(error) {
+      console.log(error)
+    }
+  })
   const handleDelete = (value: ICityTable) => {
     console.log(value)
+    deleteCityMuTation.mutate(value.id as string)
+  }
+
+  const { data, isLoading, isError, error, refetch } = useQuery({
+    queryKey: ['cities'],
+    queryFn: () => cityApi.getCities()
+  })
+  console.log(data)
+
+  if (isLoading) {
+    return <div>Loading...</div>
+  }
+
+  if (isError) {
+    return <div>Error: {error?.message}</div>
   }
 
   const columns: ProColumns<ICityTable>[] = [
@@ -91,7 +108,7 @@ const CityManagement = () => {
     <>
       <ProTable<ICityTable>
         search={false}
-        dataSource={data2}
+        dataSource={data?.data.data}
         columns={columns}
         actionRef={actionRef}
         headerTitle='City Table'
