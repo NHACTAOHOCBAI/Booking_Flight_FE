@@ -20,6 +20,7 @@ const AccountManagement = () => {
     queryFn: () => accountApi.getAccounts()
   })
 
+  console.log(accountData)
   //detail
   const [isDetailOpen, setIsDetailOpen] = useState(false)
   const [detailAccount, setDetailAccount] = useState<IAccountTable>({
@@ -141,7 +142,7 @@ const AccountManagement = () => {
   return (
     <>
       <ProTable<IAccountTable>
-        dataSource={accountData?.data.data}
+        dataSource={accountData?.data}
         columns={columns}
         actionRef={actionRef}
         bordered

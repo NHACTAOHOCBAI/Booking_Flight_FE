@@ -4,11 +4,10 @@ import { MenuFoldOutlined, MenuUnfoldOutlined, UserOutlined } from '@ant-design/
 import { Avatar, Badge, Button, Layout, Menu, theme } from 'antd'
 import { IoAirplaneOutline, IoSettingsOutline } from 'react-icons/io5'
 import { PiAirplaneInFlight, PiCityLight, PiSeat } from 'react-icons/pi'
-import { FaMapLocationDot } from 'react-icons/fa6'
 import { VscAccount } from 'react-icons/vsc'
 import { GoLocation } from 'react-icons/go'
 import { RxDashboard } from 'react-icons/rx'
-import { MdDashboard, MdFlight, MdOutlineAirlines } from 'react-icons/md'
+import { MdOutlineAirlines } from 'react-icons/md'
 const { Header, Sider, Content } = Layout
 
 const AdminLayout = () => {
@@ -50,77 +49,55 @@ const AdminLayout = () => {
           defaultSelectedKeys={['dashboard']}
           items={[
             {
-              key: 'overview',
-              label: <div style={{ fontSize: 16 }}>Overview</div>,
-              icon: <MdDashboard style={{ width: 20, height: 20 }} />,
-              children: [
-                {
-                  key: 'dashboard',
-                  icon: <RxDashboard style={{ width: 20, height: 20 }} />,
-                  label: <Link to={'/admin'}>Dashboard</Link>
-                }
-              ]
+
+              key: 'dashboard',
+              icon: <RxDashboard style={{ width: 20, height: 20 }} />,
+              label: <Link to={'/admin'}>Dashboard</Link>
+
+            },
+
+            {
+              key: 'city',
+              icon: <PiCityLight style={{ width: 20, height: 20 }} />,
+              label: <Link to={'/admin/manage-city'}>City</Link>
             },
             {
-              key: 'location',
-              label: <div style={{ fontSize: 16 }}>Location</div>,
-              icon: <FaMapLocationDot style={{ width: 20, height: 20 }} />,
-              children: [
-                {
-                  key: 'city',
-                  icon: <PiCityLight style={{ width: 20, height: 20 }} />,
-                  label: <Link to={'/admin/manage-city'}>City</Link>
-                },
-                {
-                  key: 'airport',
-                  icon: <GoLocation style={{ width: 20, height: 20 }} />,
-                  label: <Link to={'/admin/manage-airport'}>Airport</Link>
-                }
-              ]
+              key: 'airport',
+              icon: <GoLocation style={{ width: 20, height: 20 }} />,
+              label: <Link to={'/admin/manage-airport'}>Airport</Link>
+            }
+            ,
+            {
+              key: 'plane',
+              icon: <IoAirplaneOutline style={{ width: 20, height: 20 }} />,
+              label: <Link to={'/admin/manage-plane'}>Plane</Link>
             },
             {
-              key: 'flight',
-              label: <div style={{ fontWeight: 'normal', fontSize: 16 }}>Flight</div>,
-              icon: <MdFlight style={{ width: 20, height: 20 }} />,
-              children: [
-                {
-                  key: 'plane',
-                  icon: <IoAirplaneOutline style={{ width: 20, height: 20 }} />,
-                  label: <Link to={'/admin/manage-plane'}>Plane</Link>
-                },
-                {
-                  key: 'flight2',
-                  icon: <PiAirplaneInFlight style={{ width: 20, height: 20 }} />,
-                  label: <Link to={'/admin/manage-flight'}>Flight</Link>
-                },
-                {
-                  key: 'seatClass',
-                  icon: <PiSeat style={{ width: 20, height: 20 }} />,
-                  label: <Link to={'/admin/manage-seat'}>Seat Class</Link>
-                },
-                {
-                  key: 'airline',
-                  icon: <MdOutlineAirlines style={{ width: 20, height: 20 }} />,
-                  label: <Link to={'/admin/manage-airline'}>Airline</Link>
-                }
-              ]
+              key: 'flight2',
+              icon: <PiAirplaneInFlight style={{ width: 20, height: 20 }} />,
+              label: <Link to={'/admin/manage-flight'}>Flight</Link>
             },
             {
-              key: 'other',
-              label: <div style={{ fontWeight: 'normal', fontSize: 16 }}>Other</div>,
-              icon: <MdDashboard style={{ width: 20, height: 20 }} />,
-              children: [
-                {
-                  key: 'account',
-                  icon: <VscAccount style={{ width: 20, height: 20 }} />,
-                  label: <Link to={'/admin/manage-account'}>Account</Link>
-                },
-                {
-                  key: 'setting',
-                  icon: <IoSettingsOutline style={{ width: 20, height: 20 }} />,
-                  label: <Link to={'/admin/manage-airport'}>Setting</Link>
-                }
-              ]
+              key: 'seatClass',
+              icon: <PiSeat style={{ width: 20, height: 20 }} />,
+              label: <Link to={'/admin/manage-seat'}>Seat Class</Link>
+            },
+            {
+              key: 'airline',
+              icon: <MdOutlineAirlines style={{ width: 20, height: 20 }} />,
+              label: <Link to={'/admin/manage-airline'}>Airline</Link>
+            }
+            ,
+
+            {
+              key: 'account',
+              icon: <VscAccount style={{ width: 20, height: 20 }} />,
+              label: <Link to={'/admin/manage-account'}>Account</Link>
+            },
+            {
+              key: 'setting',
+              icon: <IoSettingsOutline style={{ width: 20, height: 20 }} />,
+              label: <Link to={'/admin/manage-airport'}>Setting</Link>
             }
           ]}
         />
@@ -163,7 +140,7 @@ const AdminLayout = () => {
         <Content
           style={{
             margin: '24px 16px',
-            padding: 0,
+            padding: 10,
             minHeight: 280,
             background: colorBgContainer,
             borderRadius: borderRadiusLG,

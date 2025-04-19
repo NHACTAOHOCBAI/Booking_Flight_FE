@@ -1,13 +1,14 @@
 import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons'
 import type { ActionType, ProColumns } from '@ant-design/pro-components'
 import { ProTable } from '@ant-design/pro-components'
-import { Button, Popconfirm } from 'antd'
+import { Button, Popconfirm, Result, Spin } from 'antd'
 import { useEffect, useRef, useState } from 'react'
 
 import NewCity from './newCity'
 import UpdateCity from './updateCity'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import cityApi from '@/apis/city.api'
+import { useGetAllCites } from '@/hooks/useCity'
 const CityManagement = () => {
   //Table
   const actionRef = useRef<ActionType>(null)
@@ -24,34 +25,32 @@ const CityManagement = () => {
   })
 
   // delete
-  const queryClient = useQueryClient()
-  const deleteCityMuTation = useMutation({
-    mutationFn: (id: string) => cityApi.deleteCity(id),
-    onSuccess(data) {
-      console.log(data)
-      queryClient.invalidateQueries({ queryKey: ['cities'] })
-    },
-    onError(error) {
-      console.log(error)
-    }
-  })
   const handleDelete = (value: ICityTable) => {
     console.log(value)
-    deleteCityMuTation.mutate(value.id as string)
   }
 
-  const { data, isLoading, isError, error, refetch } = useQuery({
-    queryKey: ['cities'],
-    queryFn: () => cityApi.getCities()
-  })
+  const { data, isLoading, isError, error, } = useGetAllCites();
   console.log(data)
 
   if (isLoading) {
-    return <div>Loading...</div>
+    return (
+      <section style={{ height: "100%", display: 'flex', alignItems: "center", justifyContent: 'center' }}>
+        <Spin size="large" />
+      </section>
+    )
   }
 
   if (isError) {
-    return <div>Error: {error?.message}</div>
+    console.log(error)
+    return (
+      <Result
+        status="500"
+        title="500"
+        subTitle="Sorry, something went wrong."
+        extra={<Button type="primary">Back Home</Button>}
+      />
+
+    )
   }
 
   const columns: ProColumns<ICityTable>[] = [
@@ -107,8 +106,9 @@ const CityManagement = () => {
   return (
     <>
       <ProTable<ICityTable>
+        bordered
         search={false}
-        dataSource={data?.data.data}
+        dataSource={data?.data}
         columns={columns}
         actionRef={actionRef}
         headerTitle='City Table'

@@ -5,6 +5,9 @@ const URL = 'airline'
 const airlineApi = {
   getAirline: () => {
     return http.get<SuccessResponse<IAirlineTable[]>>(URL)
+      .then(
+        res => res.data
+      )
   }
 }
 export default airlineApi

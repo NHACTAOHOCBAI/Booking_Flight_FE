@@ -10,15 +10,14 @@ import SignUpPage from 'pages/auth/signUpPage/signUpPage'
 import './index.css'
 import AdminLayout from '@/layouts/adminLayout/adminLayout'
 import Dashboard from 'pages/admin/dashboard/dashboard'
-import { ConfigProvider } from 'antd'
+import { ConfigProvider, message } from 'antd'
 import enUS from 'antd/locale/en_US'
 import AirportManagement from '@/pages/admin/airportManagement/airportManagement'
-import AccountManagement from '@/pages/admin/accountManagement/accountManagement'
+
 import SeatManagement from '@/pages/admin/seatManagement/seatManagement'
 import FlightManagement from '@/pages/admin/flightManagement/flightManagement'
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import PlaneManagement from './pages/admin/planeManagement/planeManagement'
 import AdminBooking from './pages/admin/booking/adminBooking'
 import CityManagement from './pages/admin/cityManagement/cityManagement'
@@ -28,6 +27,7 @@ import NotFoundPage from './pages/error/notFoundPage'
 import AirlineManagement from './pages/admin/airlineManagement/airlineManagement'
 import HomePage from './pages/client/homePage/homePage'
 import { AppContext, AppProvider } from './context/app.context'
+import AccountManagement from '@/pages/admin/accountManagement/accountManagement'
 
 function ProtectedRoute() {
   const { isAuthenticated } = useContext(AppContext)
@@ -119,15 +119,24 @@ const router = createBrowserRouter([
     element: <NotFoundPage />
   }
 ])
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1,
+      refetchOnWindowFocus: false,
+      staleTime: 5000,
+      gcTime: 5 * 60 * 1000,
+    },
+  }
+})
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
+
     <ConfigProvider locale={enUS}>
       <QueryClientProvider client={queryClient}>
         <AppProvider>
           <Provider store={store}>
             <RouterProvider router={router} />
-            <ReactQueryDevtools initialIsOpen={false} />
           </Provider>
         </AppProvider>
       </QueryClientProvider>

@@ -1,6 +1,6 @@
-import cityApi from '@/apis/city.api'
-import { useMutation } from '@tanstack/react-query'
-import { Form, FormProps, Input, Modal } from 'antd'
+import { useCreateCity } from '@/hooks/useCity'
+import { useQueryClient } from '@tanstack/react-query'
+import { Form, FormProps, Input, message, Modal, Skeleton } from 'antd'
 import { LuScanBarcode } from 'react-icons/lu'
 import { MdOutlineDriveFileRenameOutline } from 'react-icons/md'
 import { PiCityLight } from 'react-icons/pi'
@@ -10,24 +10,35 @@ interface IProp {
 }
 
 const NewCity = (props: IProp) => {
+  const [messageApi, contextHolder] = message.useMessage();
+
   const { isNewOpen, setIsNewOpen } = props
   const [form] = Form.useForm()
 
-  const newCitiesMutation = useMutation({
-    mutationFn: (body: { cityCode: string; cityName: string }) => cityApi.createCity(body)
-  })
+  const queryClient = useQueryClient();
+  const newCitiesMutation = useCreateCity();
 
   const onFinish: FormProps<ICityTable>['onFinish'] = async (value) => {
     const body = { cityCode: value.cityCode as string, cityName: value.cityName as string }
     newCitiesMutation.mutate(body, {
-      onSuccess(data) {
-        console.log(data)
+      async onSuccess(data) {
+        await queryClient.invalidateQueries({ queryKey: ['cities'] })
+        messageApi.open({
+          type: 'success',
+          content: data.message,
+        });
       },
       onError(error) {
         console.log(error)
-      }
+        messageApi.open({
+          type: 'error',
+          content: error.response.data.message,
+        });
+      },
+      onSettled() {
+        handleCancel()
+      },
     })
-    handleCancel()
   }
 
   const handleOk = () => {
@@ -41,6 +52,7 @@ const NewCity = (props: IProp) => {
 
   return (
     <>
+      {contextHolder}
       <Modal
         title={
           <div>
@@ -51,30 +63,35 @@ const NewCity = (props: IProp) => {
         onOk={handleOk}
         onCancel={handleCancel}
       >
-        <Form layout='vertical' name='basic' onFinish={onFinish} autoComplete='off' form={form}>
-          <Form.Item<ICityTable>
-            label={
-              <div>
-                <LuScanBarcode /> Code
-              </div>
-            }
-            name='cityCode'
-            rules={[{ required: true, message: "Please input city's code" }]}
-          >
-            <Input placeholder="City's code" />
-          </Form.Item>
-          <Form.Item<ICityTable>
-            label={
-              <div>
-                <MdOutlineDriveFileRenameOutline /> Name
-              </div>
-            }
-            name='cityName'
-            rules={[{ required: true, message: "Please input city's name" }]}
-          >
-            <Input placeholder="City's name" />
-          </Form.Item>
-        </Form>
+        {
+          newCitiesMutation.isPending ?
+            <Skeleton active />
+            :
+            <Form layout='vertical' name='basic' onFinish={onFinish} autoComplete='off' form={form}>
+              <Form.Item<ICityTable>
+                label={
+                  <div>
+                    <LuScanBarcode /> Code
+                  </div>
+                }
+                name='cityCode'
+                rules={[{ required: true, message: "Please input city's code" }]}
+              >
+                <Input placeholder="City's code" />
+              </Form.Item>
+              <Form.Item<ICityTable>
+                label={
+                  <div>
+                    <MdOutlineDriveFileRenameOutline /> Name
+                  </div>
+                }
+                name='cityName'
+                rules={[{ required: true, message: "Please input city's name" }]}
+              >
+                <Input placeholder="City's name" />
+              </Form.Item>
+            </Form>
+        }
       </Modal>
     </>
   )

@@ -5,9 +5,10 @@ const URL = '/login'
 
 const authApi = {
   login: (params: { username: string; password: string }) => {
-    const data = http.post<SuccessResponse<ILogin>>(URL, params)
-    // console.log(data)
-    return data
+    return http.post<SuccessResponse<ILogin>>(URL, params)
+      .then(
+        res => res.data
+      )
   }
 }
 export default authApi

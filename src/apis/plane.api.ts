@@ -5,6 +5,9 @@ const URL = 'planes'
 const planeApi = {
   getPlanes: () => {
     return http.get<SuccessResponse<IPlaneTable[]>>(URL)
+      .then(
+        res => res.data
+      )
   }
 }
 export default planeApi
