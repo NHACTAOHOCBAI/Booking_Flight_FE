@@ -1,12 +1,14 @@
 import { ActionType, ProColumns, ProTable } from '@ant-design/pro-components'
-import { Button, Popconfirm } from 'antd'
+import { Button, message, Popconfirm } from 'antd'
 import { useRef, useState } from 'react'
 import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons'
 import NewPlane from './newPlane'
 import UpdatePlane from './updatePlane'
-import { planeData } from '@/globalType'
 import DetailPlane from './detailPlane'
 import { toAirline } from '@/utils/convert'
+import { useDeletePlane, useGetAllPlanes } from '@/hooks/usePlane'
+import ErrorPage from '@/components/ErrorPage/ErrorPage'
+import LoadingError from '@/components/ErrorPage/LoadingError'
 const PlaneManagement = () => {
   //detail
   const [isDetailOpen, setIsDetailOpen] = useState(false)
@@ -26,9 +28,30 @@ const PlaneManagement = () => {
   })
   //new
   const [isNewOpen, setIsNewOpen] = useState(false)
+
+  // delete
+  const [messageApi, contextHolder] = message.useMessage()
+  const handleDeleteMutation = useDeletePlane()
+  const handleDelete = (id: string) => {
+    handleDeleteMutation.mutate(id, {
+      onSuccess(data) {
+        messageApi.open({
+          type: 'success',
+          content: data.message
+        })
+      },
+      onError(error) {
+        console.log(error)
+        messageApi.open({
+          type: 'error',
+          content: 'Cant delete city, some airport have this city as departure or destination'
+        })
+      }
+    })
+  }
+
   //Table
   const actionRef = useRef<ActionType>(null)
-  const data: IPlaneTable[] = planeData
 
   const columns: ProColumns<IPlaneTable>[] = [
     {
@@ -53,9 +76,7 @@ const PlaneManagement = () => {
     },
     {
       title: 'Airline',
-      render: (_, record) => (
-        <div>{toAirline(record.airlineId as string).airlineName}</div>
-      )
+      render: (_, record) => <div>{toAirline(record.airlineId as string).airlineName}</div>
     },
     {
       title: 'PlaneName',
@@ -85,6 +106,7 @@ const PlaneManagement = () => {
             description='Are you sure to delete this plane?'
             okText='Delete'
             cancelText='Cancel'
+            onConfirm={() => handleDelete(record.id as string)}
           >
             <DeleteOutlined
               style={{
@@ -96,13 +118,26 @@ const PlaneManagement = () => {
       )
     }
   ]
+
+  //fetch data
+  const { isLoading, isError, error, data } = useGetAllPlanes()
+  if (isLoading) {
+    return <LoadingError />
+  }
+
+  if (isError) {
+    console.log(error)
+    return <ErrorPage />
+  }
+  if (!data) return
   return (
     <>
+      {contextHolder}
       <ProTable<IPlaneTable>
         search={{
           labelWidth: 'auto'
         }}
-        dataSource={data}
+        dataSource={data.data}
         columns={columns}
         actionRef={actionRef}
         cardBordered

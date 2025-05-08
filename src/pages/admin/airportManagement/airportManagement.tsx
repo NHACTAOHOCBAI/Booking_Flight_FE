@@ -1,12 +1,15 @@
 import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons'
 import type { ActionType, ProColumns } from '@ant-design/pro-components'
 import { ProTable } from '@ant-design/pro-components'
-import { Button, Popconfirm } from 'antd'
+import { Button, message, Popconfirm } from 'antd'
 import { useRef, useState } from 'react'
 import NewAirport from './newAirport'
 import UpdateAirport from './updateAirport'
+import DetailAirport from './detailAirport'
+import { useDeleteAirport, useGetAllAirports } from '@/hooks/useAirport'
 import { toCity } from '@/utils/convert'
-import { useGetAllAirports } from '@/hooks/useAirport'
+import ErrorPage from '@/components/ErrorPage/ErrorPage'
+import LoadingError from '@/components/ErrorPage/LoadingError'
 const AirportManagement = () => {
   //Table
   const actionRef = useRef<ActionType>(null)
@@ -16,14 +19,40 @@ const AirportManagement = () => {
     id: '',
     airportCode: '',
     airportName: '',
-    cityId: ''
+    cityCode: ''
   })
   //New
   const [isNewOpen, setIsNewOpen] = useState(false)
   // delete
-  const handleDelete = (value: IAirportTable) => {
-    console.log(value)
+  const [messageApi, contextHolder] = message.useMessage()
+  const handleDeleteMutation = useDeleteAirport()
+  const handleDelete = (id: string) => {
+    handleDeleteMutation.mutate(id, {
+      onSuccess(data) {
+        messageApi.open({
+          type: 'success',
+          content: data.message
+        })
+      },
+      onError(error) {
+        console.log(error)
+        messageApi.open({
+          type: 'error',
+          content: 'Cant delete city, some airport have this city as departure or destination'
+        })
+      }
+    })
   }
+
+  //Detail
+  const [detailAirport, setDetailAirport] = useState<IAirportTable>({
+    id: '',
+    airportCode: '',
+    airportName: '',
+    cityCode: ''
+  })
+  const [isDetailOpen, setIsDetailOpen] = useState(false)
+
   const columns: ProColumns<IAirportTable>[] = [
     {
       dataIndex: 'index',
@@ -32,7 +61,17 @@ const AirportManagement = () => {
     },
     {
       title: 'Code',
-      render: (_, record) => <a style={{ color: '#3498db' }}>{record.airportCode}</a>
+      render: (_, record) => (
+        <a
+          style={{ color: '#3498db' }}
+          onClick={() => {
+            setDetailAirport(record)
+            setIsDetailOpen(true)
+          }}
+        >
+          {record.airportCode}
+        </a>
+      )
     },
     {
       title: 'Airport',
@@ -40,7 +79,7 @@ const AirportManagement = () => {
     },
     {
       title: 'City',
-      render: (_, record) => <div>{toCity(record.cityId as string).cityName}</div>
+      render: (_, record) => <div>{toCity(record.cityCode as string).cityName}</div>
     },
     {
       title: 'Action',
@@ -66,7 +105,7 @@ const AirportManagement = () => {
             description='Are you sure to delete this airport?'
             okText='Delete'
             cancelText='Cancel'
-            onConfirm={() => handleDelete(record)}
+            onConfirm={() => handleDelete(record.id as string)}
           >
             <DeleteOutlined
               style={{
@@ -79,15 +118,24 @@ const AirportManagement = () => {
     }
   ]
   //fetch data
-  const { isPending, error, data } = useGetAllAirports();
+  const { isLoading, isError, error, data } = useGetAllAirports()
+  if (isLoading) {
+    return <LoadingError />
+  }
 
+  if (isError) {
+    console.log(error)
+    return <ErrorPage />
+  }
+  if (!data) return
   return (
     <>
+      {contextHolder}
       <ProTable<IAirportTable>
         search={{
-          labelWidth: 'auto',
+          labelWidth: 'auto'
         }}
-        dataSource={data}
+        dataSource={data.data}
         columns={columns}
         bordered
         actionRef={actionRef}
@@ -112,6 +160,7 @@ const AirportManagement = () => {
         isUpdateOpen={isUpdateOpen}
         setIsUpdateOpen={setIsUpdateOpen}
       />
+      <DetailAirport isDetailOpen={isDetailOpen} setIsDetailOpen={setIsDetailOpen} detailAirport={detailAirport} />
     </>
   )
 }

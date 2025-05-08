@@ -1,11 +1,10 @@
-import { Col, Form, FormProps, Input, Modal, Row, Select } from 'antd'
+import { Col, Form, FormProps, Input, message, Modal, Row, Select } from 'antd'
 import { MdOutlineDriveFileRenameOutline, MdOutlinePhone } from 'react-icons/md'
 
 import { TfiEmail } from 'react-icons/tfi'
 import { RiLockPasswordLine } from 'react-icons/ri'
 import { GrUserAdmin } from 'react-icons/gr'
-import { useMutation } from '@tanstack/react-query'
-import accountApi from '@/apis/account.api'
+import { useCreateAccount } from '@/hooks/account.'
 interface IProp {
   isNewOpen: boolean
   setIsNewOpen: (value: boolean) => void
@@ -14,22 +13,38 @@ const NewAccount = (props: IProp) => {
   const { isNewOpen, setIsNewOpen } = props
   const [form] = Form.useForm()
 
-  const loginMutation = useMutation({
-    mutationFn: (body: IAccountTable) => accountApi.createAccounts(body)
-  })
+  const [messageApi, contextHolder] = message.useMessage()
+  const newAccountMutation = useCreateAccount()
 
-  const onFinish: FormProps<IAccountTable>['onFinish'] = (value) => {
-    loginMutation.mutate(value, {
-      onSuccess: (data) => {
-        console.log(data)
+  const onFinish: FormProps<IAccountTable>['onFinish'] = async (value) => {
+    const body = {
+      email: value.email,
+      fullName: value.fullName,
+      password: value.password,
+      username: value.username,
+      role: value.role,
+      phone: value.phone
+    }
+    newAccountMutation.mutate(body, {
+      onSuccess(data) {
+        messageApi.open({
+          type: 'success',
+          content: data.message
+        })
       },
-      onError: (error) => {
+      onError(error) {
         console.log(error)
+        messageApi.open({
+          type: 'error',
+          content: error.message
+        })
+      },
+      onSettled() {
+        handleCancel()
       }
     })
-
-    handleCancel()
   }
+
   const handleOk = () => {
     form.submit()
   }
@@ -40,6 +55,7 @@ const NewAccount = (props: IProp) => {
   }
   return (
     <>
+      {contextHolder}
       <Modal width={1050} title='New Account' open={isNewOpen} onOk={handleOk} onCancel={handleCancel}>
         <Form layout='vertical' name='basic' onFinish={onFinish} autoComplete='off' form={form}>
           <Row gutter={10}>

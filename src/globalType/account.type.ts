@@ -6,8 +6,8 @@ declare global {
     username: string
     password: string
     email: string
-    fullName: string
-    phone: string
-    role: number
+    fullName?: string
+    phone?: string
+    role?: number
   }
 }

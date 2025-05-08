@@ -1,5 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { Form, FormProps, Input, InputNumber, Modal } from 'antd'
+import { useCreateSeat } from '@/hooks/useSeat'
+import { Form, FormProps, Input, InputNumber, message, Modal } from 'antd'
 import TextArea from 'antd/es/input/TextArea'
 import { useEffect } from 'react'
 import { IoPricetags } from 'react-icons/io5'
@@ -16,10 +17,37 @@ interface IProp {
 const UpdateSeat = (props: IProp) => {
   const { updatedSeat, setUpdatedSeat, isUpdateOpen, setIsUpdateOpen } = props
   const [form] = Form.useForm()
-  const onFinish: FormProps<ISeatTable>['onFinish'] = (value) => {
-    console.log(value)
-    handleCancel()
+
+  const [messageApi, contextHolder] = message.useMessage()
+  const updateSeatMutation = useCreateSeat()
+
+  const onFinish: FormProps<ISeatTable>['onFinish'] = async (value) => {
+    const body = {
+      seatName: value.seatName,
+      seatCode: value.seatCode,
+      price: value.price,
+      description: value.description
+    }
+    updateSeatMutation.mutate(body, {
+      onSuccess(data) {
+        messageApi.open({
+          type: 'success',
+          content: data.message
+        })
+      },
+      onError(error) {
+        console.log(error)
+        messageApi.open({
+          type: 'error',
+          content: error.message
+        })
+      },
+      onSettled() {
+        handleCancel()
+      }
+    })
   }
+
   const handleOk = () => {
     form.submit()
   }
@@ -45,6 +73,7 @@ const UpdateSeat = (props: IProp) => {
   }, [updatedSeat])
   return (
     <>
+      {contextHolder}
       <Modal title='Update Seat' open={isUpdateOpen} onOk={handleOk} onCancel={handleCancel}>
         <Form layout='vertical' name='basic' onFinish={onFinish} autoComplete='off' form={form}>
           <Form.Item<ISeatTable>

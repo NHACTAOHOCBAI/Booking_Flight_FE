@@ -4,23 +4,25 @@ import { SuccessResponse } from '@/globalType/util.type'
 const URL = 'accounts'
 
 const accountApi = {
-  getAccounts: () => {
-    return http.get<SuccessResponse<IAccountTable[]>>(URL)
-      .then(
-        res => res.data
-      )
+  getAccountById: async (params: string) => {
+    const res = await http.get<SuccessResponse<IAccountTable>>(URL, { params })
+    return res.data
   },
-  createAccounts: (param: IAccountTable) => {
-    return http.post<SuccessResponse<IAccountTable>>(URL, param)
-      .then(
-        res => res.data
-      )
+  getAccounts: async () => {
+    const res = await http.get<SuccessResponse<IAccountTable[]>>(URL)
+    return res.data
   },
-  deleteAccounts: (id: string) => {
-    return http.post<SuccessResponse<string>>(URL, id)
-      .then(
-        res => res.data
-      )
+  createAccount: async (param: IAccountTable) => {
+    const res = await http.post<SuccessResponse<IAccountTable>>(URL, param)
+    return res.data
+  },
+  deleteAccount: async (id: string) => {
+    const res = await http.delete<SuccessResponse<string>>(`${URL}/${id}`)
+    return res.data
+  },
+  updateAccount: async (param: IAccountTable) => {
+    const res = await http.put<SuccessResponse<string>>(`${URL}/${param.id}`, param)
+    return res.data
   }
 }
 export default accountApi

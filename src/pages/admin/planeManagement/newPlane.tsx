@@ -1,5 +1,6 @@
+import { useCreatePlane } from '@/hooks/usePlane'
 import { airlineOptions } from '@/utils/select'
-import { Form, FormProps, Input, Modal, Select } from 'antd'
+import { Form, FormProps, Input, message, Modal, Select } from 'antd'
 import { LuScanBarcode } from 'react-icons/lu'
 import { MdOutlineAirlines } from 'react-icons/md'
 import { SlPlane } from 'react-icons/sl'
@@ -12,9 +13,34 @@ interface IProp {
 const NewPlane = (props: IProp) => {
   const { isNewOpen, setIsNewOpen } = props
   const [form] = Form.useForm()
-  const onFinish: FormProps<IPlaneTable>['onFinish'] = (value) => {
-    console.log(value)
-    handleCancel()
+
+  const [messageApi, contextHolder] = message.useMessage()
+  const newCitiesMutation = useCreatePlane()
+
+  const onFinish: FormProps<IPlaneTable>['onFinish'] = async (value) => {
+    const body = {
+      planeCode: value.planeCode,
+      planeName: value.planeName,
+      airlineId: value.airlineId
+    }
+    newCitiesMutation.mutate(body, {
+      onSuccess(data) {
+        messageApi.open({
+          type: 'success',
+          content: data.message
+        })
+      },
+      onError(error) {
+        console.log(error)
+        messageApi.open({
+          type: 'error',
+          content: error.message
+        })
+      },
+      onSettled() {
+        handleCancel()
+      }
+    })
   }
 
   const handleOk = () => {
@@ -28,6 +54,7 @@ const NewPlane = (props: IProp) => {
 
   return (
     <>
+      {contextHolder}
       <Modal title='New Plane' open={isNewOpen} onOk={handleOk} onCancel={handleCancel}>
         <Form layout='vertical' name='basic' onFinish={onFinish} autoComplete='off' form={form}>
           <Form.Item<IPlaneTable>

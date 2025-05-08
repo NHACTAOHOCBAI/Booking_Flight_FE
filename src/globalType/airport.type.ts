@@ -1,10 +1,10 @@
-export { };
+export {}
 
 declare global {
-    interface IAirportTable {
-        id?: string,
-        airportCode?: string,
-        airportName?: string,
-        cityId?: string
-    }
+  interface IAirportTable {
+    id?: string
+    airportCode: string
+    airportName: string
+    cityCode: string
+  }
 }

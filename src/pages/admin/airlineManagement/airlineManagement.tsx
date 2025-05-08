@@ -1,16 +1,17 @@
-import { airlineData } from '@/globalType'
 import { ProTable } from '@ant-design/pro-components'
 import type { ActionType, ProColumns } from '@ant-design/pro-components'
-import { Button, Popconfirm } from 'antd'
+import { Button, message, Popconfirm } from 'antd'
 import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons'
 import { useRef, useState } from 'react'
 import UpdatedAirline from './updateAirline'
 import NewAirline from './newAirline'
 import DetailAirline from './detailAirline'
+import { useDeleteAirline, useGetAllAirlines } from '@/hooks/useAirline'
+import ErrorPage from '@/components/ErrorPage/ErrorPage'
+import LoadingError from '@/components/ErrorPage/LoadingError'
 
 const AirlineManagement = () => {
   //data
-  const data: IAirlineTable[] = airlineData
   const actionRef = useRef<ActionType>(null)
 
   //new
@@ -30,6 +31,27 @@ const AirlineManagement = () => {
     airlineName: ''
   })
   const [isUpdateOpen, setIsUpdateOpen] = useState(false)
+
+  //delete
+  const [messageApi, contextHolder] = message.useMessage()
+  const handleDeleteMutation = useDeleteAirline()
+  const handleDelete = (id: string) => {
+    handleDeleteMutation.mutate(id, {
+      onSuccess(data) {
+        messageApi.open({
+          type: 'success',
+          content: data.message
+        })
+      },
+      onError(error) {
+        console.log(error)
+        messageApi.open({
+          type: 'error',
+          content: 'Cant delete city, some airport have this city as departure or destination'
+        })
+      }
+    })
+  }
 
   const columns: ProColumns<IAirlineTable>[] = [
     {
@@ -84,6 +106,7 @@ const AirlineManagement = () => {
             description='Are you sure to delete this Airline?'
             okText='Delete'
             cancelText='Cancel'
+            onConfirm={() => handleDelete(record.id as string)}
           >
             <DeleteOutlined
               style={{
@@ -95,13 +118,27 @@ const AirlineManagement = () => {
       )
     }
   ]
+
+  //fetch data
+  const { isLoading, isError, error, data } = useGetAllAirlines()
+  if (isLoading) {
+    return <LoadingError />
+  }
+
+  if (isError) {
+    console.log(error)
+    return <ErrorPage />
+  }
+  if (!data) return
+
   return (
     <>
+      {contextHolder}
       <ProTable<IAirlineTable>
         search={{
           labelWidth: 'auto'
         }}
-        dataSource={data}
+        dataSource={data.data}
         columns={columns}
         actionRef={actionRef}
         cardBordered

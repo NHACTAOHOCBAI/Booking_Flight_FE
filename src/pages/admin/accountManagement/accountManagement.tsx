@@ -1,26 +1,21 @@
 import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons'
 import type { ActionType, ProColumns } from '@ant-design/pro-components'
 import { ProTable } from '@ant-design/pro-components'
-import { Button, Popconfirm } from 'antd'
+import { Button, message, Popconfirm } from 'antd'
 
 import { useRef, useState } from 'react'
 import NewAccount from './newAccount'
 import UpdateAccount from './updateAccount.tsx'
 import DetailAccount from './detailAccount.tsx'
-import { useQuery } from '@tanstack/react-query'
-import accountApi from '@/apis/account.api.ts'
+
+import { useDeleteAccount, useGetAllAccounts } from '@/hooks/account..ts'
+import ErrorPage from '@/components/ErrorPage/ErrorPage.tsx'
+import LoadingError from '@/components/ErrorPage/LoadingError.tsx'
 
 const AccountManagement = () => {
   //table
   const actionRef = useRef<ActionType>(null)
-  // const data: IAccountTable[] = accountData
 
-  const { data: accountData } = useQuery({
-    queryKey: ['accounts'],
-    queryFn: () => accountApi.getAccounts()
-  })
-
-  console.log(accountData)
   //detail
   const [isDetailOpen, setIsDetailOpen] = useState(false)
   const [detailAccount, setDetailAccount] = useState<IAccountTable>({
@@ -48,11 +43,26 @@ const AccountManagement = () => {
     role: 3
   })
 
-  //delete
-  const handleDelete = (value: IAccountTable) => {
-    console.log(value)
+  // delete
+  const [messageApi, contextHolder] = message.useMessage()
+  const handleDeleteMutation = useDeleteAccount()
+  const handleDelete = (id: string) => {
+    handleDeleteMutation.mutate(id, {
+      onSuccess(data) {
+        messageApi.open({
+          type: 'success',
+          content: data.message
+        })
+      },
+      onError(error) {
+        console.log(error)
+        messageApi.open({
+          type: 'error',
+          content: 'Cant delete city, some airport have this city as departure or destination'
+        })
+      }
+    })
   }
-
   const columns: ProColumns<IAccountTable>[] = [
     {
       dataIndex: 'index',
@@ -126,7 +136,7 @@ const AccountManagement = () => {
             title='Delete the airport'
             description='Are you sure to delete this account?'
             okText='Delete'
-            onConfirm={() => handleDelete(record)}
+            onConfirm={() => handleDelete(record.id as string)}
             cancelText='Cancel'
           >
             <DeleteOutlined
@@ -139,10 +149,23 @@ const AccountManagement = () => {
       )
     }
   ]
+
+  //fetch data
+  const { isLoading, isError, error, data } = useGetAllAccounts()
+  if (isLoading) {
+    return <LoadingError />
+  }
+
+  if (isError) {
+    console.log(error)
+    return <ErrorPage />
+  }
+  if (!data) return
   return (
     <>
+      {contextHolder}
       <ProTable<IAccountTable>
-        dataSource={accountData?.data}
+        dataSource={data.data}
         columns={columns}
         actionRef={actionRef}
         bordered

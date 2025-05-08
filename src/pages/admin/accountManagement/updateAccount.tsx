@@ -1,5 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { Col, Form, FormProps, Input, Modal, Row, Select } from 'antd'
+import { useUpdateAccount } from '@/hooks/account.'
+import { Col, Form, FormProps, Input, message, Modal, Row, Select } from 'antd'
 import { useEffect } from 'react'
 import { GrUserAdmin } from 'react-icons/gr'
 import { MdOutlineDriveFileRenameOutline, MdOutlinePhone } from 'react-icons/md'
@@ -15,9 +16,36 @@ interface IProp {
 const UpdateAccount = (props: IProp) => {
   const { updatedAccount, setUpdatedAccount, isUpdateOpen, setIsUpdateOpen } = props
   const [form] = Form.useForm()
-  const onFinish: FormProps<IAccountTable>['onFinish'] = (value) => {
-    console.log(value)
-    handleCancel()
+  const [messageApi, contextHolder] = message.useMessage()
+  const updateAccountMutation = useUpdateAccount()
+
+  const onFinish: FormProps<IAccountTable>['onFinish'] = async (value) => {
+    const body = {
+      email: value.email,
+      fullName: value.fullName,
+      password: value.password,
+      username: value.username,
+      role: value.role,
+      phone: value.phone
+    }
+    updateAccountMutation.mutate(body, {
+      onSuccess(data) {
+        messageApi.open({
+          type: 'success',
+          content: data.message
+        })
+      },
+      onError(error) {
+        console.log(error)
+        messageApi.open({
+          type: 'error',
+          content: error.message
+        })
+      },
+      onSettled() {
+        handleCancel()
+      }
+    })
   }
   const handleOk = () => {
     form.submit()
@@ -48,6 +76,7 @@ const UpdateAccount = (props: IProp) => {
   }, [updatedAccount])
   return (
     <>
+      {contextHolder}
       <Modal width={1050} title='Update Account' open={isUpdateOpen} onOk={handleOk} onCancel={handleCancel}>
         <Form layout='vertical' name='basic' onFinish={onFinish} autoComplete='off' form={form}>
           <Row gutter={10}>

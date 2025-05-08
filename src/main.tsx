@@ -10,7 +10,7 @@ import SignUpPage from 'pages/auth/signUpPage/signUpPage'
 import './index.css'
 import AdminLayout from '@/layouts/adminLayout/adminLayout'
 import Dashboard from 'pages/admin/dashboard/dashboard'
-import { ConfigProvider, message } from 'antd'
+import { ConfigProvider } from 'antd'
 import enUS from 'antd/locale/en_US'
 import AirportManagement from '@/pages/admin/airportManagement/airportManagement'
 
@@ -125,13 +125,12 @@ const queryClient = new QueryClient({
       retry: 1,
       refetchOnWindowFocus: false,
       staleTime: 5000,
-      gcTime: 5 * 60 * 1000,
-    },
+      gcTime: 5 * 60 * 1000
+    }
   }
 })
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-
     <ConfigProvider locale={enUS}>
       <QueryClientProvider client={queryClient}>
         <AppProvider>

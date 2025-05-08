@@ -1,4 +1,4 @@
-import { Button, Col, DatePicker, Form, FormProps, Input, InputNumber, Modal, Row, Select, Space } from 'antd'
+import { Button, Col, DatePicker, Form, FormProps, Input, InputNumber, message, Modal, Row, Select, Space } from 'antd'
 import { CloseOutlined } from '@ant-design/icons'
 import dayjs from 'dayjs'
 import { useEffect } from 'react'
@@ -9,6 +9,7 @@ import { SlCalender } from 'react-icons/sl'
 import { TbPlaneArrival, TbPlaneDeparture } from 'react-icons/tb'
 import { PiAirplaneInFlight } from 'react-icons/pi'
 import { LuScanBarcode } from 'react-icons/lu'
+import { useUpdateFlight } from '@/hooks/useFlight'
 interface IProp {
   isUpdateOpen: boolean
   setIsUpdateOpen: (value: boolean) => void
@@ -18,7 +19,12 @@ interface IProp {
 const UpdateFlight = (props: IProp) => {
   const { isUpdateOpen, setIsUpdateOpen, setUpdatedFlight, updatedFlight } = props
   const [form] = Form.useForm()
-  const onFinish: FormProps<IFlightTable>['onFinish'] = (value) => {
+
+  const [messageApi, contextHolder] = message.useMessage()
+  const updataFlightMutation = useUpdateFlight()
+
+  const onFinish: FormProps<IFlightTable>['onFinish'] = async (value) => {
+    //format day time
     value.departureTime = dayjs(value.departureTime).format('HH:mm DD/MM/YYYY')
     value.arrivalTime = dayjs(value.arrivalTime).format('HH:mm DD/MM/YYYY')
     if (value.interAirport) {
@@ -33,13 +39,43 @@ const UpdateFlight = (props: IProp) => {
     }
     value.seat = value.seat ? value.seat : []
     console.log(value)
-    handleCancel()
+
+    //call mutation
+    const body = {
+      flightCode: value.flightCode,
+      planeId: value.planeId,
+      departureAirportId: value.departureAirportId,
+      arrivalAirportId: value.arrivalAirportId,
+      departureTime: value.departureTime,
+      arrivalTime: value.arrivalTime,
+      originPrice: value.originPrice,
+      interAirport: value.interAirport,
+      seat: value.seat
+    }
+    updataFlightMutation.mutate(body, {
+      onSuccess(data) {
+        messageApi.open({
+          type: 'success',
+          content: data.message
+        })
+      },
+      onError(error) {
+        console.log(error)
+        messageApi.open({
+          type: 'error',
+          content: error.message
+        })
+      },
+      onSettled() {
+        handleCancel()
+      }
+    })
   }
   const handleOk = () => {
     form.submit()
   }
   const handleCancel = () => {
-    // form.resetFields();
+    form.resetFields()
     // subForm.resetFields();
     setUpdatedFlight({
       id: '',
@@ -75,9 +111,10 @@ const UpdateFlight = (props: IProp) => {
       }),
       seat: updatedFlight.seat
     })
-  }, [updatedFlight])
+  }, [form, updatedFlight])
   return (
     <>
+      {contextHolder}
       <Modal width={1050} open={isUpdateOpen} onOk={handleOk} onCancel={handleCancel}>
         <Form layout='vertical' name='basic' onFinish={onFinish} autoComplete='off' form={form}>
           <Row gutter={10}>

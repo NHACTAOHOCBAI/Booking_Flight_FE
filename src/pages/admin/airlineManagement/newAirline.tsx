@@ -1,4 +1,5 @@
-import { Modal, Input, Form, FormProps } from 'antd'
+import { useCreateAirline } from '@/hooks/useAirline'
+import { Modal, Input, Form, FormProps, message } from 'antd'
 import { LuScanBarcode } from 'react-icons/lu'
 import { MdOutlineDriveFileRenameOutline } from 'react-icons/md'
 
@@ -9,10 +10,36 @@ interface Props {
 export default function NewAirline(props: Props) {
   const { isNewOpen, setIsNewOpen } = props
   const [form] = Form.useForm()
-  const onFinish: FormProps<IAirlineTable>['onFinish'] = (value) => {
-    console.log(value)
-    handleCancel()
+
+  const [messageApi, contextHolder] = message.useMessage()
+  const newAirlineMutation = useCreateAirline()
+
+  const onFinish: FormProps<IAirlineTable>['onFinish'] = async (value) => {
+    const body = {
+      id: value.id,
+      airlineCode: value.airlineCode,
+      airlineName: value.airlineName
+    }
+    newAirlineMutation.mutate(body, {
+      onSuccess(data) {
+        messageApi.open({
+          type: 'success',
+          content: data.message
+        })
+      },
+      onError(error) {
+        console.log(error)
+        messageApi.open({
+          type: 'error',
+          content: error.message
+        })
+      },
+      onSettled() {
+        handleCancel()
+      }
+    })
   }
+
   const handleOk = () => {
     form.submit()
   }
@@ -22,6 +49,7 @@ export default function NewAirline(props: Props) {
   }
   return (
     <div>
+      {contextHolder}
       <Modal title='New Airline' open={isNewOpen} onOk={handleOk} onCancel={handleCancel}>
         <Form form={form} name='New Airline' layout='vertical' autoComplete='off' onFinish={onFinish}>
           <Form.Item

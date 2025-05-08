@@ -1,19 +1,21 @@
 import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons'
 import type { ActionType, ProColumns } from '@ant-design/pro-components'
 import { ProTable } from '@ant-design/pro-components'
-import { Button, Popconfirm } from 'antd'
+import { Button, message, Popconfirm } from 'antd'
 import { useRef, useState } from 'react'
 import NewFlight from './newFlight'
 import UpdateFlight from './updateFlight'
 import DetailFlight from './detailFlight'
 import { useNavigate } from 'react-router-dom'
 import { IoTicketOutline } from 'react-icons/io5'
-import { flightData } from '@/globalType'
 import dayjs from 'dayjs'
 import { toAirport } from '@/utils/convert'
 import { airportOptions } from '@/utils/select'
 import { useAppDispatch } from '@/redux/hooks'
 import { setBookingFlight } from '@/redux/features/bookingFlight/bookingFlightSlice'
+import ErrorPage from '@/components/ErrorPage/ErrorPage'
+import LoadingError from '@/components/ErrorPage/LoadingError'
+import { useDeleteFlight, useGetAllFlights } from '@/hooks/useFlight'
 const FlightManagement = () => {
   //detail
   const [detailFlight, setDetailFlight] = useState<IFlightTable>({
@@ -49,7 +51,27 @@ const FlightManagement = () => {
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
   const actionRef = useRef<ActionType>(null)
-  const data: IFlightTable[] = flightData
+
+  // delete
+  const [messageApi, contextHolder] = message.useMessage()
+  const handleDeleteMutation = useDeleteFlight()
+  const handleDelete = (id: string) => {
+    handleDeleteMutation.mutate(id, {
+      onSuccess(data) {
+        messageApi.open({
+          type: 'success',
+          content: data.message
+        })
+      },
+      onError(error) {
+        console.log(error)
+        messageApi.open({
+          type: 'error',
+          content: 'Cant delete city, some airport have this city as departure or destination'
+        })
+      }
+    })
+  }
   const columns: ProColumns<IFlightTable>[] = [
     {
       dataIndex: 'index',
@@ -144,6 +166,7 @@ const FlightManagement = () => {
             description='Are you sure to delete this airport?'
             okText='Delete'
             cancelText='Cancel'
+            onConfirm={() => handleDelete(record.id as string)}
           >
             <DeleteOutlined
               style={{
@@ -165,14 +188,26 @@ const FlightManagement = () => {
       )
     }
   ]
+  //fetch data
+  const { isLoading, isError, error, data } = useGetAllFlights()
+  if (isLoading) {
+    return <LoadingError />
+  }
+
+  if (isError) {
+    console.log(error)
+    return <ErrorPage />
+  }
+  if (!data) return
   return (
     <>
+      {contextHolder}
       <ProTable<IFlightTable>
         search={{
           labelWidth: 'auto'
         }}
         bordered
-        dataSource={data}
+        dataSource={data.data}
         columns={columns}
         actionRef={actionRef}
         cardBordered

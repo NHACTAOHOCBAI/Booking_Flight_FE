@@ -1,7 +1,5 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import cityApi from '@/apis/city.api'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { Form, FormProps, Input, Modal } from 'antd'
+import { useUpdateCity } from '@/hooks/useCity'
+import { Form, FormProps, Input, message, Modal } from 'antd'
 import { useEffect } from 'react'
 import { HiDotsVertical } from 'react-icons/hi'
 import { LuScanBarcode } from 'react-icons/lu'
@@ -16,26 +14,35 @@ interface IProp {
 const UpdateCity = (props: IProp) => {
   const { updatedCity, setUpdatedCity, isUpdateOpen, setIsUpdateOpen } = props
   const [form] = Form.useForm()
-  const queryClient = useQueryClient()
-  const newCitiesMutation = useMutation({
-    mutationFn: (body: ICityTable) => cityApi.updateCity(body),
-    onSuccess: (data) => {
-      console.log('Cập nhật thành phố thành công:', data)
-      queryClient.invalidateQueries({ queryKey: ['cities'] })
-    },
-    onError: (error) => {
-      console.log('Lỗi cập nhật thành phố:', error)
-    }
-  })
+  const [messageApi, contextHolder] = message.useMessage()
+  const updateCitiesMutation = useUpdateCity()
 
   const onFinish: FormProps<ICityTable>['onFinish'] = async (value) => {
-    newCitiesMutation.mutate(value)
-    handleCancel()
+    const body = { id: value.id as string, cityCode: value.cityCode as string, cityName: value.cityName as string }
+    updateCitiesMutation.mutate(body, {
+      onSuccess(data) {
+        messageApi.open({
+          type: 'success',
+          content: data.message
+        })
+      },
+      onError(error) {
+        console.log(error)
+        messageApi.open({
+          type: 'error',
+          content: error.message
+        })
+      },
+      onSettled() {
+        handleCancel()
+      }
+    })
   }
 
   const handleOk = () => {
     form.submit()
   }
+
   const handleCancel = () => {
     form.resetFields()
     setUpdatedCity({
@@ -51,9 +58,10 @@ const UpdateCity = (props: IProp) => {
       cityCode: updatedCity.cityCode,
       cityName: updatedCity.cityName
     })
-  }, [updatedCity])
+  }, [form, updatedCity])
   return (
     <>
+      {contextHolder}
       <Modal title='Update City' open={isUpdateOpen} onOk={handleOk} onCancel={handleCancel}>
         <Form layout='vertical' name='basic' onFinish={onFinish} autoComplete='off' form={form}>
           <Form.Item<ICityTable>

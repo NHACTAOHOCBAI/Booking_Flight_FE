@@ -1,4 +1,4 @@
-import { Button, Col, DatePicker, Form, FormProps, Input, InputNumber, Modal, Row, Select, Space } from 'antd'
+import { Button, Col, DatePicker, Form, FormProps, Input, InputNumber, message, Modal, Row, Select, Space } from 'antd'
 import { CloseOutlined } from '@ant-design/icons'
 import dayjs from 'dayjs'
 import TextArea from 'antd/es/input/TextArea'
@@ -8,6 +8,7 @@ import { PiAirplaneInFlight } from 'react-icons/pi'
 import { TbPlaneArrival, TbPlaneDeparture } from 'react-icons/tb'
 import { SlCalender } from 'react-icons/sl'
 import { AiOutlineDollarCircle } from 'react-icons/ai'
+import { useCreateFlight } from '@/hooks/useFlight'
 interface IProp {
   isNewOpen: boolean
   setIsNewOpen: (value: boolean) => void
@@ -15,8 +16,12 @@ interface IProp {
 const NewFlight = (props: IProp) => {
   const { isNewOpen, setIsNewOpen } = props
   const [form] = Form.useForm()
-  const onFinish: FormProps<IFlightTable>['onFinish'] = (value) => {
-    console.log(value.departureTime)
+
+  const [messageApi, contextHolder] = message.useMessage()
+  const newFlightMutation = useCreateFlight()
+
+  const onFinish: FormProps<IFlightTable>['onFinish'] = async (value) => {
+    //format day time
     value.departureTime = dayjs(value.departureTime).format('HH:mm DD/MM/YYYY')
     value.arrivalTime = dayjs(value.arrivalTime).format('HH:mm DD/MM/YYYY')
     if (value.interAirport) {
@@ -31,18 +36,51 @@ const NewFlight = (props: IProp) => {
     }
     value.seat = value.seat ? value.seat : []
     console.log(value)
-    handleCancel()
+
+    //call mutation
+    const body = {
+      flightCode: value.flightCode,
+      planeId: value.planeId,
+      departureAirportId: value.departureAirportId,
+      arrivalAirportId: value.arrivalAirportId,
+      departureTime: value.departureTime,
+      arrivalTime: value.arrivalTime,
+      originPrice: value.originPrice,
+      interAirport: value.interAirport,
+      seat: value.seat
+    }
+    newFlightMutation.mutate(body, {
+      onSuccess(data) {
+        messageApi.open({
+          type: 'success',
+          content: data.message
+        })
+      },
+      onError(error) {
+        console.log(error)
+        messageApi.open({
+          type: 'error',
+          content: error.message
+        })
+      },
+      onSettled() {
+        handleCancel()
+      }
+    })
   }
+
   const handleOk = () => {
     form.submit()
   }
+
   const handleCancel = () => {
-    // form.resetFields();
+    form.resetFields()
     // subForm.resetFields();
     setIsNewOpen(false)
   }
   return (
     <>
+      {contextHolder}
       <Modal width={1050} open={isNewOpen} onOk={handleOk} onCancel={handleCancel}>
         <Form layout='vertical' name='basic' onFinish={onFinish} autoComplete='off' form={form}>
           <Row gutter={10}>

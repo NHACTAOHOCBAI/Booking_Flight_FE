@@ -1,5 +1,8 @@
-import { cityOptions } from '@/utils/select'
-import { Form, FormProps, Input, Modal, Select } from 'antd'
+import cityApi from '@/apis/city.api'
+import { useCreateAirport } from '@/hooks/useAirport'
+import { useQuery } from '@tanstack/react-query'
+import { Form, FormProps, Input, message, Modal, Select } from 'antd'
+import { useMemo } from 'react'
 import { GoLocation } from 'react-icons/go'
 import { LuScanBarcode } from 'react-icons/lu'
 import { MdOutlineDriveFileRenameOutline } from 'react-icons/md'
@@ -12,9 +15,35 @@ interface IProp {
 const NewAirport = (props: IProp) => {
   const { isNewOpen, setIsNewOpen } = props
   const [form] = Form.useForm()
+
+  const [messageApi, contextHolder] = message.useMessage()
+  const newAirportMutation = useCreateAirport()
+
   const onFinish: FormProps<IAirportTable>['onFinish'] = async (value) => {
-    console.log(value)
-    handleCancel()
+    const body = {
+      id: value.id,
+      airportCode: value.airportCode,
+      airportName: value.airportName,
+      cityCode: value.cityCode
+    }
+    newAirportMutation.mutate(body, {
+      onSuccess(data) {
+        messageApi.open({
+          type: 'success',
+          content: data.message
+        })
+      },
+      onError(error) {
+        console.log(error)
+        messageApi.open({
+          type: 'error',
+          content: error.message
+        })
+      },
+      onSettled() {
+        handleCancel()
+      }
+    })
   }
 
   const handleOk = () => {
@@ -26,8 +55,25 @@ const NewAirport = (props: IProp) => {
     setIsNewOpen(false)
   }
 
+  const citiesData = useQuery({
+    queryKey: ['cities'],
+    queryFn: cityApi.getCities,
+    enabled: isNewOpen
+  })
+  const cityOptions = useMemo(
+    () =>
+      citiesData.data?.data.map((value) => {
+        return {
+          value: value.cityName,
+          label: value.cityName
+        }
+      }),
+    [citiesData]
+  )
+
   return (
     <>
+      {contextHolder}
       <Modal
         title={
           <div>
@@ -67,7 +113,7 @@ const NewAirport = (props: IProp) => {
                 <PiCity /> City
               </div>
             }
-            name='cityId'
+            name='cityCode'
             rules={[{ required: true, message: "Please input airport's city" }]}
           >
             <Select options={cityOptions} placeholder="Airport's city" />

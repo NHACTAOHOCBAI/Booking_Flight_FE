@@ -1,14 +1,16 @@
 import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons'
 import type { ActionType, ProColumns } from '@ant-design/pro-components'
 import { ProTable } from '@ant-design/pro-components'
-import { Button, Popconfirm, Result, Spin } from 'antd'
-import { useEffect, useRef, useState } from 'react'
+import { Button, message, Popconfirm } from 'antd'
+import { useRef, useState } from 'react'
 
 import NewCity from './newCity'
 import UpdateCity from './updateCity'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import cityApi from '@/apis/city.api'
-import { useGetAllCites } from '@/hooks/useCity'
+
+import { useDeleteCity, useGetAllCites } from '@/hooks/useCity'
+import DetailCity from './detailCity'
+import LoadingError from '@/components/ErrorPage/LoadingError'
+import ErrorPage from '@/components/ErrorPage/ErrorPage'
 const CityManagement = () => {
   //Table
   const actionRef = useRef<ActionType>(null)
@@ -25,33 +27,32 @@ const CityManagement = () => {
   })
 
   // delete
-  const handleDelete = (value: ICityTable) => {
-    console.log(value)
+  const [messageApi, contextHolder] = message.useMessage()
+  const handleDeleteMutation = useDeleteCity()
+  const handleDelete = (id: string) => {
+    handleDeleteMutation.mutate(id, {
+      onSuccess(data) {
+        messageApi.open({
+          type: 'success',
+          content: data.message
+        })
+      },
+      onError(error) {
+        console.log(error)
+        messageApi.open({
+          type: 'error',
+          content: 'Cant delete city, some airport have this city as departure or destination'
+        })
+      }
+    })
   }
 
-  const { data, isLoading, isError, error, } = useGetAllCites();
-  console.log(data)
-
-  if (isLoading) {
-    return (
-      <section style={{ height: "100%", display: 'flex', alignItems: "center", justifyContent: 'center' }}>
-        <Spin size="large" />
-      </section>
-    )
-  }
-
-  if (isError) {
-    console.log(error)
-    return (
-      <Result
-        status="500"
-        title="500"
-        subTitle="Sorry, something went wrong."
-        extra={<Button type="primary">Back Home</Button>}
-      />
-
-    )
-  }
+  //Detail
+  const [detailCity, setDetailCity] = useState<ICityTable>({
+    id: '',
+    cityCode: '',
+    cityName: ''
+  })
 
   const columns: ProColumns<ICityTable>[] = [
     {
@@ -61,7 +62,17 @@ const CityManagement = () => {
     },
     {
       title: 'Code',
-      render: (_, record) => <a style={{ color: '#3498db' }}>{record.cityCode}</a>
+      render: (_, record) => (
+        <a
+          style={{ color: '#3498db' }}
+          onClick={() => {
+            setDetailCity(record)
+            setIsDetailOpen(true)
+          }}
+        >
+          {record.cityCode}
+        </a>
+      )
     },
     {
       title: 'City',
@@ -91,7 +102,7 @@ const CityManagement = () => {
             description='Are you sure to delete this city?'
             okText='Delete'
             cancelText='Cancel'
-            onConfirm={() => handleDelete(record)}
+            onConfirm={() => handleDelete(record.id as string)}
           >
             <DeleteOutlined
               style={{
@@ -103,12 +114,28 @@ const CityManagement = () => {
       )
     }
   ]
+
+  const [isDetailOpen, setIsDetailOpen] = useState(false)
+
+  const { data, isLoading, isError, error } = useGetAllCites()
+  console.log(data)
+
+  if (isLoading) {
+    return <LoadingError />
+  }
+
+  if (isError) {
+    console.log(error)
+    return <ErrorPage />
+  }
+  if (!data) return
   return (
     <>
+      {contextHolder}
       <ProTable<ICityTable>
         bordered
         search={false}
-        dataSource={data?.data}
+        dataSource={data.data}
         columns={columns}
         actionRef={actionRef}
         headerTitle='City Table'
@@ -138,6 +165,7 @@ const CityManagement = () => {
         updatedCity={updatedCity}
         setUpdatedCity={setUpdatedCity}
       />
+      <DetailCity isDetailOpen={isDetailOpen} setIsDetailOpen={setIsDetailOpen} detailCity={detailCity} />
     </>
   )
 }

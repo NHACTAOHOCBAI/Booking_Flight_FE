@@ -1,5 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { Form, FormProps, Input, Modal } from 'antd'
+import { useUpdateAirline } from '@/hooks/useAirline'
+import { Form, FormProps, Input, message, Modal } from 'antd'
 import { useEffect } from 'react'
 import { LuScanBarcode } from 'react-icons/lu'
 import { MdOutlineDriveFileRenameOutline } from 'react-icons/md'
@@ -13,10 +14,36 @@ interface Props {
 export default function UpdatedAirline(props: Props) {
   const { updatedAirline, setUpdatedAirline, isUpdateOpen, setIsUpdateOpen } = props
   const [form] = Form.useForm()
-  const onFinish: FormProps<IAirlineTable>['onFinish'] = (value) => {
-    console.log(value)
-    handleCancel()
+
+  const [messageApi, contextHolder] = message.useMessage()
+  const updateAirlineMutation = useUpdateAirline()
+
+  const onFinish: FormProps<IAirlineTable>['onFinish'] = async (value) => {
+    const body = {
+      id: value.id,
+      airlineCode: value.airlineCode,
+      airlineName: value.airlineName
+    }
+    updateAirlineMutation.mutate(body, {
+      onSuccess(data) {
+        messageApi.open({
+          type: 'success',
+          content: data.message
+        })
+      },
+      onError(error) {
+        console.log(error)
+        messageApi.open({
+          type: 'error',
+          content: error.message
+        })
+      },
+      onSettled() {
+        handleCancel()
+      }
+    })
   }
+
   const handleOk = () => {
     form.submit()
   }
@@ -38,6 +65,7 @@ export default function UpdatedAirline(props: Props) {
   }, [updatedAirline])
   return (
     <div>
+      {contextHolder}
       <Modal title='Update Airline' open={isUpdateOpen} onOk={handleOk} onCancel={handleCancel}>
         <Form form={form} name='Update Airline' layout='vertical' autoComplete='off' onFinish={onFinish}>
           <Form.Item

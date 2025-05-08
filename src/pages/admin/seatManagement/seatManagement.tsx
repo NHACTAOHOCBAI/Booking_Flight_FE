@@ -1,12 +1,14 @@
 import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons'
 import type { ActionType, ProColumns } from '@ant-design/pro-components'
 import { ProTable } from '@ant-design/pro-components'
-import { Button, Popconfirm } from 'antd'
+import { Button, message, Popconfirm } from 'antd'
 import { useRef, useState } from 'react'
 import NewSeat from './newSeat'
 import UpdateSeat from './updateSeat'
-import { seatData } from '@/globalType'
 import DetailSeat from './detailSeat'
+import { useDeleteSeat, useGetAllSeats } from '@/hooks/useSeat'
+import ErrorPage from '@/components/ErrorPage/ErrorPage'
+import LoadingError from '@/components/ErrorPage/LoadingError'
 
 const SeatManagement = () => {
   //detail
@@ -30,9 +32,29 @@ const SeatManagement = () => {
   })
   //New
   const [isNewOpen, setIsNewOpen] = useState(false)
+
+  // delete
+  const [messageApi, contextHolder] = message.useMessage()
+  const handleDeleteMutation = useDeleteSeat()
+  const handleDelete = (id: string) => {
+    handleDeleteMutation.mutate(id, {
+      onSuccess(data) {
+        messageApi.open({
+          type: 'success',
+          content: data.message
+        })
+      },
+      onError(error) {
+        console.log(error)
+        messageApi.open({
+          type: 'error',
+          content: 'Cant delete city, some airport have this city as departure or destination'
+        })
+      }
+    })
+  }
   //Table
   const actionRef = useRef<ActionType>(null)
-  const data: ISeatTable[] = seatData
   const columns: ProColumns<ISeatTable>[] = [
     {
       dataIndex: 'index',
@@ -93,6 +115,7 @@ const SeatManagement = () => {
             description='Are you sure to delete this seat?'
             okText='Delete'
             cancelText='Cancel'
+            onConfirm={() => handleDelete(record.id as string)}
           >
             <DeleteOutlined
               style={{
@@ -104,13 +127,25 @@ const SeatManagement = () => {
       )
     }
   ]
+  //fetch data
+  const { isLoading, isError, error, data } = useGetAllSeats()
+  if (isLoading) {
+    return <LoadingError />
+  }
+
+  if (isError) {
+    console.log(error)
+    return <ErrorPage />
+  }
+  if (!data) return
   return (
     <>
+      {contextHolder}
       <ProTable<ISeatTable>
         search={{
           labelWidth: 'auto'
         }}
-        dataSource={data}
+        dataSource={data.data}
         columns={columns}
         actionRef={actionRef}
         cardBordered

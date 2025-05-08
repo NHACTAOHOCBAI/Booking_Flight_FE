@@ -1,7 +1,8 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import { cityOptions } from '@/utils/select'
-import { Form, FormProps, Input, Modal, Select } from 'antd'
-import { useEffect } from 'react'
+import cityApi from '@/apis/city.api'
+import { useUpdateAirport } from '@/hooks/useAirport'
+import { useQuery } from '@tanstack/react-query'
+import { Form, FormProps, Input, message, Modal, Select } from 'antd'
+import { useEffect, useMemo } from 'react'
 import { HiDotsVertical } from 'react-icons/hi'
 import { LuScanBarcode } from 'react-icons/lu'
 import { MdOutlineDriveFileRenameOutline } from 'react-icons/md'
@@ -16,33 +17,78 @@ interface IProp {
 const UpdateAirport = (props: IProp) => {
   const { updatedAirport, setUpdatedAirport, isUpdateOpen, setIsUpdateOpen } = props
   const [form] = Form.useForm()
-  const onFinish: FormProps<IAirportTable>['onFinish'] = (value) => {
-    console.log(value)
-    handleCancel()
+  const [messageApi, contextHolder] = message.useMessage()
+  const updateAirportMutation = useUpdateAirport()
+
+  const onFinish: FormProps<IAirportTable>['onFinish'] = async (value) => {
+    const body = {
+      id: value.id as string,
+      airportCode: value.airportCode,
+      airportName: value.airportName,
+      cityCode: value.cityCode
+    }
+    updateAirportMutation.mutate(body, {
+      onSuccess(data) {
+        messageApi.open({
+          type: 'success',
+          content: data.message
+        })
+      },
+      onError(error) {
+        console.log(error)
+        messageApi.open({
+          type: 'error',
+          content: error.message
+        })
+      },
+      onSettled() {
+        handleCancel()
+      }
+    })
   }
+
   const handleOk = () => {
     form.submit()
   }
+
   const handleCancel = () => {
     form.resetFields()
     setUpdatedAirport({
       id: '',
       airportCode: '',
       airportName: '',
-      cityId: ''
+      cityCode: ''
     })
     setIsUpdateOpen(false)
   }
+
+  const citiesData = useQuery({
+    queryKey: ['cities'],
+    queryFn: cityApi.getCities,
+    enabled: isUpdateOpen
+  })
+  const cityOptions = useMemo(
+    () =>
+      citiesData.data?.data.map((value) => {
+        return {
+          value: value.cityName,
+          label: value.cityName
+        }
+      }),
+    [citiesData]
+  )
+
   useEffect(() => {
     form.setFieldsValue({
       id: updatedAirport.id,
       airportCode: updatedAirport.airportCode,
       airportName: updatedAirport.airportName,
-      cityId: updatedAirport.cityId
+      cityCode: updatedAirport.cityCode
     })
-  }, [updatedAirport])
+  }, [form, updatedAirport])
   return (
     <>
+      {contextHolder}
       <Modal title='Update Airport' open={isUpdateOpen} onOk={handleOk} onCancel={handleCancel}>
         <Form layout='vertical' name='basic' onFinish={onFinish} autoComplete='off' form={form}>
           <Form.Item<IAirportTable>
@@ -83,7 +129,7 @@ const UpdateAirport = (props: IProp) => {
                 <PiCity /> City
               </div>
             }
-            name='cityId'
+            name='cityCode'
             rules={[{ required: true, message: "Please input airport's city" }]}
           >
             <Select options={cityOptions} />
