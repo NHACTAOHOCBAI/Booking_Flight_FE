@@ -5,6 +5,7 @@ declare global {
     id?: string
     planeCode: string
     planeName: string
-    airlineId: string
+    airlineId?: string
+    airlineName?: string
   }
 }

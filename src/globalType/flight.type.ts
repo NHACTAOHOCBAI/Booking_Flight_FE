@@ -4,23 +4,29 @@ declare global {
   interface IFlightTable {
     id?: string
     flightCode: string
-    planeId: string
-    departureAirportId: string
-    arrivalAirportId: string
+    planeId?: string
+    planeName?: string
+    departureAirportId?: string
+    departureAirportName?: string
+    arrivalAirportId?: string
+    arrivalAirportName?: string
     departureTime: string
     arrivalTime: string
     originPrice: number
-    interAirport: IInterAirport[]
-    seat: ISeat[]
+    intermediateAirports: IInterAirport[]
+    listFlight_Seat: ISeat[]
   }
   interface IInterAirport {
-    airportId: string
+    airportId?: string
+    airportName?: string
     departureTime: string
     arrivalTime: string
     note: string
   }
   interface ISeat {
-    seatId: string
+    seatId?: string
+    seatName?: string
+    price: number
     quantity: number
   }
 }

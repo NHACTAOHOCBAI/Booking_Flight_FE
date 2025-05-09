@@ -5,6 +5,7 @@ import { TfiEmail } from 'react-icons/tfi'
 import { RiLockPasswordLine } from 'react-icons/ri'
 import { GrUserAdmin } from 'react-icons/gr'
 import { useCreateAccount } from '@/hooks/account.'
+import { onErrorUtil } from '@/globalType/util.type'
 interface IProp {
   isNewOpen: boolean
   setIsNewOpen: (value: boolean) => void
@@ -32,11 +33,12 @@ const NewAccount = (props: IProp) => {
           content: data.message
         })
       },
-      onError(error) {
+      onError(error: Error) {
         console.log(error)
+        const messageError = onErrorUtil(error)
         messageApi.open({
-          type: 'error',
-          content: error.message
+          type: messageError.type,
+          content: messageError.content
         })
       },
       onSettled() {

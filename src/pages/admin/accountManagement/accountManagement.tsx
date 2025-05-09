@@ -58,7 +58,7 @@ const AccountManagement = () => {
         console.log(error)
         messageApi.open({
           type: 'error',
-          content: 'Cant delete city, some airport have this city as departure or destination'
+          content: error.message
         })
       }
     })

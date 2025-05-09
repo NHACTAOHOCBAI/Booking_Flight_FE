@@ -28,6 +28,7 @@ import AirlineManagement from './pages/admin/airlineManagement/airlineManagement
 import HomePage from './pages/client/homePage/homePage'
 import { AppContext, AppProvider } from './context/app.context'
 import AccountManagement from '@/pages/admin/accountManagement/accountManagement'
+import TicketManagement from './pages/admin/ticketManagement/ticketManagement'
 
 function ProtectedRoute() {
   const { isAuthenticated } = useContext(AppContext)
@@ -97,7 +98,8 @@ const router = createBrowserRouter([
       {
         path: 'manage-airline',
         element: <AirlineManagement />
-      }
+      },
+      { path: 'manage-ticket', element: <TicketManagement /> }
     ]
   },
   {

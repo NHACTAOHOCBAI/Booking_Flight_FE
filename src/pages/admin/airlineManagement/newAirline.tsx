@@ -1,3 +1,4 @@
+import { onErrorUtil } from '@/globalType/util.type'
 import { useCreateAirline } from '@/hooks/useAirline'
 import { Modal, Input, Form, FormProps, message } from 'antd'
 import { LuScanBarcode } from 'react-icons/lu'
@@ -7,6 +8,7 @@ interface Props {
   isNewOpen: boolean
   setIsNewOpen: (value: boolean) => void
 }
+
 export default function NewAirline(props: Props) {
   const { isNewOpen, setIsNewOpen } = props
   const [form] = Form.useForm()
@@ -27,11 +29,12 @@ export default function NewAirline(props: Props) {
           content: data.message
         })
       },
-      onError(error) {
+      onError(error: Error) {
         console.log(error)
+        const messageError = onErrorUtil(error)
         messageApi.open({
-          type: 'error',
-          content: error.message
+          type: messageError.type,
+          content: messageError.content
         })
       },
       onSettled() {
@@ -39,7 +42,6 @@ export default function NewAirline(props: Props) {
       }
     })
   }
-
   const handleOk = () => {
     form.submit()
   }

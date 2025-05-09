@@ -7,7 +7,6 @@ import NewAirport from './newAirport'
 import UpdateAirport from './updateAirport'
 import DetailAirport from './detailAirport'
 import { useDeleteAirport, useGetAllAirports } from '@/hooks/useAirport'
-import { toCity } from '@/utils/convert'
 import ErrorPage from '@/components/ErrorPage/ErrorPage'
 import LoadingError from '@/components/ErrorPage/LoadingError'
 const AirportManagement = () => {
@@ -19,7 +18,8 @@ const AirportManagement = () => {
     id: '',
     airportCode: '',
     airportName: '',
-    cityCode: ''
+    cityId: '',
+    cityName: ''
   })
   //New
   const [isNewOpen, setIsNewOpen] = useState(false)
@@ -38,7 +38,7 @@ const AirportManagement = () => {
         console.log(error)
         messageApi.open({
           type: 'error',
-          content: 'Cant delete city, some airport have this city as departure or destination'
+          content: 'Cant delete this airport, this airport have been used in somewhere'
         })
       }
     })
@@ -49,7 +49,8 @@ const AirportManagement = () => {
     id: '',
     airportCode: '',
     airportName: '',
-    cityCode: ''
+    cityId: '',
+    cityName: ''
   })
   const [isDetailOpen, setIsDetailOpen] = useState(false)
 
@@ -79,7 +80,7 @@ const AirportManagement = () => {
     },
     {
       title: 'City',
-      render: (_, record) => <div>{toCity(record.cityCode as string).cityName}</div>
+      render: (_, record) => <div>{record.cityId}</div>
     },
     {
       title: 'Action',

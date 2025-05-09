@@ -9,7 +9,6 @@ import DetailFlight from './detailFlight'
 import { useNavigate } from 'react-router-dom'
 import { IoTicketOutline } from 'react-icons/io5'
 import dayjs from 'dayjs'
-import { toAirport } from '@/utils/convert'
 import { airportOptions } from '@/utils/select'
 import { useAppDispatch } from '@/redux/hooks'
 import { setBookingFlight } from '@/redux/features/bookingFlight/bookingFlightSlice'
@@ -22,13 +21,16 @@ const FlightManagement = () => {
     id: '',
     flightCode: '',
     planeId: '',
+    planeName: '',
     departureAirportId: '',
+    departureAirportName: '',
     arrivalAirportId: '',
+    arrivalAirportName: '',
     departureTime: '',
     arrivalTime: '',
     originPrice: 0,
-    interAirport: [],
-    seat: []
+    intermediateAirports: [],
+    listFlight_Seat: []
   })
   const [isDetailOpen, setIsDetailOpen] = useState(false)
   //update
@@ -37,13 +39,16 @@ const FlightManagement = () => {
     id: '',
     flightCode: '',
     planeId: '',
+    planeName: '',
     departureAirportId: '',
+    departureAirportName: '',
     arrivalAirportId: '',
+    arrivalAirportName: '',
     departureTime: '',
     arrivalTime: '',
     originPrice: 0,
-    interAirport: [],
-    seat: []
+    intermediateAirports: [],
+    listFlight_Seat: []
   })
   //New
   const [isNewOpen, setIsNewOpen] = useState(false)
@@ -67,7 +72,7 @@ const FlightManagement = () => {
         console.log(error)
         messageApi.open({
           type: 'error',
-          content: 'Cant delete city, some airport have this city as departure or destination'
+          content: error.message
         })
       }
     })
@@ -96,7 +101,7 @@ const FlightManagement = () => {
       title: 'Departure Airport',
       search: false,
       render: (_, record) => {
-        return <div>{toAirport(record.departureAirportId).airportName}</div>
+        return <div>{record.departureAirportName}</div>
       }
     },
     {
@@ -112,7 +117,7 @@ const FlightManagement = () => {
       title: 'Arrival Airport',
       search: false,
       render: (_, record) => {
-        return <div>{toAirport(record.arrivalAirportId).airportName}</div>
+        return <div>{record.arrivalAirportName}</div>
       }
     },
     {
@@ -134,13 +139,13 @@ const FlightManagement = () => {
     {
       title: 'Available tickets',
       search: false,
-      render: (_, record) => (
-        <a style={{ color: '#3498db' }}>
-          {record.seat.reduce((total, value) => {
-            return total + value.quantity
-          }, 0)}
-        </a>
-      )
+      render: (_, record) => {
+        return (
+          <div>
+            {record.listFlight_Seat ? record.listFlight_Seat.reduce((total, value) => total + value.quantity, 0) : 0}
+          </div>
+        )
+      }
     },
     {
       title: 'Action',

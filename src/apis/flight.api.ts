@@ -1,7 +1,7 @@
 import http from '@/utils/http'
 import { SuccessResponse } from '@/globalType/util.type'
 
-const URL = 'flights'
+const URL = 'api/flights'
 
 const flightApi = {
   getFlightById: async (params: string) => {

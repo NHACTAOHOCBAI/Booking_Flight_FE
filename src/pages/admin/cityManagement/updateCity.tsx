@@ -1,3 +1,4 @@
+import { onErrorUtil } from '@/globalType/util.type'
 import { useUpdateCity } from '@/hooks/useCity'
 import { Form, FormProps, Input, message, Modal } from 'antd'
 import { useEffect } from 'react'
@@ -26,11 +27,12 @@ const UpdateCity = (props: IProp) => {
           content: data.message
         })
       },
-      onError(error) {
+      onError(error: Error) {
         console.log(error)
+        const messageError = onErrorUtil(error)
         messageApi.open({
-          type: 'error',
-          content: error.message
+          type: messageError.type,
+          content: messageError.content
         })
       },
       onSettled() {

@@ -1,38 +1,50 @@
-import { ActionType, ProColumns, ProTable } from '@ant-design/pro-components'
+import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons'
+import type { ActionType, ProColumns } from '@ant-design/pro-components'
+import { ProTable } from '@ant-design/pro-components'
 import { Button, message, Popconfirm } from 'antd'
 import { useRef, useState } from 'react'
-import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons'
-import NewPlane from './newPlane'
-import UpdatePlane from './updatePlane'
-import DetailPlane from './detailPlane'
-import { useDeletePlane, useGetAllPlanes } from '@/hooks/usePlane'
+import NewTicket from './newTicket'
+
 import ErrorPage from '@/components/ErrorPage/ErrorPage'
 import LoadingError from '@/components/ErrorPage/LoadingError'
-const PlaneManagement = () => {
+import { useDeleteTicket, useGetAllTickets } from '@/hooks/useTicket'
+import DetailTicket from './detailTicket'
+import UpdateTicket from './updateTicket'
+
+const TicketManagement = () => {
   //detail
   const [isDetailOpen, setIsDetailOpen] = useState(false)
-  const [detailPlane, setDetailPlane] = useState<IPlaneTable>({
+  const [detailTicket, setDetailTicket] = useState<ITicketTable>({
     id: '',
-    airlineId: '',
-    planeCode: '',
-    planeName: '',
-    airlineName: ''
+    flightId: '',
+    flightName: '',
+    seatName: '',
+    passengerName: '',
+    passengerPhone: '',
+    passengerIDCard: '',
+    passengerEmail: '',
+    haveBaggage: false
   })
+
   //update
   const [isUpdateOpen, setIsUpdateOpen] = useState(false)
-  const [updatedPlane, setUpdatedPlane] = useState<IPlaneTable>({
+  const [updatedTicket, setUpdatedTicket] = useState<ITicketTable>({
     id: '',
-    airlineId: '',
-    planeCode: '',
-    planeName: '',
-    airlineName: ''
+    flightId: '',
+    flightName: '',
+    seatName: '',
+    passengerName: '',
+    passengerPhone: '',
+    passengerIDCard: '',
+    passengerEmail: '',
+    haveBaggage: false
   })
-  //new
+  //New
   const [isNewOpen, setIsNewOpen] = useState(false)
 
   // delete
   const [messageApi, contextHolder] = message.useMessage()
-  const handleDeleteMutation = useDeletePlane()
+  const handleDeleteMutation = useDeleteTicket()
   const handleDelete = (id: string) => {
     handleDeleteMutation.mutate(id, {
       onSuccess(data) {
@@ -45,47 +57,60 @@ const PlaneManagement = () => {
         console.log(error)
         messageApi.open({
           type: 'error',
-          content: 'Cant delete this plane, this plane have been used in somewhere'
+          content: error.message
         })
       }
     })
   }
-
   //Table
   const actionRef = useRef<ActionType>(null)
-
-  const columns: ProColumns<IPlaneTable>[] = [
+  const columns: ProColumns<ITicketTable>[] = [
     {
       dataIndex: 'index',
       valueType: 'indexBorder',
       width: 48
     },
     {
-      title: 'Code',
+      title: 'ID',
       search: false,
       render: (_, record) => (
         <a
           style={{ color: '#3498db' }}
           onClick={() => {
-            setDetailPlane(record)
+            setDetailTicket(record)
             setIsDetailOpen(true)
           }}
         >
-          {record.planeCode}
+          {record.id}
         </a>
       )
     },
     {
-      title: 'Airline',
-      render: (_, record) => <div>{record.airlineName}</div>
+      title: 'Flight Id',
+      dataIndex: 'flightId'
     },
     {
-      title: 'PlaneName',
-      dataIndex: 'planeName'
+      title: 'Seat Id',
+      dataIndex: 'seatId'
+    },
+    {
+      title: 'Passenger Name',
+      dataIndex: 'passengerName'
+    },
+    {
+      title: 'Passenger Id Card',
+      dataIndex: 'passengerIdCard'
+    },
+    {
+      title: 'Passenger Phone',
+      dataIndex: 'passengerPhone'
+    },
+    {
+      title: 'Passenger Email',
+      dataIndex: 'passengerEmail'
     },
     {
       title: 'Action',
-      search: false,
       render: (_, record) => (
         <div
           style={{
@@ -98,13 +123,13 @@ const PlaneManagement = () => {
               color: '#54a0ff'
             }}
             onClick={() => {
-              setUpdatedPlane(record)
+              setUpdatedTicket(record)
               setIsUpdateOpen(true)
             }}
           />
           <Popconfirm
-            title='Delete the plane'
-            description='Are you sure to delete this plane?'
+            title='Delete the ticket'
+            description='Are you sure to delete this ticket?'
             okText='Delete'
             cancelText='Cancel'
             onConfirm={() => handleDelete(record.id as string)}
@@ -119,9 +144,8 @@ const PlaneManagement = () => {
       )
     }
   ]
-
   //fetch data
-  const { isLoading, isError, error, data } = useGetAllPlanes()
+  const { isLoading, isError, error, data } = useGetAllTickets()
   if (isLoading) {
     return <LoadingError />
   }
@@ -134,7 +158,7 @@ const PlaneManagement = () => {
   return (
     <>
       {contextHolder}
-      <ProTable<IPlaneTable>
+      <ProTable<ITicketTable>
         search={{
           labelWidth: 'auto'
         }}
@@ -143,10 +167,11 @@ const PlaneManagement = () => {
         actionRef={actionRef}
         cardBordered
         bordered
-        headerTitle='Plane table'
+        headerTitle='Ticket table'
+        //Khi ProTable được render hoặc có sự thay đổi ở bộ lọc, tìm kiếm, phân trang, nó sẽ tự động gọi hàm request
         toolBarRender={() => [
           <Button key='button' icon={<PlusOutlined />} type='primary' onClick={() => setIsNewOpen(true)}>
-            New Plane
+            New Ticket
           </Button>
         ]}
         pagination={{
@@ -156,20 +181,20 @@ const PlaneManagement = () => {
           defaultPageSize: 5
         }}
       />
-      <NewPlane isNewOpen={isNewOpen} setIsNewOpen={setIsNewOpen} />
-      <UpdatePlane
+      <NewTicket isNewOpen={isNewOpen} setIsNewOpen={setIsNewOpen} />
+      <UpdateTicket
         isUpdateOpen={isUpdateOpen}
         setIsUpdateOpen={setIsUpdateOpen}
-        updatedPlane={updatedPlane}
-        setUpdatedPlane={setUpdatedPlane}
+        updatedTicket={updatedTicket}
+        setUpdatedTicket={setUpdatedTicket}
       />
-      <DetailPlane
+      <DetailTicket
         isDetailOpen={isDetailOpen}
         setIsDetailOpen={setIsDetailOpen}
-        setDetailPlane={setDetailPlane}
-        detailPlane={detailPlane}
+        setDetailTicket={setDetailTicket}
+        detailTicket={detailTicket}
       />
     </>
   )
 }
-export default PlaneManagement
+export default TicketManagement

@@ -41,7 +41,7 @@ const CityManagement = () => {
         console.log(error)
         messageApi.open({
           type: 'error',
-          content: 'Cant delete city, some airport have this city as departure or destination'
+          content: 'Cant delete this city, this city have been used in somewhere'
         })
       }
     })

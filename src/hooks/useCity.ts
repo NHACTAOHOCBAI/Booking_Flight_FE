@@ -8,7 +8,7 @@ export const useGetAllCites = () => {
   })
 }
 
-export const useCityGetById = (id: string) => {
+export const useGetCityById = (id: string) => {
   return useQuery({
     queryKey: ['airports', id],
     queryFn: () => cityApi.getCItyById(id)

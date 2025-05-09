@@ -5,6 +5,7 @@ declare global {
     id?: string
     airportCode: string
     airportName: string
-    cityCode: string
+    cityId?: string
+    cityName?: string
   }
 }

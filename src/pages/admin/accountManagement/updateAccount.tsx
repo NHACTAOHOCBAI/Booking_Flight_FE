@@ -1,4 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+import { onErrorUtil } from '@/globalType/util.type'
 import { useUpdateAccount } from '@/hooks/account.'
 import { Col, Form, FormProps, Input, message, Modal, Row, Select } from 'antd'
 import { useEffect } from 'react'
@@ -35,11 +36,12 @@ const UpdateAccount = (props: IProp) => {
           content: data.message
         })
       },
-      onError(error) {
+      onError(error: Error) {
         console.log(error)
+        const messageError = onErrorUtil(error)
         messageApi.open({
-          type: 'error',
-          content: error.message
+          type: messageError.type,
+          content: messageError.content
         })
       },
       onSettled() {

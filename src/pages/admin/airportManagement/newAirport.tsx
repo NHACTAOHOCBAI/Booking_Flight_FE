@@ -1,4 +1,5 @@
 import cityApi from '@/apis/city.api'
+import { onErrorUtil } from '@/globalType/util.type'
 import { useCreateAirport } from '@/hooks/useAirport'
 import { useQuery } from '@tanstack/react-query'
 import { Form, FormProps, Input, message, Modal, Select } from 'antd'
@@ -21,10 +22,9 @@ const NewAirport = (props: IProp) => {
 
   const onFinish: FormProps<IAirportTable>['onFinish'] = async (value) => {
     const body = {
-      id: value.id,
       airportCode: value.airportCode,
       airportName: value.airportName,
-      cityCode: value.cityCode
+      cityId: value.cityId
     }
     newAirportMutation.mutate(body, {
       onSuccess(data) {
@@ -33,11 +33,12 @@ const NewAirport = (props: IProp) => {
           content: data.message
         })
       },
-      onError(error) {
+      onError(error: Error) {
         console.log(error)
+        const messageError = onErrorUtil(error)
         messageApi.open({
-          type: 'error',
-          content: error.message
+          type: messageError.type,
+          content: messageError.content
         })
       },
       onSettled() {
@@ -62,9 +63,10 @@ const NewAirport = (props: IProp) => {
   })
   const cityOptions = useMemo(
     () =>
-      citiesData.data?.data.map((value) => {
+      citiesData.data?.data.map((value, index) => {
         return {
-          value: value.cityName,
+          key: index,
+          value: value.id,
           label: value.cityName
         }
       }),
@@ -113,7 +115,7 @@ const NewAirport = (props: IProp) => {
                 <PiCity /> City
               </div>
             }
-            name='cityCode'
+            name='cityId'
             rules={[{ required: true, message: "Please input airport's city" }]}
           >
             <Select options={cityOptions} placeholder="Airport's city" />

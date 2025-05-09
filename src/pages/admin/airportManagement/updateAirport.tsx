@@ -1,9 +1,9 @@
 import cityApi from '@/apis/city.api'
+import { onErrorUtil } from '@/globalType/util.type'
 import { useUpdateAirport } from '@/hooks/useAirport'
 import { useQuery } from '@tanstack/react-query'
 import { Form, FormProps, Input, message, Modal, Select } from 'antd'
 import { useEffect, useMemo } from 'react'
-import { HiDotsVertical } from 'react-icons/hi'
 import { LuScanBarcode } from 'react-icons/lu'
 import { MdOutlineDriveFileRenameOutline } from 'react-icons/md'
 import { PiCity } from 'react-icons/pi'
@@ -22,10 +22,9 @@ const UpdateAirport = (props: IProp) => {
 
   const onFinish: FormProps<IAirportTable>['onFinish'] = async (value) => {
     const body = {
-      id: value.id as string,
       airportCode: value.airportCode,
       airportName: value.airportName,
-      cityCode: value.cityCode
+      cityName: value.cityName
     }
     updateAirportMutation.mutate(body, {
       onSuccess(data) {
@@ -34,11 +33,12 @@ const UpdateAirport = (props: IProp) => {
           content: data.message
         })
       },
-      onError(error) {
+      onError(error: Error) {
         console.log(error)
+        const messageError = onErrorUtil(error)
         messageApi.open({
-          type: 'error',
-          content: error.message
+          type: messageError.type,
+          content: messageError.content
         })
       },
       onSettled() {
@@ -54,10 +54,9 @@ const UpdateAirport = (props: IProp) => {
   const handleCancel = () => {
     form.resetFields()
     setUpdatedAirport({
-      id: '',
       airportCode: '',
       airportName: '',
-      cityCode: ''
+      cityName: ''
     })
     setIsUpdateOpen(false)
   }
@@ -71,7 +70,7 @@ const UpdateAirport = (props: IProp) => {
     () =>
       citiesData.data?.data.map((value) => {
         return {
-          value: value.cityName,
+          value: value.id,
           label: value.cityName
         }
       }),
@@ -80,10 +79,9 @@ const UpdateAirport = (props: IProp) => {
 
   useEffect(() => {
     form.setFieldsValue({
-      id: updatedAirport.id,
       airportCode: updatedAirport.airportCode,
       airportName: updatedAirport.airportName,
-      cityCode: updatedAirport.cityCode
+      cityName: updatedAirport.cityName
     })
   }, [form, updatedAirport])
   return (
@@ -91,16 +89,6 @@ const UpdateAirport = (props: IProp) => {
       {contextHolder}
       <Modal title='Update Airport' open={isUpdateOpen} onOk={handleOk} onCancel={handleCancel}>
         <Form layout='vertical' name='basic' onFinish={onFinish} autoComplete='off' form={form}>
-          <Form.Item<IAirportTable>
-            label={
-              <div>
-                <HiDotsVertical /> ID
-              </div>
-            }
-            name='id'
-          >
-            <Input disabled />
-          </Form.Item>
           <Form.Item<IAirportTable>
             label={
               <div>
@@ -129,10 +117,10 @@ const UpdateAirport = (props: IProp) => {
                 <PiCity /> City
               </div>
             }
-            name='cityCode'
+            name='cityId'
             rules={[{ required: true, message: "Please input airport's city" }]}
           >
-            <Select options={cityOptions} />
+            <Select defaultValue={updatedAirport.id} options={cityOptions} />
           </Form.Item>
         </Form>
       </Modal>

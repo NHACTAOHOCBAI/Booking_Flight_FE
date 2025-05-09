@@ -1,6 +1,9 @@
+import airlineApi from '@/apis/airline.api'
+import { onErrorUtil } from '@/globalType/util.type'
 import { useCreatePlane } from '@/hooks/usePlane'
-import { airlineOptions } from '@/utils/select'
+import { useQuery } from '@tanstack/react-query'
 import { Form, FormProps, Input, message, Modal, Select } from 'antd'
+import { useMemo } from 'react'
 import { LuScanBarcode } from 'react-icons/lu'
 import { MdOutlineAirlines } from 'react-icons/md'
 import { SlPlane } from 'react-icons/sl'
@@ -30,11 +33,12 @@ const NewPlane = (props: IProp) => {
           content: data.message
         })
       },
-      onError(error) {
+      onError(error: Error) {
         console.log(error)
+        const messageError = onErrorUtil(error)
         messageApi.open({
-          type: 'error',
-          content: error.message
+          type: messageError.type,
+          content: messageError.content
         })
       },
       onSettled() {
@@ -52,6 +56,22 @@ const NewPlane = (props: IProp) => {
     setIsNewOpen(false)
   }
 
+  const airlinesData = useQuery({
+    queryKey: ['airlines'],
+    queryFn: airlineApi.getAirlines,
+    enabled: isNewOpen
+  })
+  const airlineOptions = useMemo(
+    () =>
+      airlinesData.data?.data.map((value, index) => {
+        return {
+          key: index,
+          value: value.id,
+          label: value.airlineName
+        }
+      }),
+    [airlinesData]
+  )
   return (
     <>
       {contextHolder}

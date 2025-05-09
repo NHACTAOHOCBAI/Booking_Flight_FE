@@ -1,7 +1,7 @@
 import http from '@/utils/http'
 import { SuccessResponse } from '@/globalType/util.type'
 
-const URL = 'accounts'
+const URL = 'api/accounts'
 
 const accountApi = {
   getAccountById: async (params: string) => {

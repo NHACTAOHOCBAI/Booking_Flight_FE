@@ -1,7 +1,7 @@
 import http from '@/utils/http'
 import { SuccessResponse } from '@/globalType/util.type'
 
-const URL = 'airports'
+const URL = 'api/airports'
 const airportApi = {
   getAirports: async () => {
     const res = await http.get<SuccessResponse<IAirportTable[]>>(URL)

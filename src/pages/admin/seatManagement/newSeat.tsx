@@ -1,3 +1,4 @@
+import { onErrorUtil } from '@/globalType/util.type'
 import { useCreateSeat } from '@/hooks/useSeat'
 import { Form, FormProps, Input, InputNumber, message, Modal } from 'antd'
 import TextArea from 'antd/es/input/TextArea'
@@ -31,11 +32,12 @@ const NewSeat = (props: IProp) => {
           content: data.message
         })
       },
-      onError(error) {
+      onError(error: Error) {
         console.log(error)
+        const messageError = onErrorUtil(error)
         messageApi.open({
-          type: 'error',
-          content: error.message
+          type: messageError.type,
+          content: messageError.content
         })
       },
       onSettled() {

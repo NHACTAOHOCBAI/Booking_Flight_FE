@@ -2,13 +2,18 @@ import { Button, Col, DatePicker, Form, FormProps, Input, InputNumber, message, 
 import { CloseOutlined } from '@ant-design/icons'
 import dayjs from 'dayjs'
 import TextArea from 'antd/es/input/TextArea'
-import { airportOptions, planeOptions, seatOptions } from '@/utils/select'
 import { LuScanBarcode } from 'react-icons/lu'
 import { PiAirplaneInFlight } from 'react-icons/pi'
 import { TbPlaneArrival, TbPlaneDeparture } from 'react-icons/tb'
 import { SlCalender } from 'react-icons/sl'
 import { AiOutlineDollarCircle } from 'react-icons/ai'
 import { useCreateFlight } from '@/hooks/useFlight'
+import { onErrorUtil } from '@/globalType/util.type'
+import airportApi from '@/apis/airport.api'
+import { useQuery } from '@tanstack/react-query'
+import { useMemo } from 'react'
+import planeApi from '@/apis/plane.api'
+import seatApi from '@/apis/seat.api'
 interface IProp {
   isNewOpen: boolean
   setIsNewOpen: (value: boolean) => void
@@ -24,8 +29,8 @@ const NewFlight = (props: IProp) => {
     //format day time
     value.departureTime = dayjs(value.departureTime).format('HH:mm DD/MM/YYYY')
     value.arrivalTime = dayjs(value.arrivalTime).format('HH:mm DD/MM/YYYY')
-    if (value.interAirport) {
-      value.interAirport = value.interAirport.map((values) => {
+    if (value.intermediateAirports) {
+      value.intermediateAirports = value.intermediateAirports.map((values) => {
         return {
           airportId: values.airportId,
           arrivalTime: dayjs(values.arrivalTime).format('HH:mm DD/MM/YYYY'),
@@ -34,7 +39,7 @@ const NewFlight = (props: IProp) => {
         }
       })
     }
-    value.seat = value.seat ? value.seat : []
+    value.listFlight_Seat = value.listFlight_Seat ? value.listFlight_Seat : []
     console.log(value)
 
     //call mutation
@@ -46,8 +51,8 @@ const NewFlight = (props: IProp) => {
       departureTime: value.departureTime,
       arrivalTime: value.arrivalTime,
       originPrice: value.originPrice,
-      interAirport: value.interAirport,
-      seat: value.seat
+      intermediateAirports: value.intermediateAirports,
+      listFlight_Seat: value.listFlight_Seat
     }
     newFlightMutation.mutate(body, {
       onSuccess(data) {
@@ -56,11 +61,12 @@ const NewFlight = (props: IProp) => {
           content: data.message
         })
       },
-      onError(error) {
+      onError(error: Error) {
         console.log(error)
+        const messageError = onErrorUtil(error)
         messageApi.open({
-          type: 'error',
-          content: error.message
+          type: messageError.type,
+          content: messageError.content
         })
       },
       onSettled() {
@@ -78,6 +84,58 @@ const NewFlight = (props: IProp) => {
     // subForm.resetFields();
     setIsNewOpen(false)
   }
+
+  const airportData = useQuery({
+    queryKey: ['airports'],
+    queryFn: airportApi.getAirports,
+    enabled: isNewOpen
+  })
+  const airportOptions = useMemo(
+    () =>
+      airportData.data?.data.map((value, index) => {
+        console.log(value)
+        return {
+          key: index,
+          value: value.id,
+          label: value.airportName
+        }
+      }),
+    [airportData]
+  )
+
+  const planeData = useQuery({
+    queryKey: ['planes'],
+    queryFn: planeApi.getPlanes,
+    enabled: isNewOpen
+  })
+  const planeOptions = useMemo(
+    () =>
+      planeData.data?.data.map((value, index) => {
+        return {
+          key: index,
+          value: value.id,
+          label: value.planeName
+        }
+      }),
+    [planeData]
+  )
+
+  const seatData = useQuery({
+    queryKey: ['seats'],
+    queryFn: seatApi.getSeats,
+    enabled: isNewOpen
+  })
+  const seatOptions = useMemo(
+    () =>
+      seatData.data?.data.map((value, index) => {
+        return {
+          key: index,
+          value: value.id,
+          label: value.seatName
+        }
+      }),
+    [seatData]
+  )
   return (
     <>
       {contextHolder}
@@ -225,7 +283,7 @@ const NewFlight = (props: IProp) => {
                 </Col>
               </Row>
               <Form.Item<IFlightTable> label='Intermediate airport'>
-                <Form.List name='interAirport'>
+                <Form.List name='intermediateAirports'>
                   {(subFields, subOpt) => (
                     <div style={{ display: 'flex', flexDirection: 'column', rowGap: 16 }}>
                       {subFields.map((subField) => (
@@ -330,7 +388,7 @@ const NewFlight = (props: IProp) => {
                 Manage Tickets
               </div>
               <Form.Item<IFlightTable> label=' '>
-                <Form.List name='seat'>
+                <Form.List name='listFlight_Seat'>
                   {(subFields, subOpt) => (
                     <div style={{ display: 'flex', flexDirection: 'column', rowGap: 16 }}>
                       {subFields.map((subField) => (

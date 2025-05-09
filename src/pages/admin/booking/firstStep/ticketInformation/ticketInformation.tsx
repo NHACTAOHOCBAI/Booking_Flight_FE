@@ -34,7 +34,7 @@ const TicketInformation = (prop: IProp) => {
   const onFinish: FormProps<FormValues>['onFinish'] = (values) => {
     if (values.tickets.length === 0) {
       openNotification()
-      const data: ITicketTable[] = values.tickets.map((value: TicketInfo) => {
+      const data: ITicketTable[] = values.tickets.map(() => {
         return {
           flightId: '',
           seatId: '',
@@ -73,7 +73,7 @@ const TicketInformation = (prop: IProp) => {
     form.setFieldsValue({
       tickets: data
     })
-  }, [])
+  }, [bookingTicketsList, form])
   return (
     <Form
       style={{ width: '100%' }}
