@@ -1,8 +1,9 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { onErrorUtil } from '@/globalType/util.type'
-import { useCreateSeat } from '@/hooks/useSeat'
+import { useUpdateSeat } from '@/hooks/useSeat'
 import { Form, FormProps, Input, InputNumber, message, Modal } from 'antd'
 import TextArea from 'antd/es/input/TextArea'
+import _ from 'lodash'
 import { useEffect } from 'react'
 import { IoPricetags } from 'react-icons/io5'
 import { LuScanBarcode } from 'react-icons/lu'
@@ -20,10 +21,21 @@ const UpdateSeat = (props: IProp) => {
   const [form] = Form.useForm()
 
   const [messageApi, contextHolder] = message.useMessage()
-  const updateSeatMutation = useCreateSeat()
+  const updateSeatMutation = useUpdateSeat()
 
   const onFinish: FormProps<ISeatTable>['onFinish'] = async (value) => {
+    const initialValue = _.omit(updatedSeat, ['id'])
+    const isDirty = !_.isEqual(value, initialValue)
+    if (!isDirty) {
+      messageApi.open({
+        type: 'error',
+        content: 'No Field Change'
+      })
+      return
+    }
+
     const body = {
+      id: updatedSeat.id,
       seatName: value.seatName,
       seatCode: value.seatCode,
       price: value.price,

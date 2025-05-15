@@ -1,8 +1,8 @@
 import { onErrorUtil } from '@/globalType/util.type'
 import { useUpdateCity } from '@/hooks/useCity'
 import { Form, FormProps, Input, message, Modal } from 'antd'
+import _ from 'lodash'
 import { useEffect } from 'react'
-import { HiDotsVertical } from 'react-icons/hi'
 import { LuScanBarcode } from 'react-icons/lu'
 import { MdOutlineDriveFileRenameOutline } from 'react-icons/md'
 
@@ -19,7 +19,16 @@ const UpdateCity = (props: IProp) => {
   const updateCitiesMutation = useUpdateCity()
 
   const onFinish: FormProps<ICityTable>['onFinish'] = async (value) => {
-    const body = { id: value.id as string, cityCode: value.cityCode as string, cityName: value.cityName as string }
+    const isDirty = !_.isEqual(value, { cityCode: updatedCity.cityCode, cityName: updatedCity.cityName })
+    if (!isDirty) {
+      messageApi.open({
+        type: 'error',
+        content: 'No Field Change'
+      })
+      return
+    }
+
+    const body = { id: updatedCity.id, cityCode: value.cityCode, cityName: value.cityName }
     updateCitiesMutation.mutate(body, {
       onSuccess(data) {
         messageApi.open({
@@ -66,16 +75,6 @@ const UpdateCity = (props: IProp) => {
       {contextHolder}
       <Modal title='Update City' open={isUpdateOpen} onOk={handleOk} onCancel={handleCancel}>
         <Form layout='vertical' name='basic' onFinish={onFinish} autoComplete='off' form={form}>
-          <Form.Item<ICityTable>
-            label={
-              <div>
-                <HiDotsVertical /> ID
-              </div>
-            }
-            name='id'
-          >
-            <Input disabled />
-          </Form.Item>
           <Form.Item<ICityTable>
             label={
               <div>

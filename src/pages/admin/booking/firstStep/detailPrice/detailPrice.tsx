@@ -33,16 +33,17 @@ const DetailPrice = () => {
   // Bước 1: Nhóm số lượng vé theo `seatId`
   const seatCount: Record<string, number> = {}
   bookingTicketsList.forEach((ticket) => {
-    seatCount[ticket.seatId] = (seatCount[ticket.seatId] || 0) + 1
+    seatCount[ticket.seatId as string] = (seatCount[ticket.seatId as string] || 0) + 1
   })
 
   // Bước 2: Chuyển dữ liệu sang danh sách chi tiết giá
   const detailPriceData: IDetailPrice[] = seatData
     .filter((seat) => seatCount[seat.id!]) // Lọc ghế có số lượng vé
-    .map((seat) => ({
+    .map((seat, key) => ({
+      key,
       seatName: seat.seatName as string,
       quantity: seatCount[seat.id!] as number,
-      price: (seat.price! * toFLight(bookingFlight.id).originPrice) / 100
+      price: (seat.price! * toFLight(bookingFlight.id as string).originPrice) / 100
     }))
   let totalAmount = 0
   detailPriceData.forEach((value) => {

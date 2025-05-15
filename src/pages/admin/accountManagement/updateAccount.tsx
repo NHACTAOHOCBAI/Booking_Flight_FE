@@ -2,6 +2,7 @@
 import { onErrorUtil } from '@/globalType/util.type'
 import { useUpdateAccount } from '@/hooks/account.'
 import { Col, Form, FormProps, Input, message, Modal, Row, Select } from 'antd'
+import _ from 'lodash'
 import { useEffect } from 'react'
 import { GrUserAdmin } from 'react-icons/gr'
 import { MdOutlineDriveFileRenameOutline, MdOutlinePhone } from 'react-icons/md'
@@ -21,7 +22,17 @@ const UpdateAccount = (props: IProp) => {
   const updateAccountMutation = useUpdateAccount()
 
   const onFinish: FormProps<IAccountTable>['onFinish'] = async (value) => {
+    const initialValue = _.omit(updatedAccount, ['id'])
+    const isDirty = !_.isEqual(value, initialValue)
+    if (!isDirty) {
+      messageApi.open({
+        type: 'error',
+        content: 'No Field Change'
+      })
+      return
+    }
     const body = {
+      id: updatedAccount.id,
       email: value.email,
       fullName: value.fullName,
       password: value.password,
@@ -35,6 +46,7 @@ const UpdateAccount = (props: IProp) => {
           type: 'success',
           content: data.message
         })
+        handleCancel()
       },
       onError(error: Error) {
         console.log(error)
@@ -43,9 +55,6 @@ const UpdateAccount = (props: IProp) => {
           type: messageError.type,
           content: messageError.content
         })
-      },
-      onSettled() {
-        handleCancel()
       }
     })
   }
@@ -209,10 +218,11 @@ const UpdateAccount = (props: IProp) => {
                   ]}
                 >
                   <Select
+                    placeholder={updatedAccount.role}
                     options={[
-                      { value: 'employee', label: 'Employee' },
-                      { value: 'admin', label: 'Admin' },
-                      { value: 'client', label: 'Client' }
+                      { value: '1', label: 'Employee' },
+                      { value: '2', label: 'Admin' },
+                      { value: '3', label: 'Client' }
                     ]}
                   />
                 </Form.Item>

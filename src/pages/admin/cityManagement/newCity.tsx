@@ -1,3 +1,4 @@
+import { onErrorUtil } from '@/globalType/util.type'
 import { useCreateCity } from '@/hooks/useCity'
 import { Form, FormProps, Input, message, Modal, Skeleton } from 'antd'
 import { LuScanBarcode } from 'react-icons/lu'

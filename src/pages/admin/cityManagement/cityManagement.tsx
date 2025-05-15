@@ -118,7 +118,6 @@ const CityManagement = () => {
   const [isDetailOpen, setIsDetailOpen] = useState(false)
 
   const { data, isLoading, isError, error } = useGetAllCites()
-  console.log(data)
 
   if (isLoading) {
     return <LoadingError />

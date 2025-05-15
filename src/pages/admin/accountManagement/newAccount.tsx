@@ -32,6 +32,7 @@ const NewAccount = (props: IProp) => {
           type: 'success',
           content: data.message
         })
+        handleCancel()
       },
       onError(error: Error) {
         console.log(error)
@@ -40,9 +41,6 @@ const NewAccount = (props: IProp) => {
           type: messageError.type,
           content: messageError.content
         })
-      },
-      onSettled() {
-        handleCancel()
       }
     })
   }
@@ -189,9 +187,9 @@ const NewAccount = (props: IProp) => {
                 >
                   <Select
                     options={[
-                      { value: 'employee', label: 'Employee' },
-                      { value: 'admin', label: 'Admin' },
-                      { value: 'client', label: 'Client' }
+                      { value: 1, label: 'Employee' },
+                      { value: 2, label: 'Admin' },
+                      { value: 3, label: 'Client' }
                     ]}
                     placeholder='Role'
                   />

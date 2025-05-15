@@ -1,6 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+import { onErrorUtil } from '@/globalType/util.type'
 import { useUpdateAirline } from '@/hooks/useAirline'
 import { Form, FormProps, Input, message, Modal } from 'antd'
+import _ from 'lodash'
 import { useEffect } from 'react'
 import { LuScanBarcode } from 'react-icons/lu'
 import { MdOutlineDriveFileRenameOutline } from 'react-icons/md'
@@ -19,8 +21,18 @@ export default function UpdatedAirline(props: Props) {
   const updateAirlineMutation = useUpdateAirline()
 
   const onFinish: FormProps<IAirlineTable>['onFinish'] = async (value) => {
+    const initialValue = _.omit(updatedAirline, ['id'])
+    const isDirty = !_.isEqual(value, initialValue)
+    if (!isDirty) {
+      messageApi.open({
+        type: 'error',
+        content: 'No Field Change'
+      })
+      return
+    }
+
     const body = {
-      id: value.id,
+      id: updatedAirline.id,
       airlineCode: value.airlineCode,
       airlineName: value.airlineName
     }

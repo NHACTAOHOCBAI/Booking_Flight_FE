@@ -29,8 +29,8 @@ const NewFlight = (props: IProp) => {
     //format day time
     value.departureTime = dayjs(value.departureTime).format('HH:mm DD/MM/YYYY')
     value.arrivalTime = dayjs(value.arrivalTime).format('HH:mm DD/MM/YYYY')
-    if (value.intermediateAirports) {
-      value.intermediateAirports = value.intermediateAirports.map((values) => {
+    if (value.listFlight_Airport) {
+      value.listFlight_Airport = value.listFlight_Airport.map((values) => {
         return {
           airportId: values.airportId,
           arrivalTime: dayjs(values.arrivalTime).format('HH:mm DD/MM/YYYY'),
@@ -51,7 +51,7 @@ const NewFlight = (props: IProp) => {
       departureTime: value.departureTime,
       arrivalTime: value.arrivalTime,
       originPrice: value.originPrice,
-      intermediateAirports: value.intermediateAirports,
+      listFlight_Airport: value.listFlight_Airport,
       listFlight_Seat: value.listFlight_Seat
     }
     newFlightMutation.mutate(body, {
@@ -93,7 +93,6 @@ const NewFlight = (props: IProp) => {
   const airportOptions = useMemo(
     () =>
       airportData.data?.data.map((value, index) => {
-        console.log(value)
         return {
           key: index,
           value: value.id,
@@ -283,34 +282,34 @@ const NewFlight = (props: IProp) => {
                 </Col>
               </Row>
               <Form.Item<IFlightTable> label='Intermediate airport'>
-                <Form.List name='intermediateAirports'>
+                <Form.List name='listFlight_Airport'>
                   {(subFields, subOpt) => (
                     <div style={{ display: 'flex', flexDirection: 'column', rowGap: 16 }}>
                       {subFields.map((subField) => (
                         <Space key={subField.key}>
                           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                            <Col>
+                              <Form.Item
+                                rules={[
+                                  {
+                                    required: true,
+                                    message: 'Please input airport'
+                                  }
+                                ]}
+                                noStyle
+                                name={[subField.name, 'airportId']}
+                              >
+                                <Select
+                                  style={{ width: '100%' }}
+                                  showSearch
+                                  placeholder='Airport'
+                                  optionFilterProp='label'
+                                  options={airportOptions}
+                                />
+                              </Form.Item>
+                            </Col>
                             <Row gutter={20}>
-                              <Col span={7}>
-                                <Form.Item
-                                  rules={[
-                                    {
-                                      required: true,
-                                      message: 'Please input airport'
-                                    }
-                                  ]}
-                                  noStyle
-                                  name={[subField.name, 'airportId']}
-                                >
-                                  <Select
-                                    style={{ width: '100%' }}
-                                    showSearch
-                                    placeholder='Airport'
-                                    optionFilterProp='label'
-                                    options={airportOptions}
-                                  />
-                                </Form.Item>
-                              </Col>
-                              <Col span={8}>
+                              <Col>
                                 <Form.Item
                                   rules={[
                                     {
@@ -330,7 +329,7 @@ const NewFlight = (props: IProp) => {
                                   />
                                 </Form.Item>
                               </Col>
-                              <Col span={8}>
+                              <Col>
                                 <Form.Item
                                   rules={[
                                     {

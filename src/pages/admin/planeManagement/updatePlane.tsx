@@ -3,6 +3,7 @@ import { onErrorUtil } from '@/globalType/util.type'
 import { useUpdatePlane } from '@/hooks/usePlane'
 import { useQuery } from '@tanstack/react-query'
 import { Form, Input, message, Modal, Select } from 'antd'
+import _ from 'lodash'
 import { useEffect, useMemo } from 'react'
 import { LuScanBarcode } from 'react-icons/lu'
 import { MdOutlineAirlines } from 'react-icons/md'
@@ -21,7 +22,17 @@ const UpdatePlane = (props: IProp) => {
   const updatePlaneMutation = useUpdatePlane()
 
   const onFinish = async (value: IPlaneTable) => {
+    const initialValue = _.omit(updatedPlane, ['id', 'airlineName'])
+    const isDirty = !_.isEqual(value, initialValue)
+    if (!isDirty) {
+      messageApi.open({
+        type: 'error',
+        content: 'No Field Change'
+      })
+      return
+    }
     const body = {
+      id: updatedPlane.id,
       planeCode: value.planeCode,
       planeName: value.planeName,
       airlineId: value.airlineId

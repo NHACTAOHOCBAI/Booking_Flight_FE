@@ -33,10 +33,10 @@ const DetailPlane = (props: IProps) => {
       children: detailPlane?.planeCode
     },
     {
-      key: 'AirlineCode',
-      label: 'Airline Code',
+      key: 'AirlineName',
+      label: 'Airline Name',
       span: 4,
-      children: detailPlane?.airlineId
+      children: detailPlane?.airlineName
     }
   ]
 

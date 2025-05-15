@@ -80,7 +80,7 @@ const AirportManagement = () => {
     },
     {
       title: 'City',
-      render: (_, record) => <div>{record.cityId}</div>
+      dataIndex: 'cityName'
     },
     {
       title: 'Action',

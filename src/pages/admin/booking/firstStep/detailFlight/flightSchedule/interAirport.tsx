@@ -29,7 +29,7 @@ function getTimeDifference(arrivalTime: string, departureTime: string): string {
   return `${hours}h${minutes}m`
 }
 
-const intermediateAirports = (prop: IProp) => {
+const listFlight_Airport = (prop: IProp) => {
   const { airportId, startTime, arrivalTime, depatureTime } = prop
   return (
     <>
@@ -72,4 +72,4 @@ const intermediateAirports = (prop: IProp) => {
     </>
   )
 }
-export default intermediateAirports
+export default listFlight_Airport

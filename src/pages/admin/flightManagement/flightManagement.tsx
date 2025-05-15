@@ -2,19 +2,20 @@ import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons'
 import type { ActionType, ProColumns } from '@ant-design/pro-components'
 import { ProTable } from '@ant-design/pro-components'
 import { Button, message, Popconfirm } from 'antd'
-import { useRef, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import NewFlight from './newFlight'
 import UpdateFlight from './updateFlight'
 import DetailFlight from './detailFlight'
 import { useNavigate } from 'react-router-dom'
 import { IoTicketOutline } from 'react-icons/io5'
 import dayjs from 'dayjs'
-import { airportOptions } from '@/utils/select'
 import { useAppDispatch } from '@/redux/hooks'
 import { setBookingFlight } from '@/redux/features/bookingFlight/bookingFlightSlice'
 import ErrorPage from '@/components/ErrorPage/ErrorPage'
 import LoadingError from '@/components/ErrorPage/LoadingError'
 import { useDeleteFlight, useGetAllFlights } from '@/hooks/useFlight'
+import airportApi from '@/apis/airport.api'
+import { useQuery } from '@tanstack/react-query'
 const FlightManagement = () => {
   //detail
   const [detailFlight, setDetailFlight] = useState<IFlightTable>({
@@ -29,7 +30,7 @@ const FlightManagement = () => {
     departureTime: '',
     arrivalTime: '',
     originPrice: 0,
-    intermediateAirports: [],
+    listFlight_Airport: [],
     listFlight_Seat: []
   })
   const [isDetailOpen, setIsDetailOpen] = useState(false)
@@ -47,7 +48,7 @@ const FlightManagement = () => {
     departureTime: '',
     arrivalTime: '',
     originPrice: 0,
-    intermediateAirports: [],
+    listFlight_Airport: [],
     listFlight_Seat: []
   })
   //New
@@ -77,6 +78,22 @@ const FlightManagement = () => {
       }
     })
   }
+  const airportData = useQuery({
+    queryKey: ['airports'],
+    queryFn: airportApi.getAirports,
+    enabled: isNewOpen
+  })
+  const airportOptions = useMemo(
+    () =>
+      airportData.data?.data.map((value, index) => {
+        return {
+          key: index,
+          value: value.id,
+          label: value.airportName
+        }
+      }),
+    [airportData]
+  )
   const columns: ProColumns<IFlightTable>[] = [
     {
       dataIndex: 'index',
@@ -133,7 +150,15 @@ const FlightManagement = () => {
       title: 'Departure Time ',
       valueType: 'date',
       render: (_, record) => {
-        return dayjs(record.departureTime).format('HH:mm DD/MM/YYYY')
+        return dayjs(record.departureTime, 'HH:mm DD/MM/YYYY').format('HH:mm DD/MM/YYYY')
+      }
+    },
+    {
+      title: 'Arrival Time ',
+      valueType: 'date',
+      render: (_, record) => {
+        console.log(record)
+        return dayjs(record.arrivalTime, 'HH:mm DD/MM/YYYY').format('HH:mm DD/MM/YYYY')
       }
     },
     {

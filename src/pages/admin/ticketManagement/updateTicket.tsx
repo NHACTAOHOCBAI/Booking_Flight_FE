@@ -1,8 +1,10 @@
-/* eslint-disable react-hooks/exhaustive-deps */
+import flightApi from '@/apis/flight.api'
 import { onErrorUtil } from '@/globalType/util.type'
-import { useCreateTicket } from '@/hooks/useTicket'
-import { Checkbox, Form, FormProps, Input, message, Modal } from 'antd'
-import { useEffect } from 'react'
+import { useUpdateTicket } from '@/hooks/useTicket'
+import { useQuery } from '@tanstack/react-query'
+import { Checkbox, Form, FormProps, Input, message, Modal, Select } from 'antd'
+import _ from 'lodash'
+import { useEffect, useMemo, useState } from 'react'
 import { AiOutlineIdcard } from 'react-icons/ai'
 import { LuScanBarcode } from 'react-icons/lu'
 import { MdDriveFileRenameOutline, MdOutlineLocalPhone, MdOutlineMail } from 'react-icons/md'
@@ -18,21 +20,36 @@ const UpdateTicket = (props: IProp) => {
   const { updatedTicket, setUpdatedTicket, isUpdateOpen, setIsUpdateOpen } = props
   const [form] = Form.useForm()
 
+  const [isFlightId, setIsFlightId] = useState(updatedTicket.flightId)
+
   const [messageApi, contextHolder] = message.useMessage()
-  const updateTicketMutation = useCreateTicket()
+  const updateTicketMutation = useUpdateTicket()
 
   const onFinish: FormProps<ITicketTable>['onFinish'] = async (value) => {
+    const values = form.getFieldsValue()
+    const initialValue = _.omit(updatedTicket, ['id', 'flightCode', 'seatName'])
+    const isDirty = !_.isEqual(values, initialValue)
+    if (!isDirty) {
+      messageApi.open({
+        type: 'error',
+        content: 'No Field Change'
+      })
+
+      return
+    }
+
     const body = {
+      id: updatedTicket.id,
       flightId: value.flightId,
-      flightName: value.flightName,
       seatId: value.seatId,
-      seatName: value.seatName,
       passengerName: value.passengerName,
       passengerPhone: value.passengerPhone,
       passengerIDCard: value.passengerIDCard,
       passengerEmail: value.passengerEmail,
       haveBaggage: value.haveBaggage
     }
+    // console.log(value)
+    // console.log(body)
     updateTicketMutation.mutate(body, {
       onSuccess(data) {
         messageApi.open({
@@ -62,7 +79,7 @@ const UpdateTicket = (props: IProp) => {
     setUpdatedTicket({
       id: '',
       flightId: '',
-      flightName: '',
+      flightCode: '',
       seatId: '',
       seatName: '',
       passengerName: '',
@@ -75,53 +92,97 @@ const UpdateTicket = (props: IProp) => {
   }
   useEffect(() => {
     form.setFieldsValue({
+      id: updatedTicket.id,
       flightId: updatedTicket.flightId,
+      flightCode: updatedTicket.flightCode,
       seatId: updatedTicket.seatId,
+      seatName: updatedTicket.seatName,
       passengerName: updatedTicket.passengerName,
       passengerPhone: updatedTicket.passengerPhone,
       passengerIDCard: updatedTicket.passengerIDCard,
-      passengerEmail: updatedTicket.passengerEmail
+      passengerEmail: updatedTicket.passengerEmail,
+      haveBaggage: updatedTicket.haveBaggage
     })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [updatedTicket])
+
+  const seatData = useQuery({
+    queryKey: ['seatsByFlight', isFlightId],
+    queryFn: () => flightApi.getSeats(isFlightId as string),
+    enabled: isUpdateOpen && isFlightId !== ''
+  })
+  const seatOptions = useMemo(
+    () =>
+      seatData.data?.data.map((value, index) => {
+        return {
+          key: index,
+          value: value.id,
+          label: value.seatName
+        }
+      }),
+    [seatData]
+  )
+
+  const handleClick = () => {
+    setIsFlightId(form.getFieldValue('flightId'))
+  }
+
+  const flightData = useQuery({
+    queryKey: ['flights'],
+    queryFn: flightApi.getFlights,
+    enabled: isUpdateOpen
+  })
+  const flightOptions = useMemo(
+    () =>
+      flightData.data?.data.map((value, index) => {
+        return {
+          key: index,
+          value: value.id,
+          label: value.flightCode
+        }
+      }),
+    [flightData]
+  )
+
   return (
     <>
       {contextHolder}
-      <Modal title='Update Ticket' open={isUpdateOpen} onOk={handleOk} onCancel={handleCancel}>
+      <Modal forceRender title='Update Ticket' open={isUpdateOpen} onOk={handleOk} onCancel={handleCancel}>
         <Form layout='vertical' name='basic' onFinish={onFinish} autoComplete='off' form={form}>
           <Form.Item<ITicketTable>
             label={
               <div>
                 <LuScanBarcode />
-                Flight ID
+                Flight Code
               </div>
             }
             name='flightId'
             rules={[
               {
                 required: true,
-                message: "Please input flight's Id"
+                message: "Please input flight's code"
               }
             ]}
           >
-            <Input />
+            <Select onBlur={handleClick} options={flightOptions} />
           </Form.Item>
 
           <Form.Item<ITicketTable>
             label={
               <div>
                 <PiSeat />
-                Seat ID
+                Seat Class
               </div>
             }
             name='seatId'
             rules={[
               {
                 required: true,
-                message: "Please input seat's ID"
+                message: "Please input seat's class"
               }
             ]}
           >
-            <Input placeholder='Seat ID' />
+            <Select disabled={isFlightId === '' ? true : false} options={seatOptions} />
           </Form.Item>
 
           <Form.Item<ITicketTable>

@@ -23,13 +23,11 @@ const DetailFlight = (props: IProps) => {
       departureTime: '',
       arrivalTime: '',
       originPrice: 0,
-      intermediateAirports: [],
-      seat: []
+      listFlight_Airport: [],
+      listFlight_Seat: []
     })
   }
-  const Content = (value: string) => {
-    return <div>{value}</div>
-  }
+
   const flightItems: DescriptionsProps['items'] = [
     {
       key: 'flightCode',
@@ -53,13 +51,13 @@ const DetailFlight = (props: IProps) => {
       key: 'departureTime',
       label: 'Departure time',
       span: 2,
-      children: dayjs(detailFlight?.departureTime).format('HH:mm DD/MM/YYYY')
+      children: dayjs(detailFlight?.departureTime, 'HH:mm DD/MM/YYYY').format('HH:mm DD/MM/YYYY')
     },
     {
       key: 'arrivalTime',
       label: 'Arrival time',
       span: 2,
-      children: dayjs(detailFlight?.arrivalTime).format('HH:mm DD/MM/YYYY')
+      children: dayjs(detailFlight?.arrivalTime, 'HH:mm DD/MM/YYYY').format('HH:mm DD/MM/YYYY')
     },
     {
       key: 'plane',
@@ -74,7 +72,7 @@ const DetailFlight = (props: IProps) => {
       children: `${detailFlight?.originPrice} VNĐ`
     }
   ]
-  const interColumns: TableProps<IintermediateAirports>['columns'] = [
+  const interColumns: TableProps<IInterAirport>['columns'] = [
     {
       title: 'Intermediate airport',
       dataIndex: 'index',
@@ -90,19 +88,19 @@ const DetailFlight = (props: IProps) => {
           title: 'Airport',
           dataIndex: '',
           key: 'airportName',
-          render: (_, value) => value.airportName
+          render: (_, record) => record.airportName
         },
         {
           title: 'Arrival time',
           dataIndex: '',
           key: 'arrivalTime',
-          render: (_, value) => dayjs(value.arrivalTime).format('HH:mm DD/MM/YYYY')
+          render: (_, record) => dayjs(record.arrivalTime, 'HH:mm DD/MM/YYYY').format('HH:mm DD/MM/YYYY')
         },
         {
           title: 'Departure time',
           dataIndex: '',
           key: 'departureTime',
-          render: (_, value) => dayjs(value.departureTime).format('HH:mm DD/MM/YYYY')
+          render: (_, record) => dayjs(record.departureTime, 'HH:mm DD/MM/YYYY').format('HH:mm DD/MM/YYYY')
         },
         {
           title: 'Note',
@@ -127,7 +125,7 @@ const DetailFlight = (props: IProps) => {
           title: 'Seat',
           dataIndex: '',
           key: 'seatName',
-          render: (_, value) => value.seatName
+          render: (_, record) => record.seatName
         },
         {
           title: 'Quantity',
@@ -137,8 +135,8 @@ const DetailFlight = (props: IProps) => {
         {
           title: 'Actual price',
           key: 'price',
-          render: (_, value) => {
-            return (detailFlight.originPrice * value.price) / 100
+          render: (_, record) => {
+            return (detailFlight.originPrice * record.price) / 100
           }
         }
       ]
@@ -148,14 +146,14 @@ const DetailFlight = (props: IProps) => {
     <>
       <Drawer title='Flight Information' onClose={handleClose} open={isDetailOpen} size='large'>
         <Descriptions size='middle' column={4} bordered items={flightItems} />
-        {detailFlight.intermediateAirports && detailFlight.intermediateAirports.length !== 0 ? (
+        {detailFlight.listFlight_Airport && detailFlight.listFlight_Airport.length !== 0 ? (
           <>
             <div style={{ height: 10 }}></div>
-            <Table<IintermediateAirports>
+            <Table<IInterAirport>
               bordered
               size='small'
               columns={interColumns}
-              dataSource={detailFlight.intermediateAirports}
+              dataSource={detailFlight.listFlight_Airport}
               pagination={false}
             />
           </>
@@ -163,7 +161,13 @@ const DetailFlight = (props: IProps) => {
           <></>
         )}
         <div style={{ height: 10 }}></div>
-        <Table<ISeat> bordered size='small' columns={seatColumns} dataSource={detailFlight.seat} pagination={false} />
+        <Table<ISeat>
+          bordered
+          size='small'
+          columns={seatColumns}
+          dataSource={detailFlight.listFlight_Seat}
+          pagination={false}
+        />
       </Drawer>
     </>
   )

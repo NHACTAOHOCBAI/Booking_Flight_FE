@@ -14,7 +14,12 @@ export const useGetFlightById = (id: string) => {
     queryFn: () => flightApi.getFlightById(id)
   })
 }
-
+export const useGetSeatByFlightId = (id: string) => {
+  return useQuery({
+    queryKey: ['flights/seats', id],
+    queryFn: () => flightApi.getSeats(id)
+  })
+}
 export const useCreateFlight = () => {
   const queryClient = useQueryClient()
   return useMutation({

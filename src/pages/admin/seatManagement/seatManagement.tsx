@@ -62,7 +62,7 @@ const SeatManagement = () => {
       width: 48
     },
     {
-      title: 'ID',
+      title: 'Seat Code',
       search: false,
       render: (_, record) => (
         <a
@@ -72,17 +72,13 @@ const SeatManagement = () => {
             setIsDetailOpen(true)
           }}
         >
-          {record.id}
+          {record.seatCode}
         </a>
       )
     },
     {
       title: 'SeatName',
       dataIndex: 'seatName'
-    },
-    {
-      title: 'SeatCode',
-      dataIndex: 'seatCode'
     },
     {
       title: 'Price',

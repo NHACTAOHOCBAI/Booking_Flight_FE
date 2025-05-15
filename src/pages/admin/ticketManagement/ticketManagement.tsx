@@ -16,8 +16,7 @@ const TicketManagement = () => {
   const [isDetailOpen, setIsDetailOpen] = useState(false)
   const [detailTicket, setDetailTicket] = useState<ITicketTable>({
     id: '',
-    flightId: '',
-    flightName: '',
+    flightCode: '',
     seatName: '',
     passengerName: '',
     passengerPhone: '',
@@ -30,8 +29,7 @@ const TicketManagement = () => {
   const [isUpdateOpen, setIsUpdateOpen] = useState(false)
   const [updatedTicket, setUpdatedTicket] = useState<ITicketTable>({
     id: '',
-    flightId: '',
-    flightName: '',
+    flightCode: '',
     seatName: '',
     passengerName: '',
     passengerPhone: '',
@@ -62,6 +60,7 @@ const TicketManagement = () => {
       }
     })
   }
+
   //Table
   const actionRef = useRef<ActionType>(null)
   const columns: ProColumns<ITicketTable>[] = [
@@ -86,12 +85,12 @@ const TicketManagement = () => {
       )
     },
     {
-      title: 'Flight Id',
-      dataIndex: 'flightId'
+      title: 'Flight Code',
+      dataIndex: 'flightCode'
     },
     {
-      title: 'Seat Id',
-      dataIndex: 'seatId'
+      title: 'Seat Name',
+      dataIndex: 'seatName'
     },
     {
       title: 'Passenger Name',
@@ -99,7 +98,7 @@ const TicketManagement = () => {
     },
     {
       title: 'Passenger Id Card',
-      dataIndex: 'passengerIdCard'
+      dataIndex: 'passengerIDCard'
     },
     {
       title: 'Passenger Phone',
@@ -108,6 +107,10 @@ const TicketManagement = () => {
     {
       title: 'Passenger Email',
       dataIndex: 'passengerEmail'
+    },
+    {
+      title: 'Have Baggage',
+      render: (_, record) => <div>{record.haveBaggage ? 'Yes' : 'No'}</div>
     },
     {
       title: 'Action',

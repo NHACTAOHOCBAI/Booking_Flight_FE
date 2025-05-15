@@ -28,7 +28,7 @@ export const flightData: IFlightTable[] = [
     departureTime: '2025-04-01T08:00:00Z',
     arrivalTime: '2025-04-01T10:30:00Z',
     originPrice: 150,
-    intermediateAirports: [],
+    listFlight_Airport: [],
     seat: [
       {
         seatName: '1',
@@ -58,7 +58,7 @@ export const flightData: IFlightTable[] = [
     departureTime: '2025-04-02T10:00:00Z',
     arrivalTime: '2025-04-02T12:30:00Z',
     originPrice: 200,
-    intermediateAirports: [],
+    listFlight_Airport: [],
     seat: [
       {
         seatName: '1',
@@ -88,7 +88,7 @@ export const flightData: IFlightTable[] = [
     departureTime: '2025-04-03T14:00:00Z',
     arrivalTime: '2025-04-03T16:00:00Z',
     originPrice: 180,
-    intermediateAirports: [],
+    listFlight_Airport: [],
     seat: [
       { seatName: '1', quantity: 40, price: 220 },
       { seatName: '2', quantity: 20, price: 160 },
@@ -106,7 +106,7 @@ export const flightData: IFlightTable[] = [
     departureTime: '2025-04-04T09:00:00Z',
     arrivalTime: '2025-04-04T11:30:00Z',
     originPrice: 1000000,
-    intermediateAirports: [],
+    listFlight_Airport: [],
     seat: [
       { seatName: '1', quantity: 55, price: 1200000 },
       { seatName: '2', quantity: 35, price: 900000 },
@@ -124,7 +124,7 @@ export const flightData: IFlightTable[] = [
     departureTime: '2025-04-05T07:30:00Z',
     arrivalTime: '2025-04-05T09:45:00Z',
     originPrice: 170,
-    intermediateAirports: [],
+    listFlight_Airport: [],
     seat: [
       { seatName: '1', quantity: 60, price: 210 },
       { seatName: '2', quantity: 40, price: 160 },
@@ -142,7 +142,7 @@ export const flightData: IFlightTable[] = [
     departureTime: '2025-04-06T12:00:00Z',
     arrivalTime: '2025-04-06T14:30:00Z',
     originPrice: 190,
-    intermediateAirports: [],
+    listFlight_Airport: [],
     seat: [
       { seatName: '1', quantity: 50, price: 230 },
       { seatName: '2', quantity: 30, price: 170 },
@@ -160,7 +160,7 @@ export const flightData: IFlightTable[] = [
     departureTime: '2025-04-07T16:00:00Z',
     arrivalTime: '2025-04-07T18:30:00Z',
     originPrice: 210,
-    intermediateAirports: [],
+    listFlight_Airport: [],
     seat: [
       { seatName: '1', quantity: 45, price: 260 },
       { seatName: '2', quantity: 25, price: 190 },
@@ -178,7 +178,7 @@ export const flightData: IFlightTable[] = [
     departureTime: '2025-04-08T18:00:00Z',
     arrivalTime: '2025-04-08T20:15:00Z',
     originPrice: 250,
-    intermediateAirports: [],
+    listFlight_Airport: [],
     seat: [
       { seatName: '1', quantity: 55, price: 300 },
       { seatName: '2', quantity: 35, price: 220 },
@@ -196,7 +196,7 @@ export const flightData: IFlightTable[] = [
     departureTime: '2025-04-09T20:00:00Z',
     arrivalTime: '2025-04-09T22:45:00Z',
     originPrice: 230,
-    intermediateAirports: [],
+    listFlight_Airport: [],
     seat: [
       { seatName: '1', quantity: 60, price: 280 },
       { seatName: '2', quantity: 40, price: 200 },
@@ -214,7 +214,7 @@ export const flightData: IFlightTable[] = [
     departureTime: '2025-04-10T22:00:00Z',
     arrivalTime: '2025-04-11T00:30:00Z',
     originPrice: 280,
-    intermediateAirports: [],
+    listFlight_Airport: [],
     seat: [
       { seatName: '1', quantity: 50, price: 320 },
       { seatName: '2', quantity: 30, price: 240 },

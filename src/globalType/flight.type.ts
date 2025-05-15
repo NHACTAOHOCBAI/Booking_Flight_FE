@@ -13,15 +13,17 @@ declare global {
     departureTime: string
     arrivalTime: string
     originPrice: number
-    intermediateAirports: IInterAirport[]
+    listFlight_Airport: IInterAirport[]
     listFlight_Seat: ISeat[]
   }
   interface IInterAirport {
+    id?: string
     airportId?: string
     airportName?: string
     departureTime: string
     arrivalTime: string
     note: string
+    flightId?: string
   }
   interface ISeat {
     seatId?: string

@@ -110,8 +110,20 @@ const AccountManagement = () => {
     },
     {
       title: 'Role',
-      dataIndex: 'role',
-      search: false
+      render: (_, record) => {
+        const roleName = (() => {
+          switch (record.role) {
+            case 1:
+              return 'Employee'
+            case 2:
+              return 'Admin'
+            default:
+              return 'Client'
+          }
+        })()
+
+        return <div>{roleName}</div>
+      }
     },
     {
       title: 'Action',

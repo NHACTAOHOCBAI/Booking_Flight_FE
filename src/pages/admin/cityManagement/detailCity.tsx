@@ -16,19 +16,13 @@ export default function DetailCity(props: Props) {
       key: 'CityCode',
       label: 'City Code',
       span: 4,
-      children: detailCity?.cityCode
+      children: detailCity.cityCode
     },
     {
       key: 'CityName',
       label: 'City Name',
       span: 4,
-      children: detailCity?.cityName
-    },
-    {
-      key: 'cityId',
-      label: 'city Id',
-      span: 4,
-      children: detailCity?.id
+      children: detailCity.cityName
     }
   ]
   return (

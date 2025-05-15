@@ -63,7 +63,7 @@ const toFLight = (flightId: string): IFlightTable => {
       departureTime: '',
       arrivalTime: '',
       originPrice: 0,
-      intermediateAirports: [],
+      listFlight_Airport: [],
       seat: []
     }
   }

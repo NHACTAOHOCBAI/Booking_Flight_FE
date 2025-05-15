@@ -22,8 +22,9 @@ const Ticket = () => {
   if (!bookingFlight) return
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-      {bookingTicketsList.map((value) => (
+      {bookingTicketsList.map((value, index) => (
         <Card
+          key={index}
           hoverable
           style={{
             width: 950,
@@ -73,13 +74,17 @@ const Ticket = () => {
                 <Col span={7}>
                   <div className='from' style={{ textAlign: 'left' }}>
                     <div style={{ fontWeight: 'bold', fontSize: 16, marginBottom: 5 }}>From :</div>
-                    <div style={{ fontSize: 16 }}>{handleGetCityId(bookingFlight.departureAirportId)?.cityName}</div>
+                    <div style={{ fontSize: 16 }}>
+                      {handleGetCityId(bookingFlight.departureAirportId as string)?.cityName}
+                    </div>
                   </div>
                 </Col>
                 <Col span={7}>
                   <div className='from' style={{ textAlign: 'left' }}>
                     <div style={{ fontWeight: 'bold', fontSize: 16, marginBottom: 5 }}>To :</div>
-                    <div style={{ fontSize: 16 }}>{handleGetCityId(bookingFlight.arrivalAirportId)?.cityName}</div>
+                    <div style={{ fontSize: 16 }}>
+                      {handleGetCityId(bookingFlight.arrivalAirportId as string)?.cityName}
+                    </div>
                   </div>
                 </Col>
               </Row>
@@ -87,7 +92,7 @@ const Ticket = () => {
                 <Col span={8}>
                   <div className='seat' style={{ textAlign: 'left' }}>
                     <div style={{ fontWeight: 'bold', fontSize: 16, marginBottom: 5 }}>Seat :</div>
-                    <div style={{ fontSize: 16 }}>{handleGetSeatId(value.seatId)?.seatName}</div>
+                    <div style={{ fontSize: 16 }}>{handleGetSeatId(value.seatId as string)?.seatName}</div>
                   </div>
                 </Col>
                 <Col span={8}>
@@ -126,7 +131,7 @@ const Ticket = () => {
                 <div className='from'>
                   <div style={{ fontSize: 14 }}>
                     <span style={{ fontWeight: 'bold' }}> From : </span>{' '}
-                    {handleGetCityId(bookingFlight.departureAirportId)?.cityName}
+                    {handleGetCityId(bookingFlight.departureAirportId as string)?.cityName}
                   </div>
                 </div>
               </Row>
@@ -134,7 +139,7 @@ const Ticket = () => {
                 <div className='to'>
                   <div style={{ fontSize: 14 }}>
                     <span style={{ fontWeight: 'bold' }}> To : </span>{' '}
-                    {handleGetCityId(bookingFlight.arrivalAirportId)?.cityName}
+                    {handleGetCityId(bookingFlight.arrivalAirportId as string)?.cityName}
                   </div>
                 </div>
               </Row>
@@ -142,7 +147,7 @@ const Ticket = () => {
                 <div className='seat'>
                   <div style={{ fontSize: 14 }}>
                     <span style={{ fontWeight: 'bold' }}> Seat : </span>
-                    {handleGetSeatId(value.seatId)?.seatName}
+                    {handleGetSeatId(value.seatId as string)?.seatName}
                   </div>
                 </div>
               </Row>

@@ -1,5 +1,4 @@
-import { seatOptions } from '@/utils/select'
-import { Card, Form, Input, Row, Select } from 'antd'
+import { Card, Checkbox, Form, Input, Row, Select } from 'antd'
 import { BsFillTicketPerforatedFill } from 'react-icons/bs'
 import { FiPhone } from 'react-icons/fi'
 import { HiOutlineIdentification } from 'react-icons/hi'
@@ -10,13 +9,16 @@ import { Button } from 'antd'
 import { FormProps } from 'antd/lib'
 import { useAppDispatch, useAppSelector } from '@/redux/hooks'
 import { setBookingTicketsList } from '@/redux/features/bookingTicket/bookingTicketsList'
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
+import seatApi from '@/apis/seat.api'
+import { useQuery } from '@tanstack/react-query'
 interface TicketInfo {
   seatId: string
   passengerName: string
   passengerPhone: string
   passengerEmail: string
   passengerIDCard: string
+  haveBaggage: boolean
 }
 
 interface FormValues {
@@ -30,6 +32,22 @@ const TicketInformation = (prop: IProp) => {
   const dispatch = useAppDispatch()
   const bookingFlight = useAppSelector((state) => state.bookingFlight)
   const bookingTicketsList = useAppSelector((state) => state.bookingTicketsList)
+
+  const seatData = useQuery({
+    queryKey: ['seats'],
+    queryFn: seatApi.getSeats
+  })
+  const seatOptions = useMemo(
+    () =>
+      seatData.data?.data.map((value, index) => {
+        return {
+          key: index,
+          value: value.id,
+          label: value.seatName
+        }
+      }),
+    [seatData]
+  )
   const [form] = Form.useForm()
   const onFinish: FormProps<FormValues>['onFinish'] = (values) => {
     if (values.tickets.length === 0) {
@@ -41,7 +59,8 @@ const TicketInformation = (prop: IProp) => {
           passengerName: '',
           passengerPhone: '',
           passengerIDCard: '',
-          passengerEmail: ''
+          passengerEmail: '',
+          haveBaggage: false
         }
       })
       dispatch(setBookingTicketsList(data))
@@ -54,7 +73,8 @@ const TicketInformation = (prop: IProp) => {
         passengerName: value.passengerName,
         passengerPhone: value.passengerPhone,
         passengerIDCard: value.passengerIDCard,
-        passengerEmail: value.passengerEmail
+        passengerEmail: value.passengerEmail,
+        haveBaggage: value.haveBaggage
       }
     })
     dispatch(setBookingTicketsList(data))
@@ -171,6 +191,10 @@ const TicketInformation = (prop: IProp) => {
                   style={{ textAlign: 'left' }}
                 >
                   <Input placeholder='Enter a ID' />
+                </Form.Item>
+
+                <Form.Item<ITicketTable> label={null} name='haveBaggage' valuePropName='checked'>
+                  <Checkbox>Does passenger have carry-on baggage</Checkbox>
                 </Form.Item>
               </Card>
             ))}

@@ -60,7 +60,7 @@ const AirlineManagement = () => {
       width: 48
     },
     {
-      title: 'ID',
+      title: 'Airline Code',
       search: false,
       render: (_, record) => (
         <a
@@ -70,13 +70,9 @@ const AirlineManagement = () => {
             setIsDetailOpen(true)
           }}
         >
-          {record.id}
+          {record.airlineCode}
         </a>
       )
-    },
-    {
-      title: 'AirlineCode',
-      dataIndex: 'airlineCode'
     },
     {
       title: 'AirlineName',

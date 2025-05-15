@@ -1,17 +1,16 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
-const initialState: ITicketTable[] = [
-];
+const initialState: ITicketTable[] = []
 
 const bookingTicketsListSlice = createSlice({
-    name: "bookingTicketsList",
-    initialState,
-    reducers: {
-        setBookingTicketsList: (_, action: PayloadAction<ITicketTable[]>) => {
-            return action.payload;
-        }
-    },
-});
+  name: 'bookingTicketsList',
+  initialState,
+  reducers: {
+    setBookingTicketsList: (_, action: PayloadAction<ITicketTable[]>) => {
+      return action.payload
+    }
+  }
+})
 
-export const { setBookingTicketsList } = bookingTicketsListSlice.actions;
-export default bookingTicketsListSlice.reducer;
+export const { setBookingTicketsList } = bookingTicketsListSlice.actions
+export default bookingTicketsListSlice.reducer

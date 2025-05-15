@@ -27,8 +27,9 @@ const options: OptionData[] = [
     tab: {
       key: 'vietnam-tab',
       label: 'Việt Nam',
-      list: cityData.map((city) => {
+      list: cityData.map((city, key) => {
         return {
+          key,
           value: city.id!,
           label: `${city.cityName} (${city.cityCode}) `
         }

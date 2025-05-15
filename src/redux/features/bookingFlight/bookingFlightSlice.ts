@@ -9,8 +9,8 @@ const initialState: IFlightTable = {
   departureTime: '',
   arrivalTime: '',
   originPrice: 0,
-  intermediateAirports: [],
-  seat: []
+  listFlight_Airport: [],
+  listFlight_Seat: []
 }
 
 const bookingFlightSlice = createSlice({

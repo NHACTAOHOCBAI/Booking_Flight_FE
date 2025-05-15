@@ -12,6 +12,10 @@ const flightApi = {
     const res = await http.get<SuccessResponse<IFlightTable[]>>(URL)
     return res.data
   },
+  getSeats: async (id: string) => {
+    const res = await http.get<SuccessResponse<ISeatTable[]>>(`${URL}/seats/${id}`)
+    return res.data
+  },
   createFlight: async (param: IFlightTable) => {
     const res = await http.post<SuccessResponse<IFlightTable>>(URL, param)
     return res.data

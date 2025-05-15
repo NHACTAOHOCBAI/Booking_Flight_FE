@@ -14,6 +14,7 @@ import airportApi from '@/apis/airport.api'
 import planeApi from '@/apis/plane.api'
 import seatApi from '@/apis/seat.api'
 import { useQuery } from '@tanstack/react-query'
+import _ from 'lodash'
 interface IProp {
   isUpdateOpen: boolean
   setIsUpdateOpen: (value: boolean) => void
@@ -29,23 +30,38 @@ const UpdateFlight = (props: IProp) => {
 
   const onFinish: FormProps<IFlightTable>['onFinish'] = async (value) => {
     //format day time
-    value.departureTime = dayjs(value.departureTime).format('HH:mm DD/MM/YYYY')
-    value.arrivalTime = dayjs(value.arrivalTime).format('HH:mm DD/MM/YYYY')
-    if (value.intermediateAirports) {
-      value.intermediateAirports = value.intermediateAirports.map((values) => {
+    value.departureTime = dayjs(value.departureTime, 'HH:mm DD/MM/YYYY').format('HH:mm DD/MM/YYYY')
+    value.arrivalTime = dayjs(value.arrivalTime, 'HH:mm DD/MM/YYYY').format('HH:mm DD/MM/YYYY')
+    if (value.listFlight_Airport) {
+      value.listFlight_Airport = value.listFlight_Airport.map((values) => {
         return {
+          id: values.id,
+          flightId: values.flightId,
           airportId: values.airportId,
-          arrivalTime: dayjs(values.arrivalTime).format('HH:mm DD/MM/YYYY'),
-          departureTime: dayjs(values.departureTime).format('HH:mm DD/MM/YYYY'),
+          airportName: values.airportName,
+          arrivalTime: dayjs(values.arrivalTime, 'HH:mm DD/MM/YYYY').format('HH:mm DD/MM/YYYY'),
+          departureTime: dayjs(values.departureTime, 'HH:mm DD/MM/YYYY').format('HH:mm DD/MM/YYYY'),
           note: values.note ? values.note : 'nothing'
         }
       })
-    } else value.intermediateAirports = []
+    } else value.listFlight_Airport = []
     value.listFlight_Seat = value.listFlight_Seat ? value.listFlight_Seat : []
     console.log(value)
 
+    const initialValue = _.omit(updatedFlight, ['id', 'planeName', 'departureAirportName', 'arrivalAirportName'])
+    const isDirty = !_.isEqual(value, initialValue)
+    if (!isDirty) {
+      messageApi.open({
+        type: 'error',
+        content: 'No Field Change'
+      })
+      return
+    }
+
+    console.log(initialValue)
     //call mutation
     const body = {
+      id: updatedFlight.id,
       flightCode: value.flightCode,
       planeId: value.planeId,
       departureAirportId: value.departureAirportId,
@@ -53,7 +69,7 @@ const UpdateFlight = (props: IProp) => {
       departureTime: value.departureTime,
       arrivalTime: value.arrivalTime,
       originPrice: value.originPrice,
-      intermediateAirports: value.intermediateAirports,
+      listFlight_Airport: value.listFlight_Airport,
       listFlight_Seat: value.listFlight_Seat
     }
     updataFlightMutation.mutate(body, {
@@ -91,31 +107,38 @@ const UpdateFlight = (props: IProp) => {
       departureTime: '',
       arrivalTime: '',
       originPrice: 0,
-      intermediateAirports: [],
+      listFlight_Airport: [],
       listFlight_Seat: []
     })
     setIsUpdateOpen(false)
   }
   useEffect(() => {
     form.setFieldsValue({
+      planeId: updatedFlight.planeId,
       flightCode: updatedFlight.flightCode,
       planeName: updatedFlight.planeName,
       departureAirportName: updatedFlight.departureAirportName,
+      departureAirportId: updatedFlight.departureAirportId,
       arrivalAirportName: updatedFlight.arrivalAirportName,
-      departureTime: updatedFlight.departureTime ? dayjs(updatedFlight.departureTime) : null,
-      arrivalTime: updatedFlight.arrivalTime ? dayjs(updatedFlight.arrivalTime) : null,
+      arrivalAirportId: updatedFlight.arrivalAirportId,
+      departureTime: updatedFlight.departureTime ? dayjs(updatedFlight.departureTime, 'HH:mm DD/MM/YYYY') : null,
+      arrivalTime: updatedFlight.arrivalTime ? dayjs(updatedFlight.arrivalTime, 'HH:mm DD/MM/YYYY') : null,
       originPrice: updatedFlight.originPrice,
-      intermediateAirports: updatedFlight.intermediateAirports.map((value) => {
+      listFlight_Airport: updatedFlight.listFlight_Airport.map((value) => {
         return {
+          id: value.id,
+          airportId: value.airportId,
           airportName: value.airportName,
-          arrivalTime: value.arrivalTime ? dayjs(value.arrivalTime) : null,
-          departureTime: value.departureTime ? dayjs(value.departureTime) : null,
+          flightId: value.flightId,
+          arrivalTime: value.arrivalTime ? dayjs(value.arrivalTime, 'HH:mm DD/MM/YYYY') : null,
+          departureTime: value.departureTime ? dayjs(value.departureTime, 'HH:mm DD/MM/YYYY') : null,
           note: value.note
         }
       }),
       listFlight_Seat: updatedFlight.listFlight_Seat
     })
   }, [form, updatedFlight])
+  console.log(updatedFlight)
 
   const airportData = useQuery({
     queryKey: ['airports'],
@@ -125,7 +148,6 @@ const UpdateFlight = (props: IProp) => {
   const airportOptions = useMemo(
     () =>
       airportData.data?.data.map((value, index) => {
-        console.log(value)
         return {
           key: index,
           value: value.id,
@@ -218,9 +240,8 @@ const UpdateFlight = (props: IProp) => {
                 ]}
               >
                 <Select
-                  defaultValue={updatedFlight.planeName}
                   showSearch
-                  placeholder='Select a plane'
+                  placeholder={updatedFlight.planeName}
                   optionFilterProp='label'
                   options={planeOptions}
                 />
@@ -242,8 +263,7 @@ const UpdateFlight = (props: IProp) => {
               >
                 <Select
                   showSearch
-                  defaultValue={updatedFlight.departureAirportName}
-                  placeholder='Select a departure airport'
+                  placeholder={updatedFlight.departureAirportName}
                   optionFilterProp='label'
                   options={airportOptions}
                 />
@@ -265,8 +285,7 @@ const UpdateFlight = (props: IProp) => {
               >
                 <Select
                   showSearch
-                  defaultValue={updatedFlight.arrivalAirportName}
-                  placeholder='Select a arrival airport'
+                  placeholder={updatedFlight.arrivalAirportName}
                   optionFilterProp='label'
                   options={airportOptions}
                 />
@@ -324,28 +343,28 @@ const UpdateFlight = (props: IProp) => {
                 </Col>
               </Row>
               <Form.Item<IFlightTable> label='Intermediate airport'>
-                <Form.List name='intermediateAirports'>
+                <Form.List name='listFlight_Airport'>
                   {(subFields, subOpt) => (
                     <div style={{ display: 'flex', flexDirection: 'column', rowGap: 16 }}>
                       {subFields.map((subField) => (
                         <Space key={subField.key}>
                           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                            <Col>
+                              <Form.Item
+                                rules={[
+                                  {
+                                    required: true,
+                                    message: 'Please input airport'
+                                  }
+                                ]}
+                                noStyle
+                                name={[subField.name, 'airportId']}
+                              >
+                                <Select style={{ width: '100%' }} optionFilterProp='label' options={airportOptions} />
+                              </Form.Item>
+                            </Col>
                             <Row gutter={20}>
-                              <Col span={7}>
-                                <Form.Item
-                                  rules={[
-                                    {
-                                      required: true,
-                                      message: 'Please input airport'
-                                    }
-                                  ]}
-                                  noStyle
-                                  name={[subField.name, 'airportName']}
-                                >
-                                  <Select style={{ width: '100%' }} optionFilterProp='label' options={airportOptions} />
-                                </Form.Item>
-                              </Col>
-                              <Col span={8}>
+                              <Col>
                                 <Form.Item
                                   rules={[
                                     {
@@ -365,7 +384,7 @@ const UpdateFlight = (props: IProp) => {
                                   />
                                 </Form.Item>
                               </Col>
-                              <Col span={8}>
+                              <Col>
                                 <Form.Item
                                   rules={[
                                     {

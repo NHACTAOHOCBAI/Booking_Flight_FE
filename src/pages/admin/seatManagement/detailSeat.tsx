@@ -37,7 +37,7 @@ const DetailSeat = (props: IProps) => {
       key: 'Price',
       label: 'Price',
       span: 4,
-      children: detailSeat?.price
+      children: <div>{detailSeat?.price}%</div>
     },
     {
       key: 'Description',

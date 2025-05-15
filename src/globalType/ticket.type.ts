@@ -3,8 +3,8 @@ export {}
 declare global {
   interface ITicketTable {
     id?: string
-    flightId: string
-    flightName: string
+    flightId?: string
+    flightCode?: string
     seatId?: string
     seatName?: string
     passengerName: string

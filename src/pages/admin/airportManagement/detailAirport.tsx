@@ -16,19 +16,19 @@ export default function DetailAirport(props: Props) {
       key: 'airportCode',
       label: 'airport Code',
       span: 4,
-      children: detailAirport?.airportCode
+      children: detailAirport.airportCode
     },
     {
       key: 'airportName',
       label: 'airport Name',
       span: 4,
-      children: detailAirport?.airportName
+      children: detailAirport.airportName
     },
     {
-      key: 'cityId',
-      label: 'city Id',
+      key: 'cityName',
+      label: 'city Name',
       span: 4,
-      children: detailAirport?.cityId
+      children: detailAirport.cityName
     }
   ]
   return (

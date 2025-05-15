@@ -24,12 +24,13 @@ const FlightSchedule = () => {
         </Row>
         {/* start */}
         {/* inter */}
-        {bookingFlight.intermediateAirports &&
-          bookingFlight.intermediateAirports.map((value, index) => {
+        {bookingFlight.listFlight_Airport &&
+          bookingFlight.listFlight_Airport.map((value, index) => {
             const startTime =
-              index === 0 ? bookingFlight.departureTime : bookingFlight.intermediateAirports[index - 1].departureTime
+              index === 0 ? bookingFlight.departureTime : bookingFlight.listFlight_Airport[index - 1].departureTime
             return (
               <InterAirport
+                key={index}
                 depatureTime={value.departureTime}
                 airportId={value.airportName as string}
                 startTime={startTime}
@@ -43,10 +44,10 @@ const FlightSchedule = () => {
         <DesAirport
           airportId={bookingFlight.arrivalAirportId as string}
           startTime={
-            bookingFlight.intermediateAirports &&
-            (bookingFlight.intermediateAirports.length === 0
+            bookingFlight.listFlight_Airport &&
+            (bookingFlight.listFlight_Airport.length === 0
               ? bookingFlight.departureTime
-              : bookingFlight.intermediateAirports[bookingFlight.intermediateAirports.length - 1].departureTime)
+              : bookingFlight.listFlight_Airport[bookingFlight.listFlight_Airport.length - 1].departureTime)
           }
           arrivalTime={bookingFlight.arrivalTime}
           note='nothing'
