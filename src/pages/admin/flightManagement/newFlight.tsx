@@ -14,6 +14,7 @@ import { useQuery } from '@tanstack/react-query'
 import { useMemo } from 'react'
 import planeApi from '@/apis/plane.api'
 import seatApi from '@/apis/seat.api'
+import { useCreateTicket } from '@/hooks/useTicket'
 interface IProp {
   isNewOpen: boolean
   setIsNewOpen: (value: boolean) => void
@@ -24,6 +25,7 @@ const NewFlight = (props: IProp) => {
 
   const [messageApi, contextHolder] = message.useMessage()
   const newFlightMutation = useCreateFlight()
+  const newTicketMutation = useCreateTicket()
 
   const onFinish: FormProps<IFlightTable>['onFinish'] = async (value) => {
     //format day time
@@ -54,11 +56,30 @@ const NewFlight = (props: IProp) => {
       listFlight_Airport: value.listFlight_Airport,
       listFlight_Seat: value.listFlight_Seat
     }
+
     newFlightMutation.mutate(body, {
       onSuccess(data) {
         messageApi.open({
           type: 'success',
           content: data.message
+        })
+
+        value.listFlight_Seat.map((seat) => {
+          const body = {
+            flightId: data.data.id,
+            flightCode: value.flightCode,
+            seatId: seat.seatId
+          }
+          for (let i = 1; i <= seat.quantity; i++) {
+            newTicketMutation.mutate(body, {
+              onSuccess(data) {
+                console.log(data)
+              },
+              onError(error: Error) {
+                console.log(error)
+              }
+            })
+          }
         })
       },
       onError(error: Error) {

@@ -7,10 +7,10 @@ declare global {
     flightCode?: string
     seatId?: string
     seatName?: string
-    passengerName: string
-    passengerPhone: string
-    passengerIDCard: string
-    passengerEmail: string
-    haveBaggage: boolean
+    passengerName?: string
+    passengerPhone?: string
+    passengerIDCard?: string
+    passengerEmail?: string
+    haveBaggage?: boolean
   }
 }
