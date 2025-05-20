@@ -6,9 +6,10 @@ import { useRef, useState } from 'react'
 import UpdatedAirline from './updateAirline'
 import NewAirline from './newAirline'
 import DetailAirline from './detailAirline'
-import { useDeleteAirline, useGetAllAirlines } from '@/hooks/useAirline'
+import { useDeleteAirline } from '@/hooks/useAirline'
 import ErrorPage from '@/components/ErrorPage/ErrorPage'
 import LoadingError from '@/components/ErrorPage/LoadingError'
+import airlineApi from '@/apis/airline.api'
 
 const AirlineManagement = () => {
   //data
@@ -115,26 +116,45 @@ const AirlineManagement = () => {
     }
   ]
 
-  //fetch data
-  const { isLoading, isError, error, data } = useGetAllAirlines()
-  if (isLoading) {
-    return <LoadingError />
-  }
-
-  if (isError) {
-    console.log(error)
-    return <ErrorPage />
-  }
-  if (!data) return
-
+  const [error, setError] = useState<unknown>(null)
+  const [loading, setLoading] = useState(true)
   return (
     <>
       {contextHolder}
+      {loading && <LoadingError />}
+      {error && <ErrorPage />}
       <ProTable<IAirlineTable>
+        rowKey='id'
         search={{
           labelWidth: 'auto'
         }}
-        dataSource={data.data}
+        request={async (params) => {
+          setLoading(true)
+          setError(null)
+
+          try {
+            const response = await airlineApi.getAirlines({
+              page: params.current,
+              size: params.pageSize
+            })
+
+            setLoading(false)
+            return {
+              data: response.data?.result,
+              success: true,
+              total: response.data?.meta.total
+            }
+          } catch (err) {
+            console.error(err)
+            setError(err)
+            setLoading(false)
+            return {
+              data: [],
+              success: false,
+              total: 0
+            }
+          }
+        }}
         columns={columns}
         actionRef={actionRef}
         cardBordered

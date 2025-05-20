@@ -1,10 +1,11 @@
 import http from '@/utils/http'
 import { SuccessResponse } from '@/globalType/util.type'
+import { AirportListConfig, AirportList } from '@/globalType/airport.type'
 
 const URL = 'api/airports'
 const airportApi = {
-  getAirports: async () => {
-    const res = await http.get<SuccessResponse<IAirportTable[]>>(URL)
+  getAirports: async (params: AirportListConfig) => {
+    const res = await http.get<SuccessResponse<AirportList>>(URL, { params })
     return res.data
   },
   getAirportById: async (params: string) => {

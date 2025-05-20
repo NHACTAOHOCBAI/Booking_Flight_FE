@@ -7,10 +7,11 @@ import { useRef, useState } from 'react'
 import NewCity from './newCity'
 import UpdateCity from './updateCity'
 
-import { useDeleteCity, useGetAllCites } from '@/hooks/useCity'
+import { useDeleteCity } from '@/hooks/useCity'
 import DetailCity from './detailCity'
 import LoadingError from '@/components/ErrorPage/LoadingError'
 import ErrorPage from '@/components/ErrorPage/ErrorPage'
+import cityApi from '@/apis/city.api'
 const CityManagement = () => {
   //Table
   const actionRef = useRef<ActionType>(null)
@@ -117,27 +118,49 @@ const CityManagement = () => {
 
   const [isDetailOpen, setIsDetailOpen] = useState(false)
 
-  const { data, isLoading, isError, error } = useGetAllCites()
-
-  if (isLoading) {
-    return <LoadingError />
-  }
-
-  if (isError) {
-    console.log(error)
-    return <ErrorPage />
-  }
-  if (!data) return
+  const [error, setError] = useState<unknown>(null)
+  const [loading, setLoading] = useState(true)
   return (
     <>
       {contextHolder}
+      {loading && <LoadingError />}
+      {error && <ErrorPage />}
       <ProTable<ICityTable>
-        bordered
-        search={false}
-        dataSource={data.data}
+        rowKey='id'
+        search={{
+          labelWidth: 'auto'
+        }}
+        request={async (params) => {
+          setLoading(true)
+          setError(null)
+
+          try {
+            const response = await cityApi.getCities({
+              page: params.current,
+              size: params.pageSize
+            })
+
+            setLoading(false)
+            return {
+              data: response.data?.result,
+              success: true,
+              total: response.data?.meta.total
+            }
+          } catch (err) {
+            console.error(err)
+            setError(err)
+            setLoading(false)
+            return {
+              data: [],
+              success: false,
+              total: 0
+            }
+          }
+        }}
         columns={columns}
         actionRef={actionRef}
         headerTitle='City Table'
+        bordered
         toolBarRender={() => [
           <Button
             key='button'

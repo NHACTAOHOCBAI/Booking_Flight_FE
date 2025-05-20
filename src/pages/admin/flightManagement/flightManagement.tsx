@@ -13,9 +13,10 @@ import { useAppDispatch } from '@/redux/hooks'
 import { setBookingFlight } from '@/redux/features/bookingFlight/bookingFlightSlice'
 import ErrorPage from '@/components/ErrorPage/ErrorPage'
 import LoadingError from '@/components/ErrorPage/LoadingError'
-import { useDeleteFlight, useGetAllFlights } from '@/hooks/useFlight'
+import { useDeleteFlight } from '@/hooks/useFlight'
 import airportApi from '@/apis/airport.api'
 import { useQuery } from '@tanstack/react-query'
+import flightApi from '@/apis/flight.api'
 const FlightManagement = () => {
   //detail
   const [detailFlight, setDetailFlight] = useState<IFlightTable>({
@@ -218,28 +219,48 @@ const FlightManagement = () => {
       )
     }
   ]
-  //fetch data
-  const { isLoading, isError, error, data } = useGetAllFlights()
-  if (isLoading) {
-    return <LoadingError />
-  }
-
-  if (isError) {
-    console.log(error)
-    return <ErrorPage />
-  }
-  if (!data) return
+  const [error, setError] = useState<unknown>(null)
+  const [loading, setLoading] = useState(true)
   return (
     <>
       {contextHolder}
+      {loading && <LoadingError />}
+      {error && <ErrorPage />}
       <ProTable<IFlightTable>
+        rowKey='id'
         search={{
           labelWidth: 'auto'
         }}
-        bordered
-        dataSource={data.data}
+        request={async (params) => {
+          setLoading(true)
+          setError(null)
+
+          try {
+            const response = await flightApi.getFlights({
+              page: params.current,
+              size: params.pageSize
+            })
+
+            setLoading(false)
+            return {
+              data: response.data?.result,
+              success: true,
+              total: response.data?.meta.total
+            }
+          } catch (err) {
+            console.error(err)
+            setError(err)
+            setLoading(false)
+            return {
+              data: [],
+              success: false,
+              total: 0
+            }
+          }
+        }}
         columns={columns}
         actionRef={actionRef}
+        bordered
         cardBordered
         headerTitle='Flight List'
         toolBarRender={() => [

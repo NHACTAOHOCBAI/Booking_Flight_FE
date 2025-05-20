@@ -6,11 +6,14 @@ import { useRef, useState } from 'react'
 import NewSeat from './newSeat'
 import UpdateSeat from './updateSeat'
 import DetailSeat from './detailSeat'
-import { useDeleteSeat, useGetAllSeats } from '@/hooks/useSeat'
+import { useDeleteSeat } from '@/hooks/useSeat'
 import ErrorPage from '@/components/ErrorPage/ErrorPage'
 import LoadingError from '@/components/ErrorPage/LoadingError'
+import seatApi from '@/apis/seat.api'
 
 const SeatManagement = () => {
+  const [error, setError] = useState<unknown>(null)
+  const [loading, setLoading] = useState(true)
   //detail
   const [isDetailOpen, setIsDetailOpen] = useState(false)
   const [detailSeat, setDetailSeat] = useState<ISeatTable>({
@@ -123,25 +126,44 @@ const SeatManagement = () => {
       )
     }
   ]
-  //fetch data
-  const { isLoading, isError, error, data } = useGetAllSeats()
-  if (isLoading) {
-    return <LoadingError />
-  }
 
-  if (isError) {
-    console.log(error)
-    return <ErrorPage />
-  }
-  if (!data) return
   return (
     <>
       {contextHolder}
+      {loading && <LoadingError />}
+      {error && <ErrorPage />}
       <ProTable<ISeatTable>
+        rowKey='id'
         search={{
           labelWidth: 'auto'
         }}
-        dataSource={data.data}
+        request={async (params) => {
+          setLoading(true)
+          setError(null)
+
+          try {
+            const response = await seatApi.getSeats({
+              page: params.current,
+              size: params.pageSize
+            })
+
+            setLoading(false)
+            return {
+              data: response.data?.result,
+              success: true,
+              total: response.data?.meta.total
+            }
+          } catch (err) {
+            console.error(err)
+            setError(err)
+            setLoading(false)
+            return {
+              data: [],
+              success: false,
+              total: 0
+            }
+          }
+        }}
         columns={columns}
         actionRef={actionRef}
         cardBordered

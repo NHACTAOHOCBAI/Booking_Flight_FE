@@ -7,11 +7,15 @@ import NewTicket from './newTicket'
 
 import ErrorPage from '@/components/ErrorPage/ErrorPage'
 import LoadingError from '@/components/ErrorPage/LoadingError'
-import { useDeleteTicket, useGetAllTickets } from '@/hooks/useTicket'
+import { useDeleteTicket } from '@/hooks/useTicket'
 import DetailTicket from './detailTicket'
 import UpdateTicket from './updateTicket'
+import ticketApi from '@/apis/ticket.api'
 
 const TicketManagement = () => {
+  const [error, setError] = useState<unknown>(null)
+  const [loading, setLoading] = useState(true)
+
   //detail
   const [isDetailOpen, setIsDetailOpen] = useState(false)
   const [detailTicket, setDetailTicket] = useState<ITicketTable>({
@@ -147,25 +151,44 @@ const TicketManagement = () => {
       )
     }
   ]
-  //fetch data
-  const { isLoading, isError, error, data } = useGetAllTickets()
-  if (isLoading) {
-    return <LoadingError />
-  }
 
-  if (isError) {
-    console.log(error)
-    return <ErrorPage />
-  }
-  if (!data) return
   return (
     <>
       {contextHolder}
+      {loading && <LoadingError />}
+      {error && <ErrorPage />}
       <ProTable<ITicketTable>
+        rowKey='id'
         search={{
           labelWidth: 'auto'
         }}
-        dataSource={data.data}
+        request={async (params) => {
+          setLoading(true)
+          setError(null)
+
+          try {
+            const response = await ticketApi.getTickets({
+              page: params.current,
+              size: params.pageSize
+            })
+
+            setLoading(false)
+            return {
+              data: response.data?.result,
+              success: true,
+              total: response.data?.meta.total
+            }
+          } catch (err) {
+            console.error(err)
+            setError(err)
+            setLoading(false)
+            return {
+              data: [],
+              success: false,
+              total: 0
+            }
+          }
+        }}
         columns={columns}
         actionRef={actionRef}
         cardBordered

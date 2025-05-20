@@ -1,5 +1,6 @@
 import http from '@/utils/http'
 import { SuccessResponse } from '@/globalType/util.type'
+import { PlaneListConfig, PlaneList } from '@/globalType/plane.type'
 
 const URL = 'api/planes'
 
@@ -8,8 +9,8 @@ const planeApi = {
     const res = await http.get<SuccessResponse<IPlaneTable>>(URL, { params })
     return res.data
   },
-  getPlanes: async () => {
-    const res = await http.get<SuccessResponse<IPlaneTable[]>>(URL)
+  getPlanes: async (params: PlaneListConfig) => {
+    const res = await http.get<SuccessResponse<PlaneList>>(URL, { params })
     return res.data
   },
   createPlane: async (param: IPlaneTable) => {

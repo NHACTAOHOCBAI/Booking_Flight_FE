@@ -1,10 +1,11 @@
 import airlineApi from '@/apis/airline.api'
+import { AirlineListConfig } from '@/globalType/airline.type'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
-export const useGetAllAirlines = () => {
+export const useGetAllAirlines = (queryConfig: AirlineListConfig) => {
   return useQuery({
-    queryKey: ['airlines'],
-    queryFn: airlineApi.getAirlines
+    queryKey: ['airlines', queryConfig],
+    queryFn: () => airlineApi.getAirlines(queryConfig)
   })
 }
 

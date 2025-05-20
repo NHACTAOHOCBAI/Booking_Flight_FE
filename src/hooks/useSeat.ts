@@ -1,10 +1,11 @@
 import seatApi from '@/apis/seat.api'
+import { SeatListConfig } from '@/globalType/seat.type'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
-export const useGetAllSeats = () => {
+export const useGetAllSeats = (queryConfig: SeatListConfig) => {
   return useQuery({
-    queryKey: ['seats'],
-    queryFn: seatApi.getSeats
+    queryKey: ['seats', queryConfig],
+    queryFn: () => seatApi.getSeats(queryConfig)
   })
 }
 

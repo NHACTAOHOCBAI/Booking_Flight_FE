@@ -6,9 +6,10 @@ import { useRef, useState } from 'react'
 import NewAirport from './newAirport'
 import UpdateAirport from './updateAirport'
 import DetailAirport from './detailAirport'
-import { useDeleteAirport, useGetAllAirports } from '@/hooks/useAirport'
+import { useDeleteAirport } from '@/hooks/useAirport'
 import ErrorPage from '@/components/ErrorPage/ErrorPage'
 import LoadingError from '@/components/ErrorPage/LoadingError'
+import airportApi from '@/apis/airport.api'
 const AirportManagement = () => {
   //Table
   const actionRef = useRef<ActionType>(null)
@@ -79,7 +80,7 @@ const AirportManagement = () => {
       dataIndex: 'airportName'
     },
     {
-      title: 'City',
+      title: 'Airport',
       dataIndex: 'cityName'
     },
     {
@@ -118,25 +119,46 @@ const AirportManagement = () => {
       )
     }
   ]
-  //fetch data
-  const { isLoading, isError, error, data } = useGetAllAirports()
-  if (isLoading) {
-    return <LoadingError />
-  }
 
-  if (isError) {
-    console.log(error)
-    return <ErrorPage />
-  }
-  if (!data) return
+  const [error, setError] = useState<unknown>(null)
+  const [loading, setLoading] = useState(true)
   return (
     <>
       {contextHolder}
+      {loading && <LoadingError />}
+      {error && <ErrorPage />}
       <ProTable<IAirportTable>
+        rowKey='id'
         search={{
           labelWidth: 'auto'
         }}
-        dataSource={data.data}
+        request={async (params) => {
+          setLoading(true)
+          setError(null)
+
+          try {
+            const response = await airportApi.getAirports({
+              page: params.current,
+              size: params.pageSize
+            })
+
+            setLoading(false)
+            return {
+              data: response.data?.result,
+              success: true,
+              total: response.data?.meta.total
+            }
+          } catch (err) {
+            console.error(err)
+            setError(err)
+            setLoading(false)
+            return {
+              data: [],
+              success: false,
+              total: 0
+            }
+          }
+        }}
         columns={columns}
         bordered
         actionRef={actionRef}

@@ -5,9 +5,10 @@ import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons'
 import NewPlane from './newPlane'
 import UpdatePlane from './updatePlane'
 import DetailPlane from './detailPlane'
-import { useDeletePlane, useGetAllPlanes } from '@/hooks/usePlane'
+import { useDeletePlane } from '@/hooks/usePlane'
 import ErrorPage from '@/components/ErrorPage/ErrorPage'
 import LoadingError from '@/components/ErrorPage/LoadingError'
+import planeApi from '@/apis/plane.api'
 const PlaneManagement = () => {
   //detail
   const [isDetailOpen, setIsDetailOpen] = useState(false)
@@ -119,26 +120,45 @@ const PlaneManagement = () => {
       )
     }
   ]
-
-  //fetch data
-  const { isLoading, isError, error, data } = useGetAllPlanes()
-  if (isLoading) {
-    return <LoadingError />
-  }
-
-  if (isError) {
-    console.log(error)
-    return <ErrorPage />
-  }
-  if (!data) return
+  const [error, setError] = useState<unknown>(null)
+  const [loading, setLoading] = useState(true)
   return (
     <>
       {contextHolder}
+      {loading && <LoadingError />}
+      {error && <ErrorPage />}
       <ProTable<IPlaneTable>
+        rowKey='id'
         search={{
           labelWidth: 'auto'
         }}
-        dataSource={data.data}
+        request={async (params) => {
+          setLoading(true)
+          setError(null)
+
+          try {
+            const response = await planeApi.getPlanes({
+              page: params.current,
+              size: params.pageSize
+            })
+
+            setLoading(false)
+            return {
+              data: response.data?.result,
+              success: true,
+              total: response.data?.meta.total
+            }
+          } catch (err) {
+            console.error(err)
+            setError(err)
+            setLoading(false)
+            return {
+              data: [],
+              success: false,
+              total: 0
+            }
+          }
+        }}
         columns={columns}
         actionRef={actionRef}
         cardBordered

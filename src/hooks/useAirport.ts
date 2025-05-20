@@ -1,10 +1,11 @@
 import airportApi from '@/apis/airport.api'
+import { AirportListConfig } from '@/globalType/airport.type'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
-export const useGetAllAirports = () => {
+export const useGetAllAirports = (queryConfig: AirportListConfig) => {
   return useQuery({
-    queryKey: ['airports'],
-    queryFn: airportApi.getAirports
+    queryKey: ['airports', queryConfig],
+    queryFn: () => airportApi.getAirports(queryConfig)
   })
 }
 

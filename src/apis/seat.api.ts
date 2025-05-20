@@ -1,5 +1,6 @@
 import http from '@/utils/http'
 import { SuccessResponse } from '@/globalType/util.type'
+import { SeatList, SeatListConfig } from '@/globalType/seat.type'
 
 const URL = 'api/seats'
 
@@ -8,8 +9,8 @@ const seatApi = {
     const res = await http.get<SuccessResponse<ISeatTable>>(URL, { params })
     return res.data
   },
-  getSeats: async () => {
-    const res = await http.get<SuccessResponse<ISeatTable[]>>(URL)
+  getSeats: async (params: SeatListConfig) => {
+    const res = await http.get<SuccessResponse<SeatList>>(URL, { params })
     return res.data
   },
   createSeat: async (param: ISeatTable) => {

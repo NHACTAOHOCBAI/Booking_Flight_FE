@@ -8,9 +8,10 @@ import NewAccount from './newAccount'
 import UpdateAccount from './updateAccount.tsx'
 import DetailAccount from './detailAccount.tsx'
 
-import { useDeleteAccount, useGetAllAccounts } from '@/hooks/account..ts'
+import { useDeleteAccount } from '@/hooks/account..ts'
 import ErrorPage from '@/components/ErrorPage/ErrorPage.tsx'
 import LoadingError from '@/components/ErrorPage/LoadingError.tsx'
+import accountApi from '@/apis/account.api.ts'
 
 const AccountManagement = () => {
   //table
@@ -162,22 +163,45 @@ const AccountManagement = () => {
     }
   ]
 
-  //fetch data
-  const { isLoading, isError, error, data } = useGetAllAccounts()
-  if (isLoading) {
-    return <LoadingError />
-  }
-
-  if (isError) {
-    console.log(error)
-    return <ErrorPage />
-  }
-  if (!data) return
+  const [error, setError] = useState<unknown>(null)
+  const [loading, setLoading] = useState(true)
   return (
     <>
       {contextHolder}
+      {loading && <LoadingError />}
+      {error && <ErrorPage />}
       <ProTable<IAccountTable>
-        dataSource={data.data}
+        rowKey='id'
+        search={{
+          labelWidth: 'auto'
+        }}
+        request={async (params) => {
+          setLoading(true)
+          setError(null)
+
+          try {
+            const response = await accountApi.getAccounts({
+              page: params.current,
+              size: params.pageSize
+            })
+
+            setLoading(false)
+            return {
+              data: response.data?.result,
+              success: true,
+              total: response.data?.meta.total
+            }
+          } catch (err) {
+            console.error(err)
+            setError(err)
+            setLoading(false)
+            return {
+              data: [],
+              success: false,
+              total: 0
+            }
+          }
+        }}
         columns={columns}
         actionRef={actionRef}
         bordered
