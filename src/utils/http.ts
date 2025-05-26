@@ -30,12 +30,12 @@ class Http {
         const { url } = response.config
         console.log(url)
 
-        if (url === '/login' || url === '/register') {
+        if (url === '/api/auth/login' || url === '/api/auth/register') {
           this.accessToken = response.data.data.accessToken
           saveAccessTokenToLS(this.accessToken)
           const user = response.config.data
           saveProfileToLS(JSON.parse(user).username)
-        } else if (url === '/logout') {
+        } else if (url === '/api/auth/logout') {
           this.accessToken = ''
           clearLocalStorage()
         }

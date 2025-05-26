@@ -4,8 +4,11 @@ import { MdOutlineDriveFileRenameOutline, MdOutlinePhone } from 'react-icons/md'
 import { TfiEmail } from 'react-icons/tfi'
 import { RiLockPasswordLine } from 'react-icons/ri'
 import { GrUserAdmin } from 'react-icons/gr'
-import { useCreateAccount } from '@/hooks/account.'
+import { useCreateAccount } from '@/hooks/useAccount'
 import { onErrorUtil } from '@/globalType/util.type'
+import roleApi from '@/apis/role.api'
+import { useQuery } from '@tanstack/react-query'
+import { useMemo } from 'react'
 interface IProp {
   isNewOpen: boolean
   setIsNewOpen: (value: boolean) => void
@@ -23,7 +26,7 @@ const NewAccount = (props: IProp) => {
       fullName: value.fullName,
       password: value.password,
       username: value.username,
-      role: value.role,
+      roleId: value.roleId,
       phone: value.phone
     }
     newAccountMutation.mutate(body, {
@@ -53,6 +56,23 @@ const NewAccount = (props: IProp) => {
     form.resetFields()
     setIsNewOpen(false)
   }
+
+  const roleData = useQuery({
+    queryKey: ['roles'],
+    queryFn: () => roleApi.getRoles({}),
+    enabled: isNewOpen
+  })
+  const roleOptions = useMemo(
+    () =>
+      roleData.data?.data.result.map((value, index) => {
+        return {
+          key: index,
+          value: value.id,
+          label: value.roleName
+        }
+      }),
+    [roleData]
+  )
   return (
     <>
       {contextHolder}
@@ -177,7 +197,7 @@ const NewAccount = (props: IProp) => {
                       <GrUserAdmin /> Role
                     </div>
                   }
-                  name='role'
+                  name='roleId'
                   rules={[
                     {
                       required: true,
@@ -185,14 +205,7 @@ const NewAccount = (props: IProp) => {
                     }
                   ]}
                 >
-                  <Select
-                    options={[
-                      { value: 1, label: 'Employee' },
-                      { value: 2, label: 'Admin' },
-                      { value: 3, label: 'Client' }
-                    ]}
-                    placeholder='Role'
-                  />
+                  <Select options={roleOptions} placeholder='Role' />
                 </Form.Item>
               </Col>
             </Col>

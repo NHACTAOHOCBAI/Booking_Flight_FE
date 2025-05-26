@@ -17,7 +17,7 @@ declare global {
 
 export interface TicketList {
   result: ITicketTable[]
-  meta: {
+  pagination: {
     page: number
     size: number
     page_size: number

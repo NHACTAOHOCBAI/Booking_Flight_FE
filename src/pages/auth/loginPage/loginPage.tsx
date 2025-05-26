@@ -3,14 +3,12 @@ import { Button, Checkbox, Col, Divider, Flex, Form, Input } from 'antd'
 import { ArrowLeftOutlined, GoogleOutlined } from '@ant-design/icons'
 import { Link, useNavigate } from 'react-router-dom'
 import { useContext, useState } from 'react'
-import { useMutation } from '@tanstack/react-query'
 import classNames from 'classnames'
-
-import authApi from '@/apis/auth.api'
 import { isAxiosUnprocessableEntityError } from '@/utils/utils'
 import { ErrorResponse } from '@/globalType/util.type'
 import { AppContext } from '@/context/app.context'
 import { getProfileFromLS } from '@/utils/auth'
+import { useLogin } from '@/hooks/useAuth'
 
 type FieldType = {
   username?: string
@@ -23,9 +21,7 @@ const LoginPage = () => {
   const [errorLogin, setErrorLogin] = useState(false)
   const navigate = useNavigate()
 
-  const loginMutation = useMutation({
-    mutationFn: (body: { username: string; password: string }) => authApi.login(body)
-  })
+  const loginMutation = useLogin()
 
   const onFinish: FormProps<FieldType>['onFinish'] = (values) => {
     const body = { username: values.username as string, password: values.password as string }

@@ -12,7 +12,7 @@ declare global {
 
 export interface SeatList {
   result: ISeatTable[]
-  meta: {
+  pagination: {
     page: number
     size: number
     page_size: number

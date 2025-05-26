@@ -108,12 +108,12 @@ const NewFlight = (props: IProp) => {
 
   const airportData = useQuery({
     queryKey: ['airports'],
-    queryFn: airportApi.getAirports,
+    queryFn: () => airportApi.getAirports({}),
     enabled: isNewOpen
   })
   const airportOptions = useMemo(
     () =>
-      airportData.data?.data.map((value, index) => {
+      airportData.data?.data.result.map((value, index) => {
         return {
           key: index,
           value: value.id,
@@ -125,12 +125,12 @@ const NewFlight = (props: IProp) => {
 
   const planeData = useQuery({
     queryKey: ['planes'],
-    queryFn: planeApi.getPlanes,
+    queryFn: () => planeApi.getPlanes({}),
     enabled: isNewOpen
   })
   const planeOptions = useMemo(
     () =>
-      planeData.data?.data.map((value, index) => {
+      planeData.data?.data.result.map((value, index) => {
         return {
           key: index,
           value: value.id,
@@ -142,12 +142,12 @@ const NewFlight = (props: IProp) => {
 
   const seatData = useQuery({
     queryKey: ['seats'],
-    queryFn: seatApi.getSeats,
+    queryFn: () => seatApi.getSeats({}),
     enabled: isNewOpen
   })
   const seatOptions = useMemo(
     () =>
-      seatData.data?.data.map((value, index) => {
+      seatData.data?.data.result.map((value, index) => {
         return {
           key: index,
           value: value.id,

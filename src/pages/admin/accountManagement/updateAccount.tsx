@@ -1,9 +1,11 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+import roleApi from '@/apis/role.api'
 import { onErrorUtil } from '@/globalType/util.type'
-import { useUpdateAccount } from '@/hooks/account.'
+import { useUpdateAccount } from '@/hooks/useAccount'
+import { useQuery } from '@tanstack/react-query'
 import { Col, Form, FormProps, Input, message, Modal, Row, Select } from 'antd'
 import _ from 'lodash'
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import { GrUserAdmin } from 'react-icons/gr'
 import { MdOutlineDriveFileRenameOutline, MdOutlinePhone } from 'react-icons/md'
 import { RiLockPasswordLine } from 'react-icons/ri'
@@ -37,7 +39,7 @@ const UpdateAccount = (props: IProp) => {
       fullName: value.fullName,
       password: value.password,
       username: value.username,
-      role: value.role,
+      roleId: value.roleId,
       phone: value.phone
     }
     updateAccountMutation.mutate(body, {
@@ -70,7 +72,7 @@ const UpdateAccount = (props: IProp) => {
       fullName: '',
       email: '',
       password: '',
-      role: 3
+      roleId: '3'
     })
     setIsUpdateOpen(false)
   }
@@ -82,9 +84,26 @@ const UpdateAccount = (props: IProp) => {
       email: updatedAccount.email,
       phone: updatedAccount.phone,
       fullName: updatedAccount.fullName,
-      role: updatedAccount.role
+      roleId: updatedAccount.roleId
     })
   }, [updatedAccount])
+
+  const roleData = useQuery({
+    queryKey: ['roles'],
+    queryFn: () => roleApi.getRoles({}),
+    enabled: isUpdateOpen
+  })
+  const roleOptions = useMemo(
+    () =>
+      roleData.data?.data.result.map((value, index) => {
+        return {
+          key: index,
+          value: value.id,
+          label: value.roleName
+        }
+      }),
+    [roleData]
+  )
   return (
     <>
       {contextHolder}
@@ -209,22 +228,15 @@ const UpdateAccount = (props: IProp) => {
                       <GrUserAdmin /> Role
                     </div>
                   }
-                  name='role'
+                  name='roleId'
                   rules={[
                     {
                       required: true,
-                      message: 'Please input role'
+                      message: 'Please input roleId'
                     }
                   ]}
                 >
-                  <Select
-                    placeholder={updatedAccount.role}
-                    options={[
-                      { value: '1', label: 'Employee' },
-                      { value: '2', label: 'Admin' },
-                      { value: '3', label: 'Client' }
-                    ]}
-                  />
+                  <Select placeholder={updatedAccount.roleId} options={roleOptions} />
                 </Form.Item>
               </Col>
             </Col>

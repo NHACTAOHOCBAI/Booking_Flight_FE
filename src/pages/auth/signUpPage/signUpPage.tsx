@@ -1,193 +1,242 @@
 import type { FormProps } from 'antd'
-import { Button, Col, Divider, Form, Input, Row, Select } from 'antd'
+import { Button, Col, Divider, Form, Input, message, Row, Select } from 'antd'
 import { GoogleOutlined } from '@ant-design/icons'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+
+import { AppContext } from '@/context/app.context'
+import { getProfileFromLS } from '@/utils/auth'
+import { useContext } from 'react'
+import { onErrorUtil } from '@/globalType/util.type'
+
+import { useRegister } from '@/hooks/useAuth'
 type FieldType = {
-  username?: string
+  email?: string
   phone?: string
   password?: string
   fullName?: string
   gender?: string
+  username: string
 }
 
-const onFinish: FormProps<FieldType>['onFinish'] = (values) => {
-  console.log('Success:', values)
-}
+const SignUpPage = () => {
+  const { setIsAuthenticated, setProfile } = useContext(AppContext)
+  const [messageApi, contextHolder] = message.useMessage()
+  const navigate = useNavigate()
 
-const onFinishFailed: FormProps<FieldType>['onFinishFailed'] = (errorInfo) => {
-  console.log('Failed:', errorInfo)
-}
+  const registerMutation = useRegister()
 
-const SignUpPage = () => (
-  <>
-    <div
-      style={{
-        width: '100%',
-        height: '100%',
-        backgroundColor: '#ecf0f1',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center'
-      }}
-    >
-      <Col xs={22} sm={12} xl={7}>
-        <div
-          style={{
-            height: 'auto',
-            background: 'White',
-            padding: 30,
-            borderRadius: 10,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center'
-          }}
-        >
+  const onFinish: FormProps<FieldType>['onFinish'] = (values) => {
+    const body = {
+      // username: values.email?.split('@')[0] as string,
+      password: values.password as string,
+      email: values.email as string,
+      fullName: values.fullName,
+      // gender: values.gender,
+      phone: values.phone,
+      roleId: '344a0a68-c6fc-40ab-af6c-903c2ef762b4'
+    }
+    registerMutation.mutate(body, {
+      onSuccess: (data) => {
+        messageApi.open({
+          type: 'success',
+          content: data.message
+        })
+        setIsAuthenticated(true)
+        setProfile(getProfileFromLS())
+        navigate('/', { replace: true })
+      },
+      onError: (error) => {
+        const messageError = onErrorUtil(error)
+        console.log(error)
+        messageApi.open({
+          type: messageError.type,
+          content: messageError.content
+        })
+      }
+    })
+  }
+  const onFinishFailed: FormProps<FieldType>['onFinishFailed'] = (errorInfo) => {
+    console.log('Failed:', errorInfo)
+  }
+
+  return (
+    <>
+      {contextHolder}
+      <div
+        style={{
+          width: '100%',
+          height: '100%',
+          backgroundColor: '#ecf0f1',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center'
+        }}
+      >
+        <Col xs={22} sm={12} xl={7}>
           <div
             style={{
-              fontSize: 26,
-              fontWeight: 'bold'
+              height: 'auto',
+              background: 'White',
+              padding: 30,
+              borderRadius: 10,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center'
             }}
           >
-            Join Us Today!
-          </div>
-          <div
-            style={{
-              fontSize: 14,
-              marginBottom: 20,
-              marginTop: 10,
-              color: '#95a5a6'
-            }}
-          >
-            Create your free account
-          </div>
-          <Form
-            style={{ width: '100%' }}
-            layout='vertical'
-            name='basic'
-            initialValues={{ remember: true }}
-            onFinish={onFinish}
-            onFinishFailed={onFinishFailed}
-            autoComplete='off'
-          >
+            <div
+              style={{
+                fontSize: 26,
+                fontWeight: 'bold'
+              }}
+            >
+              Join Us Today!
+            </div>
             <div
               style={{
                 fontSize: 14,
-                fontWeight: 'bold',
-                marginBottom: 5
+                marginBottom: 20,
+                marginTop: 10,
+                color: '#95a5a6'
               }}
             >
-              Email address
+              Create your free account
             </div>
-            <Form.Item<FieldType> name='username' rules={[{ required: true, message: 'Please input your email!' }]}>
-              <Input placeholder='name@gmail.com' />
-            </Form.Item>
+            <Form
+              style={{ width: '100%' }}
+              layout='vertical'
+              name='basic'
+              initialValues={{ remember: true }}
+              onFinish={onFinish}
+              onFinishFailed={onFinishFailed}
+              autoComplete='off'
+            >
+              <div
+                style={{
+                  fontSize: 14,
+                  fontWeight: 'bold',
+                  marginBottom: 5
+                }}
+              >
+                Email address
+              </div>
+              <Form.Item<FieldType> name='email' rules={[{ required: true, message: 'Please input your email!' }]}>
+                <Input placeholder='name@gmail.com' />
+              </Form.Item>
 
-            <div
-              style={{
-                fontSize: 14,
-                fontWeight: 'bold',
-                marginBottom: 5
-              }}
-            >
-              Password
-            </div>
-            <Form.Item<FieldType> name='password' rules={[{ required: true, message: 'Please input your password!' }]}>
-              <Input.Password placeholder='Enter your password' />
-            </Form.Item>
+              <div
+                style={{
+                  fontSize: 14,
+                  fontWeight: 'bold',
+                  marginBottom: 5
+                }}
+              >
+                Password
+              </div>
+              <Form.Item<FieldType>
+                name='password'
+                rules={[{ required: true, message: 'Please input your password!' }]}
+              >
+                <Input.Password placeholder='Enter your password' />
+              </Form.Item>
 
+              <div
+                style={{
+                  fontSize: 14,
+                  fontWeight: 'bold',
+                  marginBottom: 5
+                }}
+              >
+                Full name
+              </div>
+              <Form.Item<FieldType> name='fullName' rules={[{ required: true, message: 'Please input your name!' }]}>
+                <Input placeholder='Dang Phuc Nguyen' />
+              </Form.Item>
+              <Row gutter={10}>
+                <Col span={14}>
+                  <div
+                    style={{
+                      fontSize: 14,
+                      fontWeight: 'bold',
+                      marginBottom: 5
+                    }}
+                  >
+                    Phone
+                  </div>
+                  <Form.Item<FieldType>
+                    name='phone'
+                    rules={[{ required: true, message: 'Please input your phone number!' }]}
+                  >
+                    <Input placeholder='0838609516' />
+                  </Form.Item>
+                </Col>
+                <Col span={10}>
+                  <div
+                    style={{
+                      fontSize: 14,
+                      fontWeight: 'bold',
+                      marginBottom: 5
+                    }}
+                  >
+                    Gender
+                  </div>
+                  <Form.Item<FieldType>
+                    name='gender'
+                    rules={[{ required: true, message: 'Please input your gender!' }]}
+                  >
+                    <Select
+                      options={[
+                        { value: 'male', label: 'Male' },
+                        { value: 'female', label: 'Female' }
+                      ]}
+                    />
+                  </Form.Item>
+                </Col>
+              </Row>
+              <Form.Item>
+                <Button block type='primary' htmlType='submit'>
+                  Sign up
+                </Button>
+              </Form.Item>
+            </Form>
+            <Divider />
             <div
               style={{
                 fontSize: 14,
-                fontWeight: 'bold',
-                marginBottom: 5
+                color: '#95a5a6'
               }}
             >
-              Full name
-            </div>
-            <Form.Item<FieldType> name='fullName' rules={[{ required: true, message: 'Please input your name!' }]}>
-              <Input placeholder='Dang Phuc Nguyen' />
-            </Form.Item>
-            <Row gutter={10}>
-              <Col span={14}>
-                <div
-                  style={{
-                    fontSize: 14,
-                    fontWeight: 'bold',
-                    marginBottom: 5
-                  }}
-                >
-                  Phone
-                </div>
-                <Form.Item<FieldType>
-                  name='phone'
-                  rules={[{ required: true, message: 'Please input your phone number!' }]}
-                >
-                  <Input placeholder='0838609516' />
-                </Form.Item>
-              </Col>
-              <Col span={10}>
-                <div
-                  style={{
-                    fontSize: 14,
-                    fontWeight: 'bold',
-                    marginBottom: 5
-                  }}
-                >
-                  Gender
-                </div>
-                <Form.Item<FieldType> name='gender' rules={[{ required: true, message: 'Please input your gender!' }]}>
-                  <Select
-                    options={[
-                      { value: 'male', label: 'Male' },
-                      { value: 'female', label: 'Female' }
-                    ]}
-                  />
-                </Form.Item>
-              </Col>
-            </Row>
-            <Form.Item>
-              <Button block type='primary' htmlType='submit'>
-                Sign up
+              Or continue with
+              <Button>
+                <GoogleOutlined />
+                Google
               </Button>
-            </Form.Item>
-          </Form>
-          <Divider />
-          <div
-            style={{
-              fontSize: 14,
-              color: '#95a5a6'
-            }}
-          >
-            Or continue with
-            <Button>
-              <GoogleOutlined />
-              Google
-            </Button>
-          </div>
-          <div
-            style={{
-              marginTop: 10,
-              fontSize: 14,
-              color: '#95a5a6'
-            }}
-          >
-            You already had an account ?
-            <span
+            </div>
+            <div
               style={{
+                marginTop: 10,
                 fontSize: 14,
-                color: '#3498db',
-                cursor: 'pointer'
+                color: '#95a5a6'
               }}
             >
-              <Link to='/login' className='mx-1'>
-                Login here
-              </Link>
-            </span>
+              You already had an account ?
+              <span
+                style={{
+                  fontSize: 14,
+                  color: '#3498db',
+                  cursor: 'pointer'
+                }}
+              >
+                <Link to='/login' className='mx-1'>
+                  Login here
+                </Link>
+              </span>
+            </div>
           </div>
-        </div>
-      </Col>
-    </div>
-  </>
-)
+        </Col>
+      </div>
+    </>
+  )
+}
 
 export default SignUpPage

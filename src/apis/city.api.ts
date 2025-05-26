@@ -1,6 +1,7 @@
 import http from '@/utils/http'
 import { SuccessResponse } from '@/globalType/util.type'
-import { CityListConfig, CityList } from '@/globalType/city.type'
+import { CityList } from '@/globalType/city.type'
+import { ListConfig } from '@/globalType/ListConfig.type'
 
 const URL = 'api/cities'
 
@@ -9,7 +10,7 @@ const cityApi = {
     const res = await http.get<SuccessResponse<ICityTable>>(URL, { params })
     return res.data
   },
-  getCities: async (params: CityListConfig) => {
+  getCities: async (params: ListConfig) => {
     const res = await http.get<SuccessResponse<CityList>>(URL, { params })
     return res.data
   },

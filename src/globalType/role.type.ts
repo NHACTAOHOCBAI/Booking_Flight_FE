@@ -3,22 +3,16 @@ import { IPermission } from './permission.type'
 export {}
 
 declare global {
-  interface IAccountTable {
+  interface IRoleTable {
     id?: string
-    username?: string
-    password: string
-    email: string
-    fullName?: string
-    phone?: string
-    roleId?: string
-    permissions?: IPermission[]
-    accessToken?: string
-    refreshToken?: string
+    roleName: string
+    description: string
+    permissionIds: IPermission[]
   }
 }
 
-export interface AccountList {
-  result: IAccountTable[]
+export interface RoleList {
+  result: IRoleTable[]
   pagination: {
     page: number
     size: number
@@ -26,7 +20,7 @@ export interface AccountList {
     total: number
   }
 }
-export interface AccountListConfig {
+export interface RoleListConfig {
   page?: number | string
   size?: number | string
   sort_by?: 'createdAt' | 'view' | 'sold' | 'price'

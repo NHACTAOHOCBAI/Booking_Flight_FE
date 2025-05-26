@@ -35,7 +35,7 @@ declare global {
 
 export interface FlightList {
   result: IFlightTable[]
-  meta: {
+  pagination: {
     page: number
     size: number
     page_size: number

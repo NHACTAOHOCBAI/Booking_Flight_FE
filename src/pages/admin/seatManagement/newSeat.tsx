@@ -18,7 +18,7 @@ const NewSeat = (props: IProp) => {
   const [messageApi, contextHolder] = message.useMessage()
   const newSeatMutation = useCreateSeat()
 
-  const onFinish: FormProps<ISeatTable>['onFinish'] = async (value) => {
+  const onFinish: FormProps<ISeatTable>['onFinish'] = (value) => {
     const body = {
       seatName: value.seatName,
       seatCode: value.seatCode,

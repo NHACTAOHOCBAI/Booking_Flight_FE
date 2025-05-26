@@ -12,7 +12,7 @@ declare global {
 
 export interface PlaneList {
   result: IPlaneTable[]
-  meta: {
+  pagination: {
     page: number
     size: number
     page_size: number

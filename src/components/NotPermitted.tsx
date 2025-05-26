@@ -1,15 +1,13 @@
-import { Result, Button } from 'antd'
-
+import { Button, Result } from 'antd'
 import { useNavigate } from 'react-router-dom'
 
-const ErrorPage = () => {
+const NotPermitted = () => {
   const navigate = useNavigate()
   return (
     <Result
-      style={{ marginTop: 50 }}
-      status='404'
-      title='404'
-      subTitle='Sorry, the page you visited does not exist.'
+      status='403'
+      title='403'
+      subTitle='Sorry, you are not authorized to access this page.'
       extra={
         <Button type='primary' onClick={() => navigate('/')}>
           Back Home
@@ -19,4 +17,4 @@ const ErrorPage = () => {
   )
 }
 
-export default ErrorPage
+export default NotPermitted

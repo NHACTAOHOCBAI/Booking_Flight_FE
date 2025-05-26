@@ -2,7 +2,7 @@ import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons'
 import type { ActionType, ProColumns } from '@ant-design/pro-components'
 import { ProTable } from '@ant-design/pro-components'
 import { Button, message, Popconfirm } from 'antd'
-import { useRef, useState } from 'react'
+import { useContext, useRef, useState } from 'react'
 import NewSeat from './newSeat'
 import UpdateSeat from './updateSeat'
 import DetailSeat from './detailSeat'
@@ -10,10 +10,10 @@ import { useDeleteSeat } from '@/hooks/useSeat'
 import ErrorPage from '@/components/ErrorPage/ErrorPage'
 import LoadingError from '@/components/ErrorPage/LoadingError'
 import seatApi from '@/apis/seat.api'
+import { AppContext } from '@/context/app.context'
+import Access from '@/components/access'
 
 const SeatManagement = () => {
-  const [error, setError] = useState<unknown>(null)
-  const [loading, setLoading] = useState(true)
   //detail
   const [isDetailOpen, setIsDetailOpen] = useState(false)
   const [detailSeat, setDetailSeat] = useState<ISeatTable>({
@@ -57,6 +57,12 @@ const SeatManagement = () => {
     })
   }
   //Table
+  const ALL_PERMISSIONS = useContext(AppContext).PERMISSIONS.permissions
+  const permissions = {
+    method: '',
+    apiPath: '',
+    model: ''
+  }
   const actionRef = useRef<ActionType>(null)
   const columns: ProColumns<ISeatTable>[] = [
     {
@@ -100,101 +106,122 @@ const SeatManagement = () => {
             gap: 10
           }}
         >
-          <EditOutlined
-            style={{
-              color: '#54a0ff'
-            }}
-            onClick={() => {
-              setUpdatedSeat(record)
-              setIsUpdateOpen(true)
-            }}
-          />
-          <Popconfirm
-            title='Delete the seat'
-            description='Are you sure to delete this seat?'
-            okText='Delete'
-            cancelText='Cancel'
-            onConfirm={() => handleDelete(record.id as string)}
-          >
-            <DeleteOutlined
+          {/* <Access permission={ALL_PERMISSIONS['ACCOUNTS']['UPDATE']} hideChildren> */}
+          <Access permission={permissions} hideChildren>
+            <EditOutlined
               style={{
-                color: '#ee5253'
+                color: '#54a0ff'
+              }}
+              onClick={() => {
+                setUpdatedSeat(record)
+                setIsUpdateOpen(true)
               }}
             />
-          </Popconfirm>
+          </Access>
+          <Access permission={permissions}>
+            <Popconfirm
+              title='Delete the seat'
+              description='Are you sure to delete this seat?'
+              okText='Delete'
+              onConfirm={() => handleDelete(record.id as string)}
+              cancelText='Cancel'
+            >
+              {/* <Access permission={ALL_PERMISSIONS['ACCOUNTS']['DELETE']} hideChildren> */}
+
+              <DeleteOutlined
+                style={{
+                  color: '#ee5253'
+                }}
+              />
+            </Popconfirm>
+          </Access>
         </div>
       )
     }
   ]
-
+  const [error, setError] = useState<unknown>(null)
   return (
     <>
       {contextHolder}
-      {loading && <LoadingError />}
-      {error && <ErrorPage />}
-      <ProTable<ISeatTable>
-        rowKey='id'
-        search={{
-          labelWidth: 'auto'
-        }}
-        request={async (params) => {
-          setLoading(true)
-          setError(null)
+      {error ? (
+        <ErrorPage />
+      ) : (
+        <>
+          {/* <Access permission={ALL_PERMISSIONS['ACCOUNTS']['GET_PAGINATE']}> */}
+          <Access permission={permissions}>
+            <ProTable<ISeatTable>
+              rowKey='id'
+              search={{
+                labelWidth: 'auto'
+              }}
+              request={async (params) => {
+                setError(null)
 
-          try {
-            const response = await seatApi.getSeats({
-              page: params.current,
-              size: params.pageSize
-            })
+                try {
+                  const response = await seatApi.getSeats({
+                    page: params.current,
+                    size: params.pageSize
+                  })
 
-            setLoading(false)
-            return {
-              data: response.data?.result,
-              success: true,
-              total: response.data?.meta.total
-            }
-          } catch (err) {
-            console.error(err)
-            setError(err)
-            setLoading(false)
-            return {
-              data: [],
-              success: false,
-              total: 0
-            }
-          }
-        }}
-        columns={columns}
-        actionRef={actionRef}
-        cardBordered
-        bordered
-        headerTitle='Seat table'
-        //Khi ProTable được render hoặc có sự thay đổi ở bộ lọc, tìm kiếm, phân trang, nó sẽ tự động gọi hàm request
-        toolBarRender={() => [
-          <Button key='button' icon={<PlusOutlined />} type='primary' onClick={() => setIsNewOpen(true)}>
-            New Seat
-          </Button>
-        ]}
-        pagination={{
-          pageSizeOptions: [5, 10, 20],
-          showSizeChanger: true,
-          defaultCurrent: 1,
-          defaultPageSize: 5
-        }}
-      />
-      <NewSeat isNewOpen={isNewOpen} setIsNewOpen={setIsNewOpen} />
-      <UpdateSeat
-        isUpdateOpen={isUpdateOpen}
-        setIsUpdateOpen={setIsUpdateOpen}
-        updatedSeat={updatedSeat}
-        setUpdatedSeat={setUpdatedSeat}
-      />
-      <DetailSeat
-        isDetailOpen={isDetailOpen}
-        setIsDetailOpen={setIsDetailOpen}
-        setDetailSeat={setDetailSeat}
-        detailSeat={detailSeat}
-      />
+                  return {
+                    data: response.data?.result,
+                    success: true,
+                    total: response.data?.pagination.total
+                  }
+                } catch (err) {
+                  console.error(err)
+                  setError(err)
+
+                  return {
+                    data: [],
+                    success: false,
+                    total: 0
+                  }
+                }
+              }}
+              columns={columns}
+              actionRef={actionRef}
+              bordered
+              cardBordered
+              headerTitle='Seats List'
+              toolBarRender={() => [
+                // <Access permission={ALL_PERMISSIONS['ACCOUNTS']['ADD']}>
+                <Access permission={permissions}>
+                  <Button
+                    key='button'
+                    icon={<PlusOutlined />}
+                    type='primary'
+                    onClick={() => {
+                      setIsNewOpen(true)
+                    }}
+                  >
+                    New Seat
+                  </Button>
+                </Access>
+              ]}
+              pagination={{
+                pageSizeOptions: [5, 10, 20],
+                showSizeChanger: true,
+                defaultCurrent: 1,
+                defaultPageSize: 5
+              }}
+            />
+          </Access>
+          <NewSeat isNewOpen={isNewOpen} setIsNewOpen={setIsNewOpen} />
+          <UpdateSeat
+            setUpdatedSeat={setUpdatedSeat}
+            isUpdateOpen={isUpdateOpen}
+            setIsUpdateOpen={setIsUpdateOpen}
+            updatedSeat={updatedSeat}
+          />
+          <DetailSeat
+            isDetailOpen={isDetailOpen}
+            setIsDetailOpen={setIsDetailOpen}
+            setDetailSeat={setDetailSeat}
+            detailSeat={detailSeat}
+          />
+        </>
+      )}
     </>
   )
 }

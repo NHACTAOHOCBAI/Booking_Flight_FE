@@ -2,7 +2,7 @@ import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons'
 import type { ActionType, ProColumns } from '@ant-design/pro-components'
 import { ProTable } from '@ant-design/pro-components'
 import { Button, message, Popconfirm } from 'antd'
-import { useRef, useState } from 'react'
+import { useContext, useRef, useState } from 'react'
 
 import NewCity from './newCity'
 import UpdateCity from './updateCity'
@@ -12,6 +12,8 @@ import DetailCity from './detailCity'
 import LoadingError from '@/components/ErrorPage/LoadingError'
 import ErrorPage from '@/components/ErrorPage/ErrorPage'
 import cityApi from '@/apis/city.api'
+import { AppContext } from '@/context/app.context'
+import Access from '@/components/access'
 const CityManagement = () => {
   //Table
   const actionRef = useRef<ActionType>(null)
@@ -54,7 +56,12 @@ const CityManagement = () => {
     cityCode: '',
     cityName: ''
   })
-
+  const ALL_PERMISSIONS = useContext(AppContext).PERMISSIONS.permissions
+  const permissions = {
+    method: '',
+    apiPath: '',
+    model: ''
+  }
   const columns: ProColumns<ICityTable>[] = [
     {
       dataIndex: 'index',
@@ -89,105 +96,119 @@ const CityManagement = () => {
             gap: 10
           }}
         >
-          <EditOutlined
-            style={{
-              color: '#54a0ff'
-            }}
-            onClick={() => {
-              setUpdatedCity(record)
-              setIsUpdateOpen(true)
-            }}
-          />
-          <Popconfirm
-            title='Delete the city'
-            description='Are you sure to delete this city?'
-            okText='Delete'
-            cancelText='Cancel'
-            onConfirm={() => handleDelete(record.id as string)}
-          >
-            <DeleteOutlined
+          {/* <Access permission={ALL_PERMISSIONS['ACCOUNTS']['UPDATE']} hideChildren> */}
+          <Access permission={permissions} hideChildren>
+            <EditOutlined
               style={{
-                color: '#ee5253'
+                color: '#54a0ff'
+              }}
+              onClick={() => {
+                setUpdatedCity(record)
+                setIsUpdateOpen(true)
               }}
             />
-          </Popconfirm>
+          </Access>
+          <Access permission={permissions}>
+            <Popconfirm
+              title='Delete the account'
+              description='Are you sure to delete this account?'
+              okText='Delete'
+              onConfirm={() => handleDelete(record.id as string)}
+              cancelText='Cancel'
+            >
+              {/* <Access permission={ALL_PERMISSIONS['ACCOUNTS']['DELETE']} hideChildren> */}
+
+              <DeleteOutlined
+                style={{
+                  color: '#ee5253'
+                }}
+              />
+            </Popconfirm>
+          </Access>
         </div>
       )
     }
   ]
 
   const [isDetailOpen, setIsDetailOpen] = useState(false)
-
   const [error, setError] = useState<unknown>(null)
-  const [loading, setLoading] = useState(true)
   return (
     <>
       {contextHolder}
-      {loading && <LoadingError />}
-      {error && <ErrorPage />}
-      <ProTable<ICityTable>
-        rowKey='id'
-        search={{
-          labelWidth: 'auto'
-        }}
-        request={async (params) => {
-          setLoading(true)
-          setError(null)
+      {error ? (
+        <ErrorPage />
+      ) : (
+        <>
+          {/* <Access permission={ALL_PERMISSIONS['ACCOUNTS']['GET_PAGINATE']}> */}
+          <Access permission={permissions}>
+            <ProTable<ICityTable>
+              rowKey='id'
+              search={{
+                labelWidth: 'auto'
+              }}
+              request={async (params) => {
+                setError(null)
 
-          try {
-            const response = await cityApi.getCities({
-              page: params.current,
-              size: params.pageSize
-            })
+                try {
+                  const response = await cityApi.getCities({
+                    page: params.current,
+                    size: params.pageSize
+                  })
 
-            setLoading(false)
-            return {
-              data: response.data?.result,
-              success: true,
-              total: response.data?.meta.total
-            }
-          } catch (err) {
-            console.error(err)
-            setError(err)
-            setLoading(false)
-            return {
-              data: [],
-              success: false,
-              total: 0
-            }
-          }
-        }}
-        columns={columns}
-        actionRef={actionRef}
-        headerTitle='City Table'
-        bordered
-        toolBarRender={() => [
-          <Button
-            key='button'
-            icon={<PlusOutlined />}
-            onClick={() => {
-              setIsNewOpen(true)
-            }}
-            type='primary'
-          >
-            New City
-          </Button>
-        ]}
-        pagination={{
-          pageSizeOptions: [5, 10, 20],
-          showSizeChanger: true,
-          defaultCurrent: 1,
-          defaultPageSize: 5
-        }}
-      />
-      <NewCity isNewOpen={isNewOpen} setIsNewOpen={setIsNewOpen} />
-      <UpdateCity
-        isUpdateOpen={isUpdateOpen}
-        setIsUpdateOpen={setIsUpdateOpen}
-        updatedCity={updatedCity}
-        setUpdatedCity={setUpdatedCity}
-      />
-      <DetailCity isDetailOpen={isDetailOpen} setIsDetailOpen={setIsDetailOpen} detailCity={detailCity} />
+                  return {
+                    data: response.data?.result,
+                    success: true,
+                    total: response.data?.pagination.total
+                  }
+                } catch (err) {
+                  console.error(err)
+                  setError(err)
+
+                  return {
+                    data: [],
+                    success: false,
+                    total: 0
+                  }
+                }
+              }}
+              columns={columns}
+              actionRef={actionRef}
+              bordered
+              cardBordered
+              headerTitle='Citys List'
+              toolBarRender={() => [
+                // <Access permission={ALL_PERMISSIONS['ACCOUNTS']['ADD']}>
+                <Access permission={permissions}>
+                  <Button
+                    key='button'
+                    icon={<PlusOutlined />}
+                    type='primary'
+                    onClick={() => {
+                      setIsNewOpen(true)
+                    }}
+                  >
+                    New City
+                  </Button>
+                </Access>
+              ]}
+              pagination={{
+                pageSizeOptions: [5, 10, 20],
+                showSizeChanger: true,
+                defaultCurrent: 1,
+                defaultPageSize: 5
+              }}
+            />
+          </Access>
+          <NewCity isNewOpen={isNewOpen} setIsNewOpen={setIsNewOpen} />
+          <UpdateCity
+            setUpdatedCity={setUpdatedCity}
+            isUpdateOpen={isUpdateOpen}
+            setIsUpdateOpen={setIsUpdateOpen}
+            updatedCity={updatedCity}
+          />
+          <DetailCity isDetailOpen={isDetailOpen} setIsDetailOpen={setIsDetailOpen} detailCity={detailCity} />
+        </>
+      )}
     </>
   )
 }

@@ -1,14 +1,15 @@
 import { ActionType, ProColumns, ProTable } from '@ant-design/pro-components'
 import { Button, message, Popconfirm } from 'antd'
-import { useRef, useState } from 'react'
+import { useContext, useRef, useState } from 'react'
 import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons'
 import NewPlane from './newPlane'
 import UpdatePlane from './updatePlane'
 import DetailPlane from './detailPlane'
 import { useDeletePlane } from '@/hooks/usePlane'
 import ErrorPage from '@/components/ErrorPage/ErrorPage'
-import LoadingError from '@/components/ErrorPage/LoadingError'
 import planeApi from '@/apis/plane.api'
+import { AppContext } from '@/context/app.context'
+import Access from '@/components/access'
 const PlaneManagement = () => {
   //detail
   const [isDetailOpen, setIsDetailOpen] = useState(false)
@@ -54,7 +55,12 @@ const PlaneManagement = () => {
 
   //Table
   const actionRef = useRef<ActionType>(null)
-
+  const ALL_PERMISSIONS = useContext(AppContext).PERMISSIONS.permissions
+  const permissions = {
+    method: '',
+    apiPath: '',
+    model: ''
+  }
   const columns: ProColumns<IPlaneTable>[] = [
     {
       dataIndex: 'index',
@@ -94,101 +100,122 @@ const PlaneManagement = () => {
             gap: 10
           }}
         >
-          <EditOutlined
-            style={{
-              color: '#54a0ff'
-            }}
-            onClick={() => {
-              setUpdatedPlane(record)
-              setIsUpdateOpen(true)
-            }}
-          />
-          <Popconfirm
-            title='Delete the plane'
-            description='Are you sure to delete this plane?'
-            okText='Delete'
-            cancelText='Cancel'
-            onConfirm={() => handleDelete(record.id as string)}
-          >
-            <DeleteOutlined
+          {/* <Access permission={ALL_PERMISSIONS['ACCOUNTS']['UPDATE']} hideChildren> */}
+          <Access permission={permissions} hideChildren>
+            <EditOutlined
               style={{
-                color: '#ee5253'
+                color: '#54a0ff'
+              }}
+              onClick={() => {
+                setUpdatedPlane(record)
+                setIsUpdateOpen(true)
               }}
             />
-          </Popconfirm>
+          </Access>
+          <Access permission={permissions}>
+            <Popconfirm
+              title='Delete the plane'
+              description='Are you sure to delete this plane?'
+              okText='Delete'
+              onConfirm={() => handleDelete(record.id as string)}
+              cancelText='Cancel'
+            >
+              {/* <Access permission={ALL_PERMISSIONS['ACCOUNTS']['DELETE']} hideChildren> */}
+
+              <DeleteOutlined
+                style={{
+                  color: '#ee5253'
+                }}
+              />
+            </Popconfirm>
+          </Access>
         </div>
       )
     }
   ]
   const [error, setError] = useState<unknown>(null)
-  const [loading, setLoading] = useState(true)
   return (
     <>
       {contextHolder}
-      {loading && <LoadingError />}
-      {error && <ErrorPage />}
-      <ProTable<IPlaneTable>
-        rowKey='id'
-        search={{
-          labelWidth: 'auto'
-        }}
-        request={async (params) => {
-          setLoading(true)
-          setError(null)
+      {error ? (
+        <ErrorPage />
+      ) : (
+        <>
+          {/* <Access permission={ALL_PERMISSIONS['ACCOUNTS']['GET_PAGINATE']}> */}
+          <Access permission={permissions}>
+            <ProTable<IPlaneTable>
+              rowKey='id'
+              search={{
+                labelWidth: 'auto'
+              }}
+              request={async (params) => {
+                setError(null)
 
-          try {
-            const response = await planeApi.getPlanes({
-              page: params.current,
-              size: params.pageSize
-            })
+                try {
+                  const response = await planeApi.getPlanes({
+                    page: params.current,
+                    size: params.pageSize
+                  })
 
-            setLoading(false)
-            return {
-              data: response.data?.result,
-              success: true,
-              total: response.data?.meta.total
-            }
-          } catch (err) {
-            console.error(err)
-            setError(err)
-            setLoading(false)
-            return {
-              data: [],
-              success: false,
-              total: 0
-            }
-          }
-        }}
-        columns={columns}
-        actionRef={actionRef}
-        cardBordered
-        bordered
-        headerTitle='Plane table'
-        toolBarRender={() => [
-          <Button key='button' icon={<PlusOutlined />} type='primary' onClick={() => setIsNewOpen(true)}>
-            New Plane
-          </Button>
-        ]}
-        pagination={{
-          pageSizeOptions: [5, 10, 20],
-          showSizeChanger: true,
-          defaultCurrent: 1,
-          defaultPageSize: 5
-        }}
-      />
-      <NewPlane isNewOpen={isNewOpen} setIsNewOpen={setIsNewOpen} />
-      <UpdatePlane
-        isUpdateOpen={isUpdateOpen}
-        setIsUpdateOpen={setIsUpdateOpen}
-        updatedPlane={updatedPlane}
-        setUpdatedPlane={setUpdatedPlane}
-      />
-      <DetailPlane
-        isDetailOpen={isDetailOpen}
-        setIsDetailOpen={setIsDetailOpen}
-        setDetailPlane={setDetailPlane}
-        detailPlane={detailPlane}
-      />
+                  return {
+                    data: response.data?.result,
+                    success: true,
+                    total: response.data?.pagination.total
+                  }
+                } catch (err) {
+                  console.error(err)
+                  setError(err)
+
+                  return {
+                    data: [],
+                    success: false,
+                    total: 0
+                  }
+                }
+              }}
+              columns={columns}
+              actionRef={actionRef}
+              bordered
+              cardBordered
+              headerTitle='Planes List'
+              toolBarRender={() => [
+                // <Access permission={ALL_PERMISSIONS['ACCOUNTS']['ADD']}>
+                <Access permission={permissions}>
+                  <Button
+                    key='button'
+                    icon={<PlusOutlined />}
+                    type='primary'
+                    onClick={() => {
+                      setIsNewOpen(true)
+                    }}
+                  >
+                    New Plane
+                  </Button>
+                </Access>
+              ]}
+              pagination={{
+                pageSizeOptions: [5, 10, 20],
+                showSizeChanger: true,
+                defaultCurrent: 1,
+                defaultPageSize: 5
+              }}
+            />
+          </Access>
+          <NewPlane isNewOpen={isNewOpen} setIsNewOpen={setIsNewOpen} />
+          <UpdatePlane
+            setUpdatedPlane={setUpdatedPlane}
+            isUpdateOpen={isUpdateOpen}
+            setIsUpdateOpen={setIsUpdateOpen}
+            updatedPlane={updatedPlane}
+          />
+          <DetailPlane
+            isDetailOpen={isDetailOpen}
+            setIsDetailOpen={setIsDetailOpen}
+            setDetailPlane={setDetailPlane}
+            detailPlane={detailPlane}
+          />
+        </>
+      )}
     </>
   )
 }

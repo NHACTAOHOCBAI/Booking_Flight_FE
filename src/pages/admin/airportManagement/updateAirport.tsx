@@ -85,13 +85,14 @@ const UpdateAirport = (props: IProp) => {
 
   const citiesData = useQuery({
     queryKey: ['cities'],
-    queryFn: cityApi.getCities,
+    queryFn: () => cityApi.getCities({}),
     enabled: isUpdateOpen
   })
   const cityOptions = useMemo(
     () =>
-      citiesData.data?.data.map((value) => {
+      citiesData.data?.data.result.map((value, index) => {
         return {
+          key: index,
           value: value.id,
           label: value.cityName
         }

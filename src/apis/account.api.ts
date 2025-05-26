@@ -1,6 +1,7 @@
 import http from '@/utils/http'
 import { SuccessResponse } from '@/globalType/util.type'
-import { AccountListConfig, AccountList } from '@/globalType/account.type'
+import { AccountList } from '@/globalType/account.type'
+import { ListConfig } from '@/globalType/ListConfig.type'
 
 const URL = 'api/accounts'
 
@@ -9,7 +10,7 @@ const accountApi = {
     const res = await http.get<SuccessResponse<IAccountTable>>(URL, { params })
     return res.data
   },
-  getAccounts: async (params: AccountListConfig) => {
+  getAccounts: async (params: ListConfig) => {
     const res = await http.get<SuccessResponse<AccountList>>(URL, { params })
     return res.data
   },

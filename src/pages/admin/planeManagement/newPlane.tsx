@@ -58,12 +58,12 @@ const NewPlane = (props: IProp) => {
 
   const airlinesData = useQuery({
     queryKey: ['airlines'],
-    queryFn: airlineApi.getAirlines,
+    queryFn: () => airlineApi.getAirlines({}),
     enabled: isNewOpen
   })
   const airlineOptions = useMemo(
     () =>
-      airlinesData.data?.data.map((value, index) => {
+      airlinesData.data?.data.result.map((value, index) => {
         return {
           key: index,
           value: value.id,

@@ -2,50 +2,37 @@ import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons'
 import type { ActionType, ProColumns } from '@ant-design/pro-components'
 import { ProTable } from '@ant-design/pro-components'
 import { Button, message, Popconfirm } from 'antd'
+
 import { useContext, useRef, useState } from 'react'
-import NewTicket from './newTicket'
+import NewRole from './newRole.tsx'
+import UpdateRole from './updateRole.tsx'
 
-import ErrorPage from '@/components/ErrorPage/ErrorPage'
-import LoadingError from '@/components/ErrorPage/LoadingError'
-import { useDeleteTicket } from '@/hooks/useTicket'
-import DetailTicket from './detailTicket'
-import UpdateTicket from './updateTicket'
-import { AppContext } from '@/context/app.context'
-import Access from '@/components/access'
-import ticketApi from '@/apis/ticket.api'
+import { useDeleteRole } from '@/hooks/useRole.ts'
+import ErrorPage from '@/components/ErrorPage/ErrorPage.tsx'
+import LoadingError from '@/components/ErrorPage/LoadingError.tsx'
+import roleApi from '@/apis/role.api.ts'
+import { AppContext } from '@/context/app.context.tsx'
+import Access from '@/components/access.tsx'
 
-const TicketManagement = () => {
-  //detail
-  const [isDetailOpen, setIsDetailOpen] = useState(false)
-  const [detailTicket, setDetailTicket] = useState<ITicketTable>({
-    id: '',
-    flightCode: '',
-    seatName: '',
-    passengerName: '',
-    passengerPhone: '',
-    passengerIDCard: '',
-    passengerEmail: '',
-    haveBaggage: false
-  })
+const RoleManagement = () => {
+  //table
+  const actionRef = useRef<ActionType>(null)
+
+  //new
+  const [isNewOpen, setIsNewOpen] = useState(false)
 
   //update
   const [isUpdateOpen, setIsUpdateOpen] = useState(false)
-  const [updatedTicket, setUpdatedTicket] = useState<ITicketTable>({
+  const [updatedRole, setUpdateRole] = useState<IRoleTable>({
     id: '',
-    flightCode: '',
-    seatName: '',
-    passengerName: '',
-    passengerPhone: '',
-    passengerIDCard: '',
-    passengerEmail: '',
-    haveBaggage: false
+    roleName: '',
+    description: '',
+    permissionIds: []
   })
-  //New
-  const [isNewOpen, setIsNewOpen] = useState(false)
 
   // delete
   const [messageApi, contextHolder] = message.useMessage()
-  const handleDeleteMutation = useDeleteTicket()
+  const handleDeleteMutation = useDeleteRole()
   const handleDelete = (id: string) => {
     handleDeleteMutation.mutate(id, {
       onSuccess(data) {
@@ -69,59 +56,24 @@ const TicketManagement = () => {
     apiPath: '',
     model: ''
   }
-  //Table
-  const actionRef = useRef<ActionType>(null)
-  const columns: ProColumns<ITicketTable>[] = [
+  const columns: ProColumns<IRoleTable>[] = [
     {
       dataIndex: 'index',
       valueType: 'indexBorder',
       width: 48
     },
     {
-      title: 'ID',
-      search: false,
-      render: (_, record) => (
-        <a
-          style={{ color: '#3498db' }}
-          onClick={() => {
-            setDetailTicket(record)
-            setIsDetailOpen(true)
-          }}
-        >
-          {record.id}
-        </a>
-      )
+      title: 'RoleName',
+      dataIndex: 'roleName'
     },
+
     {
-      title: 'Flight Code',
-      dataIndex: 'flightCode'
-    },
-    {
-      title: 'Seat Name',
-      dataIndex: 'seatName'
-    },
-    {
-      title: 'Passenger Name',
-      dataIndex: 'passengerName'
-    },
-    {
-      title: 'Passenger Id Card',
-      dataIndex: 'passengerIDCard'
-    },
-    {
-      title: 'Passenger Phone',
-      dataIndex: 'passengerPhone'
-    },
-    {
-      title: 'Passenger Email',
-      dataIndex: 'passengerEmail'
-    },
-    {
-      title: 'Have Baggage',
-      render: (_, record) => <div>{record.haveBaggage ? 'Yes' : 'No'}</div>
+      title: 'Description',
+      dataIndex: 'description'
     },
     {
       title: 'Action',
+      search: false,
       render: (_, record) => (
         <div
           style={{
@@ -136,15 +88,15 @@ const TicketManagement = () => {
                 color: '#54a0ff'
               }}
               onClick={() => {
-                setUpdatedTicket(record)
+                setUpdateRole(record)
                 setIsUpdateOpen(true)
               }}
             />
           </Access>
           <Access permission={permissions}>
             <Popconfirm
-              title='Delete the ticket'
-              description='Are you sure to delete this ticket?'
+              title='Delete the role'
+              description='Are you sure to delete this role?'
               okText='Delete'
               onConfirm={() => handleDelete(record.id as string)}
               cancelText='Cancel'
@@ -162,7 +114,6 @@ const TicketManagement = () => {
       )
     }
   ]
-
   const [error, setError] = useState<unknown>(null)
   return (
     <>
@@ -173,7 +124,7 @@ const TicketManagement = () => {
         <>
           {/* <Access permission={ALL_PERMISSIONS['ACCOUNTS']['GET_PAGINATE']}> */}
           <Access permission={permissions}>
-            <ProTable<ITicketTable>
+            <ProTable<IRoleTable>
               rowKey='id'
               search={{
                 labelWidth: 'auto'
@@ -182,7 +133,7 @@ const TicketManagement = () => {
                 setError(null)
 
                 try {
-                  const response = await ticketApi.getTickets({
+                  const response = await roleApi.getRoles({
                     page: params.current,
                     size: params.pageSize
                   })
@@ -207,7 +158,7 @@ const TicketManagement = () => {
               actionRef={actionRef}
               bordered
               cardBordered
-              headerTitle='Tickets List'
+              headerTitle='Roles List'
               toolBarRender={() => [
                 // <Access permission={ALL_PERMISSIONS['ACCOUNTS']['ADD']}>
                 <Access permission={permissions}>
@@ -219,7 +170,7 @@ const TicketManagement = () => {
                       setIsNewOpen(true)
                     }}
                   >
-                    New Ticket
+                    New Role
                   </Button>
                 </Access>
               ]}
@@ -231,22 +182,16 @@ const TicketManagement = () => {
               }}
             />
           </Access>
-          <NewTicket isNewOpen={isNewOpen} setIsNewOpen={setIsNewOpen} />
-          <UpdateTicket
-            setUpdatedTicket={setUpdatedTicket}
+          <NewRole isNewOpen={isNewOpen} setIsNewOpen={setIsNewOpen} />
+          <UpdateRole
+            setUpdatedRole={setUpdateRole}
             isUpdateOpen={isUpdateOpen}
             setIsUpdateOpen={setIsUpdateOpen}
-            updatedTicket={updatedTicket}
-          />
-          <DetailTicket
-            isDetailOpen={isDetailOpen}
-            setIsDetailOpen={setIsDetailOpen}
-            setDetailTicket={setDetailTicket}
-            detailTicket={detailTicket}
+            updatedRole={updatedRole}
           />
         </>
       )}
     </>
   )
 }
-export default TicketManagement
+export default RoleManagement

@@ -10,7 +10,7 @@ declare global {
 
 export interface CityList {
   result: ICityTable[]
-  meta: {
+  pagination: {
     page: number
     size: number
     page_size: number

@@ -58,12 +58,12 @@ const NewAirport = (props: IProp) => {
 
   const citiesData = useQuery({
     queryKey: ['cities'],
-    queryFn: cityApi.getCities,
+    queryFn: () => cityApi.getCities({}),
     enabled: isNewOpen
   })
   const cityOptions = useMemo(
     () =>
-      citiesData.data?.data.map((value, index) => {
+      citiesData.data?.data.result.map((value, index) => {
         return {
           key: index,
           value: value.id,

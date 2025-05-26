@@ -1,6 +1,7 @@
 import http from '@/utils/http'
 import { SuccessResponse } from '@/globalType/util.type'
-import { SeatList, SeatListConfig } from '@/globalType/seat.type'
+import { SeatList } from '@/globalType/seat.type'
+import { ListConfig } from '@/globalType/ListConfig.type'
 
 const URL = 'api/seats'
 
@@ -9,7 +10,7 @@ const seatApi = {
     const res = await http.get<SuccessResponse<ISeatTable>>(URL, { params })
     return res.data
   },
-  getSeats: async (params: SeatListConfig) => {
+  getSeats: async (params: ListConfig) => {
     const res = await http.get<SuccessResponse<SeatList>>(URL, { params })
     return res.data
   },

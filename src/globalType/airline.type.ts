@@ -10,7 +10,7 @@ declare global {
 
 export interface AirlineList {
   result: IAirlineTable[]
-  meta: {
+  pagination: {
     page: number
     size: number
     page_size: number

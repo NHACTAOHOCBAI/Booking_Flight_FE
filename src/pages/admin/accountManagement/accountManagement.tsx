@@ -3,15 +3,16 @@ import type { ActionType, ProColumns } from '@ant-design/pro-components'
 import { ProTable } from '@ant-design/pro-components'
 import { Button, message, Popconfirm } from 'antd'
 
-import { useRef, useState } from 'react'
+import { useContext, useRef, useState } from 'react'
 import NewAccount from './newAccount'
 import UpdateAccount from './updateAccount.tsx'
 import DetailAccount from './detailAccount.tsx'
 
-import { useDeleteAccount } from '@/hooks/account..ts'
+import { useDeleteAccount } from '@/hooks/useAccount.ts'
 import ErrorPage from '@/components/ErrorPage/ErrorPage.tsx'
-import LoadingError from '@/components/ErrorPage/LoadingError.tsx'
 import accountApi from '@/apis/account.api.ts'
+import Access from '@/components/access.tsx'
+import { AppContext } from '@/context/app.context.tsx'
 
 const AccountManagement = () => {
   //table
@@ -25,7 +26,7 @@ const AccountManagement = () => {
     fullName: '',
     password: '',
     phone: '',
-    role: 3,
+    roleId: '3',
     username: ''
   })
 
@@ -41,7 +42,7 @@ const AccountManagement = () => {
     email: '',
     password: '',
     phone: '',
-    role: 3
+    roleId: '3'
   })
 
   // delete
@@ -63,6 +64,12 @@ const AccountManagement = () => {
         })
       }
     })
+  }
+  const ALL_PERMISSIONS = useContext(AppContext).PERMISSIONS.permissions
+  const permissions = {
+    method: '',
+    apiPath: '',
+    model: ''
   }
   const columns: ProColumns<IAccountTable>[] = [
     {
@@ -113,10 +120,10 @@ const AccountManagement = () => {
       title: 'Role',
       render: (_, record) => {
         const roleName = (() => {
-          switch (record.role) {
-            case 1:
+          switch (record.roleId) {
+            case '1':
               return 'Employee'
-            case 2:
+            case '2':
               return 'Admin'
             default:
               return 'Client'
@@ -136,111 +143,123 @@ const AccountManagement = () => {
             gap: 10
           }}
         >
-          <EditOutlined
-            style={{
-              color: '#54a0ff'
-            }}
-            onClick={() => {
-              setUpdateAccount(record)
-              setIsUpdateOpen(true)
-            }}
-          />
-          <Popconfirm
-            title='Delete the airport'
-            description='Are you sure to delete this account?'
-            okText='Delete'
-            onConfirm={() => handleDelete(record.id as string)}
-            cancelText='Cancel'
-          >
-            <DeleteOutlined
+          {/* <Access permission={ALL_PERMISSIONS['ACCOUNTS']['UPDATE']} hideChildren> */}
+          <Access permission={permissions} hideChildren>
+            <EditOutlined
               style={{
-                color: '#ee5253'
+                color: '#54a0ff'
+              }}
+              onClick={() => {
+                setUpdateAccount(record)
+                setIsUpdateOpen(true)
               }}
             />
-          </Popconfirm>
+          </Access>
+          <Access permission={permissions}>
+            <Popconfirm
+              title='Delete the account'
+              description='Are you sure to delete this account?'
+              okText='Delete'
+              onConfirm={() => handleDelete(record.id as string)}
+              cancelText='Cancel'
+            >
+              {/* <Access permission={ALL_PERMISSIONS['ACCOUNTS']['DELETE']} hideChildren> */}
+
+              <DeleteOutlined
+                style={{
+                  color: '#ee5253'
+                }}
+              />
+            </Popconfirm>
+          </Access>
         </div>
       )
     }
   ]
 
   const [error, setError] = useState<unknown>(null)
-  const [loading, setLoading] = useState(true)
   return (
     <>
       {contextHolder}
-      {loading && <LoadingError />}
-      {error && <ErrorPage />}
-      <ProTable<IAccountTable>
-        rowKey='id'
-        search={{
-          labelWidth: 'auto'
-        }}
-        request={async (params) => {
-          setLoading(true)
-          setError(null)
+      {error ? (
+        <ErrorPage />
+      ) : (
+        <>
+          {/* <Access permission={ALL_PERMISSIONS['ACCOUNTS']['GET_PAGINATE']}> */}
+          <Access permission={permissions}>
+            <ProTable<IAccountTable>
+              rowKey='id'
+              search={{
+                labelWidth: 'auto'
+              }}
+              request={async (params) => {
+                setError(null)
 
-          try {
-            const response = await accountApi.getAccounts({
-              page: params.current,
-              size: params.pageSize
-            })
+                try {
+                  const response = await accountApi.getAccounts({
+                    page: params.current,
+                    size: params.pageSize
+                  })
 
-            setLoading(false)
-            return {
-              data: response.data?.result,
-              success: true,
-              total: response.data?.meta.total
-            }
-          } catch (err) {
-            console.error(err)
-            setError(err)
-            setLoading(false)
-            return {
-              data: [],
-              success: false,
-              total: 0
-            }
-          }
-        }}
-        columns={columns}
-        actionRef={actionRef}
-        bordered
-        cardBordered
-        headerTitle='Accounts List'
-        // request={handleRequest}
-        //Khi ProTable được render hoặc có sự thay đổi ở bộ lọc, tìm kiếm, phân trang, nó sẽ tự động gọi hàm request
-        toolBarRender={() => [
-          <Button
-            key='button'
-            icon={<PlusOutlined />}
-            type='primary'
-            onClick={() => {
-              setIsNewOpen(true)
-            }}
-          >
-            New Account
-          </Button>
-        ]}
-        pagination={{
-          pageSizeOptions: [5, 10, 20],
-          showSizeChanger: true,
-          defaultCurrent: 1,
-          defaultPageSize: 5
-        }}
-      />
-      <NewAccount isNewOpen={isNewOpen} setIsNewOpen={setIsNewOpen} />
-      <UpdateAccount
-        setUpdatedAccount={setUpdateAccount}
-        isUpdateOpen={isUpdateOpen}
-        setIsUpdateOpen={setIsUpdateOpen}
-        updatedAccount={updatedAccount}
-      />
-      <DetailAccount
-        isDetailOpen={isDetailOpen}
-        setIsDetailOpen={setIsDetailOpen}
-        setDetailAccount={setDetailAccount}
-        detailAccount={detailAccount}
-      />
+                  return {
+                    data: response.data?.result,
+                    success: true,
+                    total: response.data?.pagination.total
+                  }
+                } catch (err) {
+                  console.error(err)
+                  setError(err)
+
+                  return {
+                    data: [],
+                    success: false,
+                    total: 0
+                  }
+                }
+              }}
+              columns={columns}
+              actionRef={actionRef}
+              bordered
+              cardBordered
+              headerTitle='Accounts List'
+              toolBarRender={() => [
+                // <Access permission={ALL_PERMISSIONS['ACCOUNTS']['ADD']}>
+                <Access permission={permissions}>
+                  <Button
+                    key='button'
+                    icon={<PlusOutlined />}
+                    type='primary'
+                    onClick={() => {
+                      setIsNewOpen(true)
+                    }}
+                  >
+                    New Account
+                  </Button>
+                </Access>
+              ]}
+              pagination={{
+                pageSizeOptions: [5, 10, 20],
+                showSizeChanger: true,
+                defaultCurrent: 1,
+                defaultPageSize: 5
+              }}
+            />
+          </Access>
+          <NewAccount isNewOpen={isNewOpen} setIsNewOpen={setIsNewOpen} />
+          <UpdateAccount
+            setUpdatedAccount={setUpdateAccount}
+            isUpdateOpen={isUpdateOpen}
+            setIsUpdateOpen={setIsUpdateOpen}
+            updatedAccount={updatedAccount}
+          />
+          <DetailAccount
+            isDetailOpen={isDetailOpen}
+            setIsDetailOpen={setIsDetailOpen}
+            setDetailAccount={setDetailAccount}
+            detailAccount={detailAccount}
+          />
+        </>
+      )}
     </>
   )
 }

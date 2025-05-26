@@ -1,6 +1,7 @@
 import http from '@/utils/http'
 import { SuccessResponse } from '@/globalType/util.type'
-import { FlightListConfig, FlightList } from '@/globalType/flight.type'
+import { FlightList } from '@/globalType/flight.type'
+import { ListConfig } from '@/globalType/ListConfig.type'
 
 const URL = 'api/flights'
 
@@ -9,7 +10,7 @@ const flightApi = {
     const res = await http.get<SuccessResponse<IFlightTable>>(URL, { params })
     return res.data
   },
-  getFlights: async (params: FlightListConfig) => {
+  getFlights: async (params: ListConfig) => {
     const res = await http.get<SuccessResponse<FlightList>>(URL, { params })
     return res.data
   },

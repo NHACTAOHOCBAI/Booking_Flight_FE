@@ -17,6 +17,6 @@ export const getProfileFromLS = () => {
   return result ? JSON.parse(result) : null
 }
 
-export const saveProfileToLS = (profile: IAccountTable) => {
+export const saveProfileToLS = (profile: unknown) => {
   localStorage.setItem('profile', JSON.stringify(profile))
 }

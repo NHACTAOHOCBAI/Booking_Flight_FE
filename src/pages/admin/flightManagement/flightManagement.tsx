@@ -2,7 +2,7 @@ import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons'
 import type { ActionType, ProColumns } from '@ant-design/pro-components'
 import { ProTable } from '@ant-design/pro-components'
 import { Button, message, Popconfirm } from 'antd'
-import { useMemo, useRef, useState } from 'react'
+import { useContext, useMemo, useRef, useState } from 'react'
 import NewFlight from './newFlight'
 import UpdateFlight from './updateFlight'
 import DetailFlight from './detailFlight'
@@ -17,6 +17,8 @@ import { useDeleteFlight } from '@/hooks/useFlight'
 import airportApi from '@/apis/airport.api'
 import { useQuery } from '@tanstack/react-query'
 import flightApi from '@/apis/flight.api'
+import { AppContext } from '@/context/app.context'
+import Access from '@/components/access'
 const FlightManagement = () => {
   //detail
   const [detailFlight, setDetailFlight] = useState<IFlightTable>({
@@ -81,12 +83,12 @@ const FlightManagement = () => {
   }
   const airportData = useQuery({
     queryKey: ['airports'],
-    queryFn: airportApi.getAirports,
+    queryFn: () => airportApi.getAirports({}),
     enabled: isNewOpen
   })
   const airportOptions = useMemo(
     () =>
-      airportData.data?.data.map((value, index) => {
+      airportData.data?.data.result.map((value, index) => {
         return {
           key: index,
           value: value.id,
@@ -95,6 +97,12 @@ const FlightManagement = () => {
       }),
     [airportData]
   )
+  const ALL_PERMISSIONS = useContext(AppContext).PERMISSIONS.permissions
+  const permissions = {
+    method: '',
+    apiPath: '',
+    model: ''
+  }
   const columns: ProColumns<IFlightTable>[] = [
     {
       dataIndex: 'index',
@@ -183,28 +191,35 @@ const FlightManagement = () => {
             gap: 10
           }}
         >
-          <EditOutlined
-            style={{
-              color: '#54a0ff'
-            }}
-            onClick={() => {
-              setIsUpdateOpen(true)
-              setUpdatedFlight(record)
-            }}
-          />
-          <Popconfirm
-            title='Delete the airport'
-            description='Are you sure to delete this airport?'
-            okText='Delete'
-            cancelText='Cancel'
-            onConfirm={() => handleDelete(record.id as string)}
-          >
-            <DeleteOutlined
+          {/* <Access permission={ALL_PERMISSIONS['ACCOUNTS']['UPDATE']} hideChildren> */}
+          <Access permission={permissions} hideChildren>
+            <EditOutlined
               style={{
-                color: '#ee5253'
+                color: '#54a0ff'
+              }}
+              onClick={() => {
+                setUpdatedFlight(record)
+                setIsUpdateOpen(true)
               }}
             />
-          </Popconfirm>
+          </Access>
+          <Access permission={permissions}>
+            <Popconfirm
+              title='Delete the flight'
+              description='Are you sure to delete this flight?'
+              okText='Delete'
+              onConfirm={() => handleDelete(record.id as string)}
+              cancelText='Cancel'
+            >
+              {/* <Access permission={ALL_PERMISSIONS['ACCOUNTS']['DELETE']} hideChildren> */}
+
+              <DeleteOutlined
+                style={{
+                  color: '#ee5253'
+                }}
+              />
+            </Popconfirm>
+          </Access>
           <Button
             type='dashed'
             onClick={() => {
@@ -220,81 +235,88 @@ const FlightManagement = () => {
     }
   ]
   const [error, setError] = useState<unknown>(null)
-  const [loading, setLoading] = useState(true)
   return (
     <>
       {contextHolder}
-      {loading && <LoadingError />}
-      {error && <ErrorPage />}
-      <ProTable<IFlightTable>
-        rowKey='id'
-        search={{
-          labelWidth: 'auto'
-        }}
-        request={async (params) => {
-          setLoading(true)
-          setError(null)
+      {error ? (
+        <ErrorPage />
+      ) : (
+        <>
+          {/* <Access permission={ALL_PERMISSIONS['ACCOUNTS']['GET_PAGINATE']}> */}
+          <Access permission={permissions}>
+            <ProTable<IFlightTable>
+              rowKey='id'
+              search={{
+                labelWidth: 'auto'
+              }}
+              request={async (params) => {
+                setError(null)
 
-          try {
-            const response = await flightApi.getFlights({
-              page: params.current,
-              size: params.pageSize
-            })
+                try {
+                  const response = await flightApi.getFlights({
+                    page: params.current,
+                    size: params.pageSize
+                  })
 
-            setLoading(false)
-            return {
-              data: response.data?.result,
-              success: true,
-              total: response.data?.meta.total
-            }
-          } catch (err) {
-            console.error(err)
-            setError(err)
-            setLoading(false)
-            return {
-              data: [],
-              success: false,
-              total: 0
-            }
-          }
-        }}
-        columns={columns}
-        actionRef={actionRef}
-        bordered
-        cardBordered
-        headerTitle='Flight List'
-        toolBarRender={() => [
-          <Button
-            key='button'
-            icon={<PlusOutlined />}
-            type='primary'
-            onClick={() => {
-              setIsNewOpen(true)
-            }}
-          >
-            New Airport
-          </Button>
-        ]}
-        pagination={{
-          pageSizeOptions: [5, 10, 20],
-          showSizeChanger: true,
-          defaultCurrent: 1,
-          defaultPageSize: 5
-        }}
-      />
-      <NewFlight isNewOpen={isNewOpen} setIsNewOpen={setIsNewOpen} />
-      <UpdateFlight
-        isUpdateOpen={isUpdateOpen}
-        setIsUpdateOpen={setIsUpdateOpen}
-        updatedFlight={updatedFlight}
-        setUpdatedFlight={setUpdatedFlight}
-      />
-      <DetailFlight
-        isDetailOpen={isDetailOpen}
-        setIsDetailOpen={setIsDetailOpen}
-        detailFlight={detailFlight}
-        setDetailFlight={setDetailFlight}
-      />
+                  return {
+                    data: response.data?.result,
+                    success: true,
+                    total: response.data?.pagination.total
+                  }
+                } catch (err) {
+                  console.error(err)
+                  setError(err)
+
+                  return {
+                    data: [],
+                    success: false,
+                    total: 0
+                  }
+                }
+              }}
+              columns={columns}
+              actionRef={actionRef}
+              bordered
+              cardBordered
+              headerTitle='Flights List'
+              toolBarRender={() => [
+                // <Access permission={ALL_PERMISSIONS['ACCOUNTS']['ADD']}>
+                <Access permission={permissions}>
+                  <Button
+                    key='button'
+                    icon={<PlusOutlined />}
+                    type='primary'
+                    onClick={() => {
+                      setIsNewOpen(true)
+                    }}
+                  >
+                    New Flight
+                  </Button>
+                </Access>
+              ]}
+              pagination={{
+                pageSizeOptions: [5, 10, 20],
+                showSizeChanger: true,
+                defaultCurrent: 1,
+                defaultPageSize: 5
+              }}
+            />
+          </Access>
+          <NewFlight isNewOpen={isNewOpen} setIsNewOpen={setIsNewOpen} />
+          <UpdateFlight
+            setUpdatedFlight={setUpdatedFlight}
+            isUpdateOpen={isUpdateOpen}
+            setIsUpdateOpen={setIsUpdateOpen}
+            updatedFlight={updatedFlight}
+          />
+          <DetailFlight
+            isDetailOpen={isDetailOpen}
+            setIsDetailOpen={setIsDetailOpen}
+            detailFlight={detailFlight}
+            setDetailFlight={setDetailFlight}
+          />
+        </>
+      )}
     </>
   )
 }

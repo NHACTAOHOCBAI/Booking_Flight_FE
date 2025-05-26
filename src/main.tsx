@@ -1,6 +1,6 @@
-import { StrictMode, useContext } from 'react'
+import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import { createBrowserRouter, Navigate, Outlet, RouterProvider } from 'react-router-dom'
+import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import UserLayout from 'pages/client/userLayout/userLayout'
 
 import AboutUsPage from 'pages/client/aboutUsPage/aboutUsPage'
@@ -23,27 +23,26 @@ import AdminBooking from './pages/admin/booking/adminBooking'
 import CityManagement from './pages/admin/cityManagement/cityManagement'
 import { Provider } from 'react-redux'
 import { store } from './redux/store'
-import NotFoundPage from './pages/error/notFoundPage'
 import AirlineManagement from './pages/admin/airlineManagement/airlineManagement'
 import HomePage from './pages/client/homePage/homePage'
-import { AppContext, AppProvider } from './context/app.context'
+import { AppProvider } from './context/app.context'
 import AccountManagement from '@/pages/admin/accountManagement/accountManagement'
 import TicketManagement from './pages/admin/ticketManagement/ticketManagement'
+import RoleManagement from './pages/admin/roleManagement/roleManagement'
+import ErrorPage from './components/ErrorPage/ErrorPage'
+import ProtectedRoute from './components/ProtectedRoute'
+import RejectedRoute from './components/RejectedRoute'
 
-function ProtectedRoute() {
-  const { isAuthenticated } = useContext(AppContext)
-  return isAuthenticated ? <Outlet /> : <Navigate to='/login' />
-}
+// function ProtectedRoute() {
+//   const { isAuthenticated } = useContext(AppContext)
+//   return isAuthenticated ? <Outlet /> : <Navigate to='/login' />
+// }
 
-function RejectedRoute() {
-  const { isAuthenticated } = useContext(AppContext)
-  console.log(isAuthenticated)
-  return !isAuthenticated ? <Outlet /> : <Navigate to='/' />
-}
 const router = createBrowserRouter([
   {
     path: '/',
     element: <UserLayout />,
+    errorElement: <ErrorPage />,
     children: [
       {
         index: true,
@@ -62,44 +61,97 @@ const router = createBrowserRouter([
   {
     path: '/admin',
     element: <AdminLayout />,
+    errorElement: <ErrorPage />,
     children: [
       {
         index: true,
-        element: <Dashboard />
+        element: (
+          <ProtectedRoute>
+            <Dashboard />
+          </ProtectedRoute>
+        )
       },
       {
         path: 'manage-city',
-        element: <CityManagement />
+        element: (
+          <ProtectedRoute>
+            <CityManagement />
+          </ProtectedRoute>
+        )
       },
       {
         path: 'manage-airport',
-        element: <AirportManagement />
+        element: (
+          <ProtectedRoute>
+            <AirportManagement />
+          </ProtectedRoute>
+        )
       },
       {
         path: 'manage-flight',
-        element: <FlightManagement />
+        element: (
+          <ProtectedRoute>
+            <FlightManagement />
+          </ProtectedRoute>
+        )
       },
       {
         path: 'manage-flight/booking/:flightId',
-        element: <AdminBooking />
+        element: (
+          <ProtectedRoute>
+            <AdminBooking />
+          </ProtectedRoute>
+        )
       },
       {
         path: 'manage-seat',
-        element: <SeatManagement />
+        element: (
+          <ProtectedRoute>
+            <SeatManagement />
+          </ProtectedRoute>
+        )
       },
       {
         path: 'manage-account',
-        element: <AccountManagement />
+        element: (
+          <ProtectedRoute>
+            <AccountManagement />
+          </ProtectedRoute>
+        )
       },
       {
         path: 'manage-plane',
-        element: <PlaneManagement />
+        element: (
+          <ProtectedRoute>
+            <PlaneManagement />
+          </ProtectedRoute>
+        )
       },
       {
         path: 'manage-airline',
-        element: <AirlineManagement />
+        element: (
+          <ProtectedRoute>
+            <AirlineManagement />
+          </ProtectedRoute>
+        )
       },
-      { path: 'manage-ticket', element: <TicketManagement /> }
+      {
+        path: 'manage-ticket',
+        element: (
+          <ProtectedRoute>
+            <TicketManagement />
+          </ProtectedRoute>
+        )
+      },
+      {
+        path: 'manage-role',
+        element: (
+          <ProtectedRoute>
+            {' '}
+            <RoleManagement />
+          </ProtectedRoute>
+        )
+      }
     ]
   },
   {
@@ -118,7 +170,7 @@ const router = createBrowserRouter([
   },
   {
     path: '*',
-    element: <NotFoundPage />
+    element: <ErrorPage />
   }
 ])
 const queryClient = new QueryClient({
