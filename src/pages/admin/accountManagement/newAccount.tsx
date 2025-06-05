@@ -1,14 +1,13 @@
 import { Col, Form, FormProps, Input, message, Modal, Row, Select } from 'antd'
 import { MdOutlineDriveFileRenameOutline, MdOutlinePhone } from 'react-icons/md'
 
-import { TfiEmail } from 'react-icons/tfi'
-import { RiLockPasswordLine } from 'react-icons/ri'
-import { GrUserAdmin } from 'react-icons/gr'
-import { useCreateAccount } from '@/hooks/useAccount'
 import { onErrorUtil } from '@/globalType/util.type'
-import roleApi from '@/apis/role.api'
-import { useQuery } from '@tanstack/react-query'
+import { useCreateAccount } from '@/hooks/useAccount'
+import { useGetAllRoles } from '@/hooks/useRole'
 import { useMemo } from 'react'
+import { GrUserAdmin } from 'react-icons/gr'
+import { RiLockPasswordLine } from 'react-icons/ri'
+import { TfiEmail } from 'react-icons/tfi'
 interface IProp {
   isNewOpen: boolean
   setIsNewOpen: (value: boolean) => void
@@ -26,7 +25,7 @@ const NewAccount = (props: IProp) => {
       fullName: value.fullName,
       password: value.password,
       username: value.username,
-      roleId: value.roleId,
+      roleId: value.role,
       phone: value.phone
     }
     newAccountMutation.mutate(body, {
@@ -57,11 +56,7 @@ const NewAccount = (props: IProp) => {
     setIsNewOpen(false)
   }
 
-  const roleData = useQuery({
-    queryKey: ['roles'],
-    queryFn: () => roleApi.getRoles({}),
-    enabled: isNewOpen
-  })
+  const roleData = useGetAllRoles({}, isNewOpen)
   const roleOptions = useMemo(
     () =>
       roleData.data?.data.result.map((value, index) => {
@@ -105,23 +100,6 @@ const NewAccount = (props: IProp) => {
                 ]}
               >
                 <Input placeholder='Email' />
-              </Form.Item>
-
-              <Form.Item<IAccountTable>
-                label={
-                  <div>
-                    <MdOutlineDriveFileRenameOutline /> Username
-                  </div>
-                }
-                name='username'
-                rules={[
-                  {
-                    required: true,
-                    message: 'Please input username'
-                  }
-                ]}
-              >
-                <Input placeholder='Username' />
               </Form.Item>
 
               <Form.Item<IAccountTable>
@@ -197,7 +175,7 @@ const NewAccount = (props: IProp) => {
                       <GrUserAdmin /> Role
                     </div>
                   }
-                  name='roleId'
+                  name='role'
                   rules={[
                     {
                       required: true,

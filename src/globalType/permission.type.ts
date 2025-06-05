@@ -4,17 +4,11 @@ export interface IPermission {
   apiPath?: string
   method?: string
   model?: string
-
-  createdBy?: string
-  isDeleted?: boolean
-  deletedAt?: boolean | null
-  createdAt?: string
-  updatedAt?: string
 }
 
 export interface GroupPermission {
   model: string
-  permissions: IPermission[]
+  permissionId: IPermission[]
 }
 
 export interface PermissionList {
@@ -26,5 +20,3 @@ export interface PermissionList {
     total: number
   }
 }
-
-export const PERMISSIONS = {}

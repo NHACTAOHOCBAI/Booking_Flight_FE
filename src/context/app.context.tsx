@@ -1,7 +1,7 @@
-import { AllPermissions, usePermissions } from '@/hooks/usePermission'
-import { getAccessTokenFromLS, getProfileFromLS } from '@/utils/auth'
+import { AllPermissions, loadPermissions, usePermissions } from '@/hooks/usePermission'
+import { getAccessTokenFromLS, getProfileFromLS } from '@/apis/auth.api'
 
-import { createContext, useMemo, useState } from 'react'
+import { createContext, useEffect, useMemo, useState } from 'react'
 
 interface AppContextInterface {
   isAuthenticated: boolean
@@ -14,6 +14,7 @@ interface AppContextInterface {
     error: Error | null
     refetch: () => void
   }
+  isPermissionsReady: boolean
 }
 const initialAppContext: AppContextInterface = {
   isAuthenticated: Boolean(getAccessTokenFromLS()),
@@ -25,7 +26,8 @@ const initialAppContext: AppContextInterface = {
     isLoading: false,
     error: null,
     refetch: () => {}
-  }
+  },
+  isPermissionsReady: false
 }
 // eslint-disable-next-line react-refresh/only-export-components
 export const AppContext = createContext<AppContextInterface>(initialAppContext)
@@ -33,16 +35,32 @@ export const AppContext = createContext<AppContextInterface>(initialAppContext)
 export function AppProvider({ children }: { children: React.ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState(initialAppContext.isAuthenticated)
   const [profile, setProfile] = useState(initialAppContext.profile)
-  const PERMISSIONS = usePermissions()
+
+  const [PERMISSIONS, setPermissions] = useState(initialAppContext.PERMISSIONS)
+  const [isPermissionsReady, setIsPermissionsReady] = useState(false)
+  useEffect(() => {
+    console.log('re mount')
+    loadPermissions().then((permissions) => {
+      setPermissions({
+        permissions,
+        isLoading: false,
+        error: null,
+        refetch: loadPermissions
+      })
+      setIsPermissionsReady(true)
+    })
+    return () => console.log('AppProvider unmounted')
+  }, [])
   const contextValue = useMemo(() => {
     return {
       isAuthenticated,
       setIsAuthenticated,
       profile,
       setProfile,
-      PERMISSIONS
+      PERMISSIONS,
+      isPermissionsReady
     }
-  }, [isAuthenticated, profile, PERMISSIONS])
+  }, [isAuthenticated, profile, PERMISSIONS, isPermissionsReady])
 
   return <AppContext.Provider value={contextValue}> {children} </AppContext.Provider>
 }

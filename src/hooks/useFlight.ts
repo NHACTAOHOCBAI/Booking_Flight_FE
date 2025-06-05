@@ -1,11 +1,12 @@
-import flightApi from '@/apis/flight.api'
-import { FlightListConfig } from '@/globalType/flight.type'
+import flightApi from '@/apis/apis/flight.api'
+import { ListConfig } from '@/globalType/listConfig.type'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
-export const useGetAllFlights = (queryConfig: FlightListConfig) => {
+export const useGetAllFlights = (queryConfig: ListConfig, enabled: boolean = true) => {
   return useQuery({
     queryKey: ['flights', queryConfig],
-    queryFn: () => flightApi.getFlights(queryConfig)
+    queryFn: () => flightApi.getFlights(queryConfig),
+    enabled: enabled
   })
 }
 export const useGetFlightById = (id: string) => {

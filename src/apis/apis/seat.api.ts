@@ -1,13 +1,13 @@
-import http from '@/utils/http'
+import http from '@/apis/http'
 import { SuccessResponse } from '@/globalType/util.type'
 import { SeatList } from '@/globalType/seat.type'
-import { ListConfig } from '@/globalType/ListConfig.type'
+import { ListConfig } from '@/globalType/listConfig.type'
 
 const URL = 'api/seats'
 
 const seatApi = {
   getSeatById: async (params: string) => {
-    const res = await http.get<SuccessResponse<ISeatTable>>(URL, { params })
+    const res = await http.get<SuccessResponse<ISeatTable>>(`${URL}/${params}`)
     return res.data
   },
   getSeats: async (params: ListConfig) => {

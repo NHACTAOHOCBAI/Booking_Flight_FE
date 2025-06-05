@@ -1,13 +1,13 @@
-import http from '@/utils/http'
+import http from '@/apis/http'
 import { SuccessResponse } from '@/globalType/util.type'
 import { IPermission, PermissionList } from '@/globalType/permission.type'
-import { ListConfig } from '@/globalType/ListConfig.type'
+import { ListConfig } from '@/globalType/listConfig.type'
 
 const URL = 'api/permissions'
 
 const permissionApi = {
   getPermissionById: async (params: string) => {
-    const res = await http.get<SuccessResponse<IPermission>>(URL, { params })
+    const res = await http.get<SuccessResponse<IPermission>>(`${URL}/${params}`)
     return res.data
   },
   getPermissions: async (params: ListConfig) => {

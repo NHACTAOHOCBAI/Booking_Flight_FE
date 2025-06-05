@@ -1,14 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Col, Form, message, Row } from 'antd'
 import { PlusOutlined } from '@ant-design/icons'
-import { onErrorUtil, SuccessResponse } from '@/globalType/util.type'
-import { FooterToolbar, ModalForm, ProCard, ProFormSwitch, ProFormText } from '@ant-design/pro-components'
+import { onErrorUtil } from '@/globalType/util.type'
+import { ModalForm, ProCard, ProFormSwitch, ProFormText } from '@ant-design/pro-components'
 import { useCreateRole } from '@/hooks/useRole'
-import { GroupPermission, IPermission } from '@/globalType/permission.type'
-import http from '@/utils/http'
-import { useQuery } from '@tanstack/react-query'
 import ModuleApi from './moduleApi'
-import { groupByPermission } from '@/utils/utils'
 interface IProp {
   isNewOpen: boolean
   setIsNewOpen: (value: boolean) => void
@@ -21,9 +17,19 @@ const NewRole = (props: IProp) => {
   const newRoleMutation = useCreateRole()
 
   const onFinish = async (value: any) => {
+    const checkedPermissions = []
+    if (value.permissionId) {
+      for (const key in value.permissionId) {
+        if (value.permissionId[key] === true) {
+          checkedPermissions.push(key)
+        }
+      }
+    }
+    console.log(value.permissionId)
+    console.log(checkedPermissions)
     const body = {
       roleName: value.roleName,
-      permissionIds: value.permissionIds,
+      permissionId: checkedPermissions,
       description: value.description
     }
     newRoleMutation.mutate(body, {
@@ -49,18 +55,7 @@ const NewRole = (props: IProp) => {
     form.resetFields()
     setIsNewOpen(false)
   }
-  const listPermissionData = useQuery({
-    queryKey: ['permissions'],
-    queryFn: async () => {
-      const res = await http.get<SuccessResponse<IPermission[]>>('api/permissions')
-      return res.data
-    },
-    enabled: isNewOpen
-  })
-  let listPermissions: GroupPermission[]
-  if (listPermissionData.data) listPermissions = groupByPermission(listPermissionData?.data.data)
-  else listPermissions = []
-  console.log(listPermissions, listPermissionData)
+
   return (
     <>
       {contextHolder}
@@ -81,14 +76,14 @@ const NewRole = (props: IProp) => {
         form={form}
         onFinish={onFinish}
         submitter={{
-          render: (_: any, dom: any) => <FooterToolbar>{dom}</FooterToolbar>,
-          submitButtonProps: {
-            icon: <PlusOutlined />
-          },
           searchConfig: {
             resetText: 'Cancel',
             submitText: 'Create new'
-          }
+          },
+          submitButtonProps: {
+            icon: <PlusOutlined />
+          },
+          render: (_: any, dom: any) => dom // render mặc định
         }}
       >
         <Row gutter={16}>
@@ -123,12 +118,7 @@ const NewRole = (props: IProp) => {
               size='small'
               bordered
             >
-              <ModuleApi
-                form={form}
-                listPermissions={listPermissions}
-                singleRole={form.getFieldsValue()}
-                openModal={isNewOpen}
-              />
+              <ModuleApi form={form} singleRole={form.getFieldsValue()} openModal={isNewOpen} />
             </ProCard>
           </Col>
         </Row>

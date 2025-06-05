@@ -1,5 +1,3 @@
-import { IPermission } from './permission.type'
-
 export {}
 
 declare global {
@@ -10,10 +8,9 @@ declare global {
     email: string
     fullName?: string
     phone?: string
-    roleId?: string
-    permissions?: IPermission[]
-    accessToken?: string
-    refreshToken?: string
+    role?: IRoleTable
+
+    avatar?: string
   }
 }
 

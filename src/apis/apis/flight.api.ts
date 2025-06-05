@@ -1,17 +1,22 @@
-import http from '@/utils/http'
+import http from '@/apis/http'
 import { SuccessResponse } from '@/globalType/util.type'
 import { FlightList } from '@/globalType/flight.type'
-import { ListConfig } from '@/globalType/ListConfig.type'
+import { ListConfig } from '@/globalType/listConfig.type'
 
 const URL = 'api/flights'
 
 const flightApi = {
   getFlightById: async (params: string) => {
-    const res = await http.get<SuccessResponse<IFlightTable>>(URL, { params })
+    const res = await http.get<SuccessResponse<IFlightTable>>(`${URL}/${params}`)
     return res.data
   },
-  getFlights: async (params: ListConfig) => {
-    const res = await http.get<SuccessResponse<FlightList>>(URL, { params })
+  getFlights: async (params: ListConfig | string) => {
+    let res
+    if (typeof params === 'object') {
+      res = await http.get<SuccessResponse<FlightList>>(URL, { params })
+    } else {
+      res = await http.get<SuccessResponse<FlightList>>(params)
+    }
     return res.data
   },
   getSeats: async (id: string) => {

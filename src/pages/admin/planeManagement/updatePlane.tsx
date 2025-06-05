@@ -1,7 +1,6 @@
-import airlineApi from '@/apis/airline.api'
 import { onErrorUtil } from '@/globalType/util.type'
+import { useGetAllAirlines } from '@/hooks/useAirline'
 import { useUpdatePlane } from '@/hooks/usePlane'
-import { useQuery } from '@tanstack/react-query'
 import { Form, Input, message, Modal, Select } from 'antd'
 import _ from 'lodash'
 import { useEffect, useMemo } from 'react'
@@ -37,6 +36,7 @@ const UpdatePlane = (props: IProp) => {
       planeName: value.planeName,
       airlineId: value.airlineId
     }
+    console.log(body.id)
     updatePlaneMutation.mutate(body, {
       onSuccess(data) {
         messageApi.open({
@@ -80,11 +80,7 @@ const UpdatePlane = (props: IProp) => {
     })
   }, [form, updatedPlane])
 
-  const airlinesData = useQuery({
-    queryKey: ['airlines'],
-    queryFn: () => airlineApi.getAirlines({}),
-    enabled: isUpdateOpen
-  })
+  const airlinesData = useGetAllAirlines({}, isUpdateOpen)
   const airlineOptions = useMemo(
     () =>
       airlinesData.data?.data.result.map((value, index) => {

@@ -2,7 +2,7 @@ export {}
 
 declare global {
   interface ILogin {
-    data: string
+    data: { accessToken: string; account: IAccountTable }
     message: string
     code: number
   }

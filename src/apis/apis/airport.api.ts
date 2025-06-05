@@ -1,7 +1,7 @@
-import http from '@/utils/http'
+import http from '@/apis/http'
 import { SuccessResponse } from '@/globalType/util.type'
 import { AirportList } from '@/globalType/airport.type'
-import { ListConfig } from '@/globalType/ListConfig.type'
+import { ListConfig } from '@/globalType/listConfig.type'
 
 const URL = 'api/airports'
 const airportApi = {
@@ -9,8 +9,8 @@ const airportApi = {
     const res = await http.get<SuccessResponse<AirportList>>(URL, { params })
     return res.data
   },
-  getAirportById: async (params: string) => {
-    const res = await http.get<SuccessResponse<IAirportTable>>(URL, { params })
+  getAirportById: async (id: string) => {
+    const res = await http.get<SuccessResponse<IAirportTable>>(`${URL}/${id}`)
     return res.data
   },
   createAirport: async (param: IAirportTable) => {

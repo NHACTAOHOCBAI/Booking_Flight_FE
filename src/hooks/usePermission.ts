@@ -1,14 +1,29 @@
-import permissionApi from '@/apis/permission.api'
+import permissionApi from '@/apis/apis/permission.api'
 import { IPermission } from '@/globalType/permission.type'
 import { useQuery } from '@tanstack/react-query'
+
+// permissions.cache.ts
+let cachedPermissions: AllPermissions | null = null
+
+export const getCachedPermissions = () => cachedPermissions
+
+export const loadPermissions = async () => {
+  if (!cachedPermissions) {
+    const res = await permissionApi.getPermissions({})
+    cachedPermissions = transformPermissionsToObject(res.data.result)
+  }
+  return cachedPermissions
+}
 
 export const usePermissions = () => {
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: ['permissions'],
-    queryFn: () => permissionApi.getPermissions({}),
+    queryFn: () => {
+      return permissionApi.getPermissions({})
+    },
     select: (response) => {
       const permissions = response.data.result
-      console.log(permissions)
+
       return transformPermissionsToObject(permissions)
     },
     // Cấu hình để không gọi lại API trừ khi có yêu cầu
@@ -26,14 +41,8 @@ export const usePermissions = () => {
   }
 }
 
-interface PermissionDetail {
-  method: string
-  apiPath: string
-  model: string
-}
-
 interface PermissionModule {
-  [key: string]: PermissionDetail
+  [key: string]: IPermission
 }
 
 export interface AllPermissions {
@@ -46,7 +55,7 @@ const transformPermissionsToObject = (permissions: IPermission[]): AllPermission
 
   permissions.forEach((perm) => {
     const model = perm.model // e.g., "COMPANIES"
-    const name = perm.name // e.g., "GET_PAGINATE"
+    const name = perm.name // e.g., "READ_USER"
 
     if (!model || !name || !perm.method || !perm.apiPath) {
       return
@@ -59,7 +68,8 @@ const transformPermissionsToObject = (permissions: IPermission[]): AllPermission
     result[model][name] = {
       method: perm.method,
       apiPath: perm.apiPath,
-      model
+      model,
+      id: perm.id
     }
   })
 

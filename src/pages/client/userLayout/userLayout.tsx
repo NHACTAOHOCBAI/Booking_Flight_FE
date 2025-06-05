@@ -5,7 +5,7 @@ import Footer from '@/components/Footer'
 const UserLayout = () => {
   return (
     <div>
-      <div className=' '>
+      <div className='bg-slate-300 '>
         <UserHeader />
         <Outlet />
       </div>

@@ -1,15 +1,16 @@
-import { Link, Outlet, useNavigate } from 'react-router-dom'
-import { useContext, useEffect, useState } from 'react'
 import { MenuFoldOutlined, MenuUnfoldOutlined, UserOutlined } from '@ant-design/icons'
 import { Avatar, Badge, Button, Layout, Menu, MenuProps, theme } from 'antd'
-import { IoAirplaneOutline, IoSettingsOutline, IoTicketOutline } from 'react-icons/io5'
-import { PiAirplaneInFlight, PiCityLight, PiSeat } from 'react-icons/pi'
-import { VscAccount } from 'react-icons/vsc'
-import { GoLocation } from 'react-icons/go'
+import { useContext, useEffect, useState } from 'react'
 import { RxDashboard } from 'react-icons/rx'
-import { MdOutlineAirlines } from 'react-icons/md'
+import { VscAccount } from 'react-icons/vsc'
+import { Link, Outlet, useNavigate } from 'react-router-dom'
 
 import { AppContext } from '@/context/app.context'
+import { GoLocation } from 'react-icons/go'
+import { IoAirplaneOutline, IoTicketOutline, IoSettingsOutline } from 'react-icons/io5'
+import { MdOutlineAirlines } from 'react-icons/md'
+import { PiCityLight, PiAirplaneInFlight, PiSeat } from 'react-icons/pi'
+import { IPermission } from '@/globalType/permission.type'
 const { Header, Sider, Content } = Layout
 
 const AdminLayout = () => {
@@ -21,64 +22,75 @@ const AdminLayout = () => {
   } = theme.useToken()
 
   const { profile } = useContext(AppContext)
-  const permissions = profile?.permissions
-  const ALL_PERMISSIONS = useContext(AppContext).PERMISSIONS.permissions
+  const permissions = profile?.role?.permissions
 
+  const { PERMISSIONS, isPermissionsReady } = useContext(AppContext)
+  const ALL_PERMISSIONS = PERMISSIONS.permissions
+  // console.log(ALL_PERMISSIONS)
   useEffect(() => {
+    if (!isPermissionsReady) return
+
     const ACL_ENABLE = import.meta.env.VITE_ACL_ENABLE
     if (permissions?.length || ACL_ENABLE === 'false') {
-      const viewCity = permissions?.find(
+      const viewAccount = permissions?.find(
         (item) =>
-          item.apiPath === ALL_PERMISSIONS['CITIES']['GET_PAGINATE'].apiPath &&
-          item.method === ALL_PERMISSIONS['CITIES']['GET_PAGINATE'].method
+          typeof item === 'object' &&
+          item.apiPath === ALL_PERMISSIONS.ACCOUNTS.GET_ACCOUNTS.apiPath &&
+          item.method === ALL_PERMISSIONS['ACCOUNTS']['GET_ACCOUNTS'].method
       )
 
-      const viewAirport = permissions?.find(
-        (item) =>
-          item.apiPath === ALL_PERMISSIONS['AIRPORTS']['GET_PAGINATE'].apiPath &&
-          item.method === ALL_PERMISSIONS['AIRPORTS']['GET_PAGINATE'].method
-      )
+      // const viewCity = permissions?.find(
+      //   (item) =>
+      //     item.apiPath === ALL_PERMISSIONS['CITIES']['GET_CITIES'].apiPath &&
+      //     item.method === ALL_PERMISSIONS['CITIES']['GET_CITIES'].method
+      // )
+      const viewCity = 1
+
+      const viewAirport = 1
+      // const viewAirport = permissions?.find(
+      //   (item) =>
+      //     item.apiPath === ALL_PERMISSIONS['AIRPORTS']['GET_AIRPORTS'].apiPath &&
+      //     item.method === ALL_PERMISSIONS['AIRPORTS']['GET_AIRPORTS'].method
+      // )
 
       const viewPlane = permissions?.find(
         (item) =>
-          item.apiPath === ALL_PERMISSIONS['PLANES']['GET_PAGINATE'].apiPath &&
-          item.method === ALL_PERMISSIONS['PLANES']['GET_PAGINATE'].method
+          typeof item === 'object' &&
+          item.apiPath === ALL_PERMISSIONS['PLANES']['GET_PLANES'].apiPath &&
+          item.method === ALL_PERMISSIONS['PLANES']['GET_PLANES'].method
       )
 
-      const viewFlight = permissions?.find(
-        (item) =>
-          item.apiPath === ALL_PERMISSIONS['FLIGHTS']['GET_PAGINATE'].apiPath &&
-          item.method === ALL_PERMISSIONS['FLIGHTS']['GET_PAGINATE'].method
-      )
-
-      const viewAirline = permissions?.find(
-        (item) =>
-          item.apiPath === ALL_PERMISSIONS['AIRLINES']['GET_PAGINATE'].apiPath &&
-          item.method === ALL_PERMISSIONS['AIRLINES']['GET_PAGINATE'].method
-      )
-
+      // const viewFlight = permissions?.find(
+      //   (item) =>
+      //     item.apiPath === ALL_PERMISSIONS['FLIGHTS']['GET_FLIGHTS'].apiPath &&
+      //     item.method === ALL_PERMISSIONS['FLIGHTS']['GET_FLIGHTS'].method
+      // )
+      const viewFlight = 1
+      // const viewAirline = permissions?.find(
+      //   (item) =>
+      //     item.apiPath === ALL_PERMISSIONS['AIRLINES']['GET_AIRLINES'].apiPath &&
+      //     item.method === ALL_PERMISSIONS['AIRLINES']['GET_AIRLINES'].method
+      // )
+      const viewAirline = 1
       const viewSeatClass = permissions?.find(
         (item) =>
-          item.apiPath === ALL_PERMISSIONS['SEATCLASSES']['GET_PAGINATE'].apiPath &&
-          item.method === ALL_PERMISSIONS['SEATCLASSES']['GET_PAGINATE'].method
-      )
-
-      const viewAccount = permissions?.find(
-        (item) =>
-          item.apiPath === ALL_PERMISSIONS['ACCOUNTS']['GET_PAGINATE'].apiPath &&
-          item.method === ALL_PERMISSIONS['ACCOUNTS']['GET_PAGINATE'].method
+          typeof item === 'object' &&
+          item.apiPath === ALL_PERMISSIONS['SEATS']['GET_SEATS'].apiPath &&
+          item.method === ALL_PERMISSIONS['SEATS']['GET_SEATS'].method
       )
 
       const viewTicket = permissions?.find(
         (item) =>
-          item.apiPath === ALL_PERMISSIONS['TICKETS']['GET_PAGINATE'].apiPath &&
-          item.method === ALL_PERMISSIONS['TICKETS']['GET_PAGINATE'].method
+          typeof item === 'object' &&
+          item.apiPath === ALL_PERMISSIONS['TICKETS']['GET_TICKETS'].apiPath &&
+          item.method === ALL_PERMISSIONS['TICKETS']['GET_TICKETS'].method
       )
 
       const viewRole = permissions?.find(
         (item) =>
-          item.apiPath === ALL_PERMISSIONS['ROLES']['GET_PAGINATE'].apiPath &&
-          item.method === ALL_PERMISSIONS['ROLES']['GET_PAGINATE'].method
+          typeof item === 'object' &&
+          item.apiPath === ALL_PERMISSIONS['ROLES']['GET_ROLES'].apiPath &&
+          item.method === ALL_PERMISSIONS['ROLES']['GET_ROLES'].method
       )
 
       const full = [
@@ -87,6 +99,15 @@ const AdminLayout = () => {
           icon: <RxDashboard style={{ width: 20, height: 20 }} />,
           label: <Link to={'/admin'}>Dashboard</Link>
         },
+        ...(viewAccount || ACL_ENABLE === 'false'
+          ? [
+              {
+                key: 'account',
+                icon: <VscAccount style={{ width: 20, height: 20 }} />,
+                label: <Link to={'/admin/manage-account'}>Account</Link>
+              }
+            ]
+          : []),
         ...(viewCity || ACL_ENABLE === 'false'
           ? [
               {
@@ -143,15 +164,7 @@ const AdminLayout = () => {
               }
             ]
           : []),
-        ...(viewAccount || ACL_ENABLE === 'false'
-          ? [
-              {
-                key: 'account',
-                icon: <VscAccount style={{ width: 20, height: 20 }} />,
-                label: <Link to={'/admin/manage-account'}>Account</Link>
-              }
-            ]
-          : []),
+
         ...(viewTicket || ACL_ENABLE === 'false'
           ? [
               {
@@ -175,7 +188,7 @@ const AdminLayout = () => {
       setMenuItems(full)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [permissions])
+  }, [permissions, isPermissionsReady])
 
   return (
     <Layout

@@ -1,11 +1,12 @@
-import roleApi from '@/apis/role.api.ts'
+import roleApi from '@/apis/apis/role.api'
 import { RoleListConfig } from '@/globalType/role.type.ts'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
-export const useGetAllRoles = (queryConfig: RoleListConfig) => {
+export const useGetAllRoles = (queryConfig: RoleListConfig, enabled: boolean = true) => {
   return useQuery({
     queryKey: ['roles', queryConfig],
-    queryFn: () => roleApi.getRoles(queryConfig)
+    queryFn: () => roleApi.getRoles(queryConfig),
+    enabled: enabled
   })
 }
 

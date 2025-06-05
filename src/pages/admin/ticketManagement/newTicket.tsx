@@ -1,5 +1,7 @@
-import flightApi from '@/apis/flight.api'
+import flightApi from '@/apis/apis/flight.api'
 import { onErrorUtil } from '@/globalType/util.type'
+import { useGetAllFlights } from '@/hooks/useFlight'
+import { useGetAllSeats } from '@/hooks/useSeat'
 import { useCreateTicket } from '@/hooks/useTicket'
 import { useQuery } from '@tanstack/react-query'
 import { Checkbox, Form, FormProps, Input, message, Modal, Select } from 'antd'
@@ -61,14 +63,10 @@ const NewSeat = (props: IProp) => {
     setIsNewOpen(false)
   }
 
-  const seatData = useQuery({
-    queryKey: ['seatsByFlight', isFlightId],
-    queryFn: () => flightApi.getSeats(isFlightId),
-    enabled: isNewOpen && isFlightId !== ''
-  })
+  const seatData = useGetAllSeats({}, isNewOpen)
   const seatOptions = useMemo(
     () =>
-      seatData.data?.data.map((value, index) => {
+      seatData.data?.data.result.map((value, index) => {
         return {
           key: index,
           value: value.id,
@@ -82,14 +80,10 @@ const NewSeat = (props: IProp) => {
     setIsFlightId(form.getFieldValue('flightId'))
   }
 
-  const flightData = useQuery({
-    queryKey: ['flights'],
-    queryFn: flightApi.getFlights,
-    enabled: isNewOpen
-  })
+  const flightData = useGetAllFlights({}, isNewOpen)
   const flightOptions = useMemo(
     () =>
-      flightData.data?.data.map((value, index) => {
+      flightData.data?.data.result.map((value, index) => {
         return {
           key: index,
           value: value.id,
@@ -98,6 +92,7 @@ const NewSeat = (props: IProp) => {
       }),
     [flightData]
   )
+
   useEffect(() => {
     if (seatOptions && seatOptions?.length > 0 && seatData.isFetching === false)
       form.setFieldValue('seatId', seatOptions[0])

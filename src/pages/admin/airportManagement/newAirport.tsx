@@ -1,7 +1,6 @@
-import cityApi from '@/apis/city.api'
 import { onErrorUtil } from '@/globalType/util.type'
 import { useCreateAirport } from '@/hooks/useAirport'
-import { useQuery } from '@tanstack/react-query'
+import { useGetAllCities } from '@/hooks/useCity'
 import { Form, FormProps, Input, message, Modal, Select } from 'antd'
 import { useMemo } from 'react'
 import { GoLocation } from 'react-icons/go'
@@ -56,11 +55,7 @@ const NewAirport = (props: IProp) => {
     setIsNewOpen(false)
   }
 
-  const citiesData = useQuery({
-    queryKey: ['cities'],
-    queryFn: () => cityApi.getCities({}),
-    enabled: isNewOpen
-  })
+  const citiesData = useGetAllCities({}, isNewOpen)
   const cityOptions = useMemo(
     () =>
       citiesData.data?.data.result.map((value, index) => {

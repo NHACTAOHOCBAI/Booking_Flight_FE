@@ -1,5 +1,4 @@
-import { toAirport } from '@/utils/convert'
-import { Col, Row } from 'antd'
+import { useAirportGetById } from '@/hooks/useAirport'
 import dayjs from 'dayjs'
 import { GrMapLocation } from 'react-icons/gr'
 
@@ -7,69 +6,51 @@ interface IProp {
   airportId: string
   startTime: string
   arrivalTime: string
-  depatureTime: string
+  departureTime: string
   note: string
 }
+
 function getTimeDifference(arrivalTime: string, departureTime: string): string {
-  // Chuyển đổi chuỗi ISO 8601 thành timestamp (milliseconds) để tránh lỗi múi giờ
   const arrival = Date.parse(arrivalTime)
   const departure = Date.parse(departureTime)
 
-  // Tính khoảng cách thời gian (milliseconds)
   const diffMs = departure - arrival
-
-  // Chuyển đổi thành phút
   const totalMinutes = Math.floor(diffMs / (1000 * 60))
-
-  // Tính số giờ và phút
   const hours = Math.floor(totalMinutes / 60)
   const minutes = totalMinutes % 60
 
-  // Định dạng kết quả
   return `${hours}h${minutes}m`
 }
 
-const listFlight_Airport = (prop: IProp) => {
-  const { airportId, startTime, arrivalTime, depatureTime } = prop
+const InterAirport = ({ airportId, startTime, arrivalTime, departureTime }: IProp) => {
+  const airportName = useAirportGetById(airportId).data?.data.airportName
+
   return (
-    <>
-      <Row style={{ marginBottom: 10 }}>
-        <Col span={11}>
-          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
-            <div className='time'>{getTimeDifference(startTime, arrivalTime)} </div>
-          </div>
-        </Col>
-        <Col span={2}>
-          <Row justify='center'>
-            <div
-              style={{
-                height: 100, // Độ cao của đường
-                borderLeft: '2px dashed black' // Đường nét đứt
-              }}
-            ></div>
-          </Row>
-        </Col>
-      </Row>
-      <Row>
-        <Col span={11}>
-          <Row justify='center'>
-            <div className='time'>{dayjs(arrivalTime).format('HH:mm DD/MM/YYYY')}</div>
-          </Row>
-          <Row>
-            <div style={{ height: 15 }}></div>
-          </Row>
-          <Row justify='center'>
-            <div className='time'>{dayjs(depatureTime).format('HH:mm DD/MM/YYYY')}</div>
-          </Row>
-        </Col>
-        <Col span={2}>
-          <GrMapLocation style={{ width: 20, height: 20, marginTop: 20 }} />
-        </Col>
-        <Col span={11}>
-          <div className='airport'>{toAirport(airportId).airportName}</div>
-        </Col>
-      </Row>
-    </>
+    <div className='space-y-4'>
+      {/* Thời gian dừng */}
+      <div className='flex items-center mb-2'>
+        <div className='w-1/2 flex justify-center items-center'>
+          <div className='text-lg font-semibold text-gray-700'>{getTimeDifference(startTime, arrivalTime)}</div>
+        </div>
+        <div className='w-[8.33%] flex justify-center'>
+          <div className='h-24 border-l-2 border-dashed border-black'></div>
+        </div>
+      </div>
+
+      {/* Thông tin sân bay trung chuyển */}
+      <div className='flex items-start'>
+        <div className='w-1/2 text-center'>
+          <div className='text-sm font-medium text-gray-700'>{dayjs(arrivalTime).format('HH:mm DD/MM/YYYY')}</div>
+          <div className='h-4'></div>
+          <div className='text-sm font-medium text-gray-700'>{dayjs(departureTime).format('HH:mm DD/MM/YYYY')}</div>
+        </div>
+        <div className='w-[8.33%] flex justify-center'>
+          <GrMapLocation className='w-5 h-5 mt-5 text-gray-600' />
+        </div>
+        <div className='w-1/2 text-sm font-semibold text-gray-800'>{airportName}</div>
+      </div>
+    </div>
   )
 }
-export default listFlight_Airport
+
+export default InterAirport

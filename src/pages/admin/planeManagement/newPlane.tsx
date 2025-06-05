@@ -1,7 +1,6 @@
-import airlineApi from '@/apis/airline.api'
 import { onErrorUtil } from '@/globalType/util.type'
+import { useGetAllAirlines } from '@/hooks/useAirline'
 import { useCreatePlane } from '@/hooks/usePlane'
-import { useQuery } from '@tanstack/react-query'
 import { Form, FormProps, Input, message, Modal, Select } from 'antd'
 import { useMemo } from 'react'
 import { LuScanBarcode } from 'react-icons/lu'
@@ -56,11 +55,7 @@ const NewPlane = (props: IProp) => {
     setIsNewOpen(false)
   }
 
-  const airlinesData = useQuery({
-    queryKey: ['airlines'],
-    queryFn: () => airlineApi.getAirlines({}),
-    enabled: isNewOpen
-  })
+  const airlinesData = useGetAllAirlines({}, isNewOpen)
   const airlineOptions = useMemo(
     () =>
       airlinesData.data?.data.result.map((value, index) => {

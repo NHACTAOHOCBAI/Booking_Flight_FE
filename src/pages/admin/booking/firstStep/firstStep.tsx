@@ -1,30 +1,31 @@
-import { Col, Row } from "antd"
-import TicketInformation from "./ticketInformation/ticketInformation"
-import DetailPrice from "./detailPrice/detailPrice"
-import DetailFlight from "./detailFlight/detailFlight"
+import TicketInformation from './ticketInformation/ticketInformation'
+import DetailPrice from './detailPrice/detailPrice'
+import DetailFlight from './detailFlight/detailFlight'
 
 interface IProp {
-    openNotification: () => void
+  openNotification: (check?: boolean) => void
+  passengerNumber: number
 }
-const FirstStep = (prop: IProp) => {
-    const { openNotification } = prop;
-    return (
-        <>
-            <Row gutter={10} style={{ margin: 10 }}>
-                <Col span={15}>
-                    <Row>
-                        <TicketInformation
-                            openNotification={openNotification}
-                        />
-                    </Row>
 
-                </Col>
-                <Col span={9} style={{ display: "flex", gap: 10, flexDirection: "column" }}>
-                    <DetailFlight />
-                    <DetailPrice />
-                </Col>
-            </Row>
-        </>
-    )
+const FirstStep = ({ passengerNumber, openNotification }: IProp) => {
+  return (
+    <div className='flex flex-col lg:flex-row gap-4 p-2'>
+      {/* Left side: Ticket information */}
+      <div className='lg:w-3/4 w-full'>
+        <div className='grid grid-cols-1 gap-4'>
+          {Array.from({ length: passengerNumber }).map((_, index) => (
+            <TicketInformation key={index} openNotification={openNotification} />
+          ))}
+        </div>
+      </div>
+
+      {/* Right side: Detail flight and price */}
+      <div className='lg:w-1/4 w-full flex flex-col gap-4'>
+        <DetailFlight />
+        <DetailPrice />
+      </div>
+    </div>
+  )
 }
+
 export default FirstStep

@@ -10,7 +10,7 @@ import DetailAccount from './detailAccount.tsx'
 
 import { useDeleteAccount } from '@/hooks/useAccount.ts'
 import ErrorPage from '@/components/ErrorPage/ErrorPage.tsx'
-import accountApi from '@/apis/account.api.ts'
+import accountApi from '@/apis/apis/account.api.ts'
 import Access from '@/components/access.tsx'
 import { AppContext } from '@/context/app.context.tsx'
 
@@ -26,7 +26,11 @@ const AccountManagement = () => {
     fullName: '',
     password: '',
     phone: '',
-    roleId: '3',
+    role: {
+      roleName: '',
+      description: '',
+      permissionId: []
+    },
     username: ''
   })
 
@@ -42,7 +46,11 @@ const AccountManagement = () => {
     email: '',
     password: '',
     phone: '',
-    roleId: '3'
+    role: {
+      roleName: '',
+      description: '',
+      permissionId: []
+    }
   })
 
   // delete
@@ -65,31 +73,15 @@ const AccountManagement = () => {
       }
     })
   }
-  const ALL_PERMISSIONS = useContext(AppContext).PERMISSIONS.permissions
-  const permissions = {
-    method: '',
-    apiPath: '',
-    model: ''
-  }
+
+  const { PERMISSIONS } = useContext(AppContext)
+  const ALL_PERMISSIONS = PERMISSIONS.permissions
+
   const columns: ProColumns<IAccountTable>[] = [
     {
       dataIndex: 'index',
       valueType: 'indexBorder',
       width: 48
-    },
-    {
-      title: 'Username',
-      render: (_, record) => (
-        <a
-          style={{ color: '#3498db' }}
-          onClick={() => {
-            setDetailAccount(record)
-            setIsDetailOpen(true)
-          }}
-        >
-          {record.username}
-        </a>
-      )
     },
     {
       title: 'Email',
@@ -104,33 +96,10 @@ const AccountManagement = () => {
       title: 'Phone',
       dataIndex: 'phone'
     },
-    //role tim kiem
-    {
-      title: 'Role',
-      dataIndex: 'role',
-      hideInTable: true,
-      valueType: 'select',
-      valueEnum: {
-        admin: { text: 'Admin' },
-        employee: { text: 'Employee' },
-        client: { text: 'Client' }
-      }
-    },
     {
       title: 'Role',
       render: (_, record) => {
-        const roleName = (() => {
-          switch (record.roleId) {
-            case '1':
-              return 'Employee'
-            case '2':
-              return 'Admin'
-            default:
-              return 'Client'
-          }
-        })()
-
-        return <div>{roleName}</div>
+        return <div>{record.role?.roleName}</div>
       }
     },
     {
@@ -143,8 +112,8 @@ const AccountManagement = () => {
             gap: 10
           }}
         >
-          {/* <Access permission={ALL_PERMISSIONS['ACCOUNTS']['UPDATE']} hideChildren> */}
-          <Access permission={permissions} hideChildren>
+          <Access permission={ALL_PERMISSIONS['ACCOUNTS']['PUT_ACCOUNTS']} hideChildren>
+            {/* <Access permission={permissions} hideChildren> */}
             <EditOutlined
               style={{
                 color: '#54a0ff'
@@ -155,7 +124,7 @@ const AccountManagement = () => {
               }}
             />
           </Access>
-          <Access permission={permissions}>
+          <Access permission={ALL_PERMISSIONS['ACCOUNTS']['DELETE_ACCOUNTS']} hideChildren>
             <Popconfirm
               title='Delete the account'
               description='Are you sure to delete this account?'
@@ -163,8 +132,6 @@ const AccountManagement = () => {
               onConfirm={() => handleDelete(record.id as string)}
               cancelText='Cancel'
             >
-              {/* <Access permission={ALL_PERMISSIONS['ACCOUNTS']['DELETE']} hideChildren> */}
-
               <DeleteOutlined
                 style={{
                   color: '#ee5253'
@@ -185,8 +152,8 @@ const AccountManagement = () => {
         <ErrorPage />
       ) : (
         <>
-          {/* <Access permission={ALL_PERMISSIONS['ACCOUNTS']['GET_PAGINATE']}> */}
-          <Access permission={permissions}>
+          <Access permission={ALL_PERMISSIONS['ACCOUNTS']['GET_ACCOUNTS']} hideChildren>
+            {/* <Access permission={ALL_PERMISSIONS}> */}
             <ProTable<IAccountTable>
               rowKey='id'
               search={{
@@ -223,8 +190,8 @@ const AccountManagement = () => {
               cardBordered
               headerTitle='Accounts List'
               toolBarRender={() => [
-                // <Access permission={ALL_PERMISSIONS['ACCOUNTS']['ADD']}>
-                <Access permission={permissions}>
+                <Access permission={ALL_PERMISSIONS['ACCOUNTS']['POST_ACCOUNTS']} hideChildren>
+                  {/* <Access permission={permissions}> */}
                   <Button
                     key='button'
                     icon={<PlusOutlined />}

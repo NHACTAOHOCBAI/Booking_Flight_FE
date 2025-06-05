@@ -14,9 +14,9 @@ import { setBookingFlight } from '@/redux/features/bookingFlight/bookingFlightSl
 import ErrorPage from '@/components/ErrorPage/ErrorPage'
 import LoadingError from '@/components/ErrorPage/LoadingError'
 import { useDeleteFlight } from '@/hooks/useFlight'
-import airportApi from '@/apis/airport.api'
+import airportApi from '@/apis/apis/airport.api'
 import { useQuery } from '@tanstack/react-query'
-import flightApi from '@/apis/flight.api'
+import flightApi from '@/apis/apis/flight.api'
 import { AppContext } from '@/context/app.context'
 import Access from '@/components/access'
 const FlightManagement = () => {
@@ -191,8 +191,7 @@ const FlightManagement = () => {
             gap: 10
           }}
         >
-          {/* <Access permission={ALL_PERMISSIONS['ACCOUNTS']['UPDATE']} hideChildren> */}
-          <Access permission={permissions} hideChildren>
+          <Access permission={ALL_PERMISSIONS['FLIGHTS']['PUT_FLIGHTS']} hideChildren>
             <EditOutlined
               style={{
                 color: '#54a0ff'
@@ -203,7 +202,7 @@ const FlightManagement = () => {
               }}
             />
           </Access>
-          <Access permission={permissions}>
+          <Access permission={ALL_PERMISSIONS['FLIGHTS']['DELETE_FLIGHTS']} hideChildren>
             <Popconfirm
               title='Delete the flight'
               description='Are you sure to delete this flight?'
@@ -211,8 +210,6 @@ const FlightManagement = () => {
               onConfirm={() => handleDelete(record.id as string)}
               cancelText='Cancel'
             >
-              {/* <Access permission={ALL_PERMISSIONS['ACCOUNTS']['DELETE']} hideChildren> */}
-
               <DeleteOutlined
                 style={{
                   color: '#ee5253'
@@ -224,7 +221,7 @@ const FlightManagement = () => {
             type='dashed'
             onClick={() => {
               dispatch(setBookingFlight(record))
-              navigate(`booking/${record.id}`)
+              navigate(`/booking/${record.id}`)
             }}
           >
             <IoTicketOutline />
@@ -242,66 +239,65 @@ const FlightManagement = () => {
         <ErrorPage />
       ) : (
         <>
-          {/* <Access permission={ALL_PERMISSIONS['ACCOUNTS']['GET_PAGINATE']}> */}
-          <Access permission={permissions}>
-            <ProTable<IFlightTable>
-              rowKey='id'
-              search={{
-                labelWidth: 'auto'
-              }}
-              request={async (params) => {
-                setError(null)
+          {/* <Access permission={ALL_PERMISSIONS['FLIGHTS']['GET_FLIGHTS']}> */}
+          <ProTable<IFlightTable>
+            rowKey='id'
+            search={{
+              labelWidth: 'auto'
+            }}
+            request={async (params) => {
+              setError(null)
 
-                try {
-                  const response = await flightApi.getFlights({
-                    page: params.current,
-                    size: params.pageSize
-                  })
+              try {
+                const response = await flightApi.getFlights({
+                  page: params.current,
+                  size: params.pageSize
+                })
 
-                  return {
-                    data: response.data?.result,
-                    success: true,
-                    total: response.data?.pagination.total
-                  }
-                } catch (err) {
-                  console.error(err)
-                  setError(err)
-
-                  return {
-                    data: [],
-                    success: false,
-                    total: 0
-                  }
+                return {
+                  data: response.data?.result,
+                  success: true,
+                  total: response.data?.pagination.total
                 }
-              }}
-              columns={columns}
-              actionRef={actionRef}
-              bordered
-              cardBordered
-              headerTitle='Flights List'
-              toolBarRender={() => [
-                // <Access permission={ALL_PERMISSIONS['ACCOUNTS']['ADD']}>
-                <Access permission={permissions}>
-                  <Button
-                    key='button'
-                    icon={<PlusOutlined />}
-                    type='primary'
-                    onClick={() => {
-                      setIsNewOpen(true)
-                    }}
-                  >
-                    New Flight
-                  </Button>
-                </Access>
-              ]}
-              pagination={{
-                pageSizeOptions: [5, 10, 20],
-                showSizeChanger: true,
-                defaultCurrent: 1,
-                defaultPageSize: 5
-              }}
-            />
-          </Access>
+              } catch (err) {
+                console.error(err)
+                setError(err)
+
+                return {
+                  data: [],
+                  success: false,
+                  total: 0
+                }
+              }
+            }}
+            columns={columns}
+            actionRef={actionRef}
+            bordered
+            cardBordered
+            headerTitle='Flights List'
+            toolBarRender={() => [
+              <Access permission={ALL_PERMISSIONS['FLIGHTS']['POST_FLIGHTS']}>
+                {/* <Access permission={permissions}> */}
+                <Button
+                  key='button'
+                  icon={<PlusOutlined />}
+                  type='primary'
+                  onClick={() => {
+                    setIsNewOpen(true)
+                  }}
+                >
+                  New Flight
+                </Button>
+              </Access>
+            ]}
+            pagination={{
+              pageSizeOptions: [5, 10, 20],
+              showSizeChanger: true,
+              defaultCurrent: 1,
+              defaultPageSize: 5
+            }}
+          />
+          {/* </Access> */}
           <NewFlight isNewOpen={isNewOpen} setIsNewOpen={setIsNewOpen} />
           <UpdateFlight
             setUpdatedFlight={setUpdatedFlight}

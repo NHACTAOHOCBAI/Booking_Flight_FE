@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react'
-import { Input, Popover, Tabs, List } from 'antd'
-import { cityData } from '@/globalType'
-import { toCity } from '@/utils/convert'
+import { useGetAllCities } from '@/hooks/useCity'
+import { EnvironmentOutlined } from '@ant-design/icons'
+import { Input, List, Popover, Tabs } from 'antd'
+import { useEffect, useMemo, useState } from 'react'
 
 interface City {
   value: string
@@ -20,90 +20,6 @@ interface OptionData {
   tab: TabData
 }
 
-const options: OptionData[] = [
-  {
-    value: 'vietnam',
-    label: 'Việt Nam',
-    tab: {
-      key: 'vietnam-tab',
-      label: 'Việt Nam',
-      list: cityData.map((city, key) => {
-        return {
-          key,
-          value: city.id!,
-          label: `${city.cityName} (${city.cityCode}) `
-        }
-      })
-      //    [
-      //     { value: 'hanoi', label: 'Hà Nội (HAN)' },
-      //     { value: 'hochiminh', label: 'Hồ Chí Minh (SGN)' },
-      //     { value: 'danang', label: 'Đà Nẵng (DAD)' },
-      //     { value: 'dienbienphu', label: 'Điện Biên Phủ (DIN)' },
-      //     { value: 'haiphong', label: 'Hải Phòng (HPH)' },
-      //     { value: 'thanhhoa', label: 'Thanh Hóa (THD)' },
-      //     { value: 'vinh', label: 'Vinh (VII)' }
-      //   ]
-    }
-  },
-  {
-    value: 'chaua',
-    label: 'Châu Á',
-    tab: {
-      key: 'chaua-tab',
-      label: 'Châu Á',
-      list: [
-        { value: 'quangnam', label: 'Quảng Nam (VCL)' },
-        { value: 'hue', label: 'Huế (HUI)' },
-        { value: 'pleiku', label: 'Pleiku (PXU)' },
-        { value: 'phuyen', label: 'Phú Yên (TBB)' },
-        { value: 'banmethuot', label: 'Ban Mê Thuột (BMV)' },
-        { value: 'nhatrang', label: 'Nha Trang (CXR)' },
-        { value: 'quinhon', label: 'Qui Nhơn (UIH)' }
-      ]
-    }
-  },
-  {
-    value: 'chauau',
-    label: 'Châu Âu',
-    tab: {
-      key: 'chauau-tab',
-      label: 'Châu Âu',
-      list: [
-        { value: 'paris', label: 'Paris (CDG)' },
-        { value: 'london', label: 'London (LHR)' }
-      ]
-    }
-  },
-  {
-    value: 'hoakycanada',
-    label: 'Hoa Kỳ - Canada',
-    tab: {
-      key: 'hoakycanada-tab',
-      label: 'Hoa Kỳ - Canada',
-      list: [
-        { value: 'newyork', label: 'New York (JFK)' },
-        { value: 'toronto', label: 'Toronto (YYZ)' }
-      ]
-    }
-  },
-  {
-    value: 'chauucchauphi',
-    label: 'Châu Úc - Châu Phi',
-    tab: {
-      key: 'chauucchauphi-tab',
-      label: 'Châu Úc - Châu Phi',
-      list: [
-        { value: 'cantho', label: 'Cần Thơ (VCA)' },
-        { value: 'kiengiang', label: 'Kiên Giang (VKG)' },
-        { value: 'camau', label: 'Cà Mau (CAH)' },
-        { value: 'phuquoc', label: 'Phú Quốc (PQC)' },
-        { value: 'condao', label: 'Côn Đảo (VCS)' },
-        { value: 'quangninh', label: 'Quảng Ninh (VDO)' }
-      ]
-    }
-  }
-]
-
 interface InputWithPopoverProps {
   setValue: (value: string) => void
   placeholder?: string
@@ -114,11 +30,6 @@ const SearchAddress: React.FC<InputWithPopoverProps> = ({ setValue, placeholder,
   const [popoverContent, setPopoverContent] = useState<TabData[]>([])
   const [popoverVisible, setPopoverVisible] = useState(false)
   const [activeTabKey, setActiveTabKey] = useState<string>('')
-
-  useEffect(() => {
-    setPopoverContent(options.map((option) => option.tab))
-    setActiveTabKey('vietnam-tab')
-  }, [])
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const valueInput = e.target.value
@@ -171,6 +82,94 @@ const SearchAddress: React.FC<InputWithPopoverProps> = ({ setValue, placeholder,
     }
   }
 
+  const { data: citiesGet, isLoading } = useGetAllCities({}, true)
+  const cityData = useMemo(() => {
+    return citiesGet?.data?.result ?? []
+  }, [citiesGet])
+  // if (citiesGet && citiesGet.data) cityData = citiesGet?.data.result
+  const options: OptionData[] = useMemo(() => {
+    return [
+      {
+        value: 'vietnam',
+        label: 'Việt Nam',
+        tab: {
+          key: 'vietnam-tab',
+          label: 'Việt Nam',
+          list: isLoading
+            ? [] // hoặc [{ label: 'Đang tải...', value: '' }]
+            : cityData.map((city, key) => {
+                return {
+                  key,
+                  value: `${city.cityName}`,
+                  label: `${city.cityName} `
+                }
+              })
+        }
+      },
+      {
+        value: 'chaua',
+        label: 'Châu Á',
+        tab: {
+          key: 'chaua-tab',
+          label: 'Châu Á',
+          list: [
+            { value: 'quangnam', label: 'Quảng Nam (VCL)' },
+            { value: 'hue', label: 'Huế (HUI)' },
+            { value: 'pleiku', label: 'Pleiku (PXU)' },
+            { value: 'phuyen', label: 'Phú Yên (TBB)' },
+            { value: 'banmethuot', label: 'Ban Mê Thuột (BMV)' },
+            { value: 'nhatrang', label: 'Nha Trang (CXR)' },
+            { value: 'quinhon', label: 'Qui Nhơn (UIH)' }
+          ]
+        }
+      },
+      {
+        value: 'chauau',
+        label: 'Châu Âu',
+        tab: {
+          key: 'chauau-tab',
+          label: 'Châu Âu',
+          list: [
+            { value: 'paris', label: 'Paris (CDG)' },
+            { value: 'london', label: 'London (LHR)' }
+          ]
+        }
+      },
+      {
+        value: 'hoakycanada',
+        label: 'Hoa Kỳ - Canada',
+        tab: {
+          key: 'hoakycanada-tab',
+          label: 'Hoa Kỳ - Canada',
+          list: [
+            { value: 'newyork', label: 'New York (JFK)' },
+            { value: 'toronto', label: 'Toronto (YYZ)' }
+          ]
+        }
+      },
+      {
+        value: 'chauucchauphi',
+        label: 'Châu Úc - Châu Phi',
+        tab: {
+          key: 'chauucchauphi-tab',
+          label: 'Châu Úc - Châu Phi',
+          list: [
+            { value: 'cantho', label: 'Cần Thơ (VCA)' },
+            { value: 'kiengiang', label: 'Kiên Giang (VKG)' },
+            { value: 'camau', label: 'Cà Mau (CAH)' },
+            { value: 'phuquoc', label: 'Phú Quốc (PQC)' },
+            { value: 'condao', label: 'Côn Đảo (VCS)' },
+            { value: 'quangninh', label: 'Quảng Ninh (VDO)' }
+          ]
+        }
+      }
+    ]
+  }, [cityData, isLoading])
+
+  useEffect(() => {
+    setPopoverContent(options.map((option) => option.tab))
+    setActiveTabKey('vietnam-tab')
+  }, [options])
   const getPopoverContent = () => {
     return (
       <div>
@@ -201,6 +200,7 @@ const SearchAddress: React.FC<InputWithPopoverProps> = ({ setValue, placeholder,
 
   return (
     <Popover
+      className='size-full'
       placement='bottomLeft'
       arrow={false}
       content={getPopoverContent()}
@@ -209,9 +209,10 @@ const SearchAddress: React.FC<InputWithPopoverProps> = ({ setValue, placeholder,
       onOpenChange={handlePopoverOpenChange}
     >
       <Input
-        className='h-[50px]'
-        placeholder={placeholder}
-        value={toCity(value)?.cityName || value}
+        size='large'
+        placeholder='Origin (e.g., Ho Chi Minh City)'
+        prefix={<EnvironmentOutlined className='text-red-600' />}
+        value={value}
         onChange={(e) => {
           handleInputChange(e)
         }}

@@ -8,11 +8,12 @@ interface IProps {
 }
 
 const RoleBaseRoute = (props: IProps) => {
-  const { profile } = useContext(AppContext)
-  const userRole = profile
+  const { profile, isPermissionsReady } = useContext(AppContext)
+  const userRole = profile?.role?.roleName
 
-  if (userRole !== null) {
-    return <>{props.children}</>
+  if (userRole && userRole !== 'USER') {
+    if (isPermissionsReady) return <>{props.children}</>
+    else <Navigate to='/admin' />
   } else {
     return <NotPermitted />
   }
@@ -21,6 +22,7 @@ const RoleBaseRoute = (props: IProps) => {
 const ProtectedRoute = (props: IProps) => {
   const { isAuthenticated } = useContext(AppContext)
 
+  // const isAuthenticated = true
   return (
     <>
       {isAuthenticated === true ? (

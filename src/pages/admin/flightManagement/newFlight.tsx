@@ -1,20 +1,20 @@
-import { Button, Col, DatePicker, Form, FormProps, Input, InputNumber, message, Modal, Row, Select, Space } from 'antd'
+import airportApi from '@/apis/apis/airport.api'
+import planeApi from '@/apis/apis/plane.api'
+import seatApi from '@/apis/apis/seat.api'
+import { onErrorUtil } from '@/globalType/util.type'
+import { useCreateFlight } from '@/hooks/useFlight'
+import { useCreateTicket } from '@/hooks/useTicket'
 import { CloseOutlined } from '@ant-design/icons'
-import dayjs from 'dayjs'
+import { useQuery } from '@tanstack/react-query'
+import { Button, Col, DatePicker, Form, FormProps, Input, InputNumber, message, Modal, Row, Select, Space } from 'antd'
 import TextArea from 'antd/es/input/TextArea'
+import dayjs from 'dayjs'
+import { useMemo } from 'react'
+import { AiOutlineDollarCircle } from 'react-icons/ai'
 import { LuScanBarcode } from 'react-icons/lu'
 import { PiAirplaneInFlight } from 'react-icons/pi'
-import { TbPlaneArrival, TbPlaneDeparture } from 'react-icons/tb'
 import { SlCalender } from 'react-icons/sl'
-import { AiOutlineDollarCircle } from 'react-icons/ai'
-import { useCreateFlight } from '@/hooks/useFlight'
-import { onErrorUtil } from '@/globalType/util.type'
-import airportApi from '@/apis/airport.api'
-import { useQuery } from '@tanstack/react-query'
-import { useMemo } from 'react'
-import planeApi from '@/apis/plane.api'
-import seatApi from '@/apis/seat.api'
-import { useCreateTicket } from '@/hooks/useTicket'
+import { TbPlaneArrival, TbPlaneDeparture } from 'react-icons/tb'
 interface IProp {
   isNewOpen: boolean
   setIsNewOpen: (value: boolean) => void
@@ -25,7 +25,6 @@ const NewFlight = (props: IProp) => {
 
   const [messageApi, contextHolder] = message.useMessage()
   const newFlightMutation = useCreateFlight()
-  const newTicketMutation = useCreateTicket()
 
   const onFinish: FormProps<IFlightTable>['onFinish'] = async (value) => {
     //format day time
@@ -62,24 +61,6 @@ const NewFlight = (props: IProp) => {
         messageApi.open({
           type: 'success',
           content: data.message
-        })
-
-        value.listFlight_Seat.map((seat) => {
-          const body = {
-            flightId: data.data.id,
-            flightCode: value.flightCode,
-            seatId: seat.seatId
-          }
-          for (let i = 1; i <= seat.quantity; i++) {
-            newTicketMutation.mutate(body, {
-              onSuccess(data) {
-                console.log(data)
-              },
-              onError(error: Error) {
-                console.log(error)
-              }
-            })
-          }
         })
       },
       onError(error: Error) {

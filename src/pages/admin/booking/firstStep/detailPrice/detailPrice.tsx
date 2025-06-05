@@ -1,6 +1,5 @@
-import { seatData } from '@/globalType'
+import { useGetAllSeats } from '@/hooks/useSeat'
 import { useAppSelector } from '@/redux/hooks'
-import { toFLight } from '@/utils/convert'
 import { Card, Table } from 'antd'
 import { TableProps } from 'antd/lib'
 import { FaMoneyCheckAlt } from 'react-icons/fa'
@@ -37,14 +36,18 @@ const DetailPrice = () => {
   })
 
   // Bước 2: Chuyển dữ liệu sang danh sách chi tiết giá
-  const detailPriceData: IDetailPrice[] = seatData
-    .filter((seat) => seatCount[seat.id!]) // Lọc ghế có số lượng vé
-    .map((seat, key) => ({
-      key,
-      seatName: seat.seatName as string,
-      quantity: seatCount[seat.id!] as number,
-      price: (seat.price! * toFLight(bookingFlight.id as string).originPrice) / 100
-    }))
+  const allSeat = useGetAllSeats({}).data
+  let detailPriceData: IDetailPrice[] = []
+  if (allSeat?.data) {
+    detailPriceData = allSeat.data.result
+      .filter((seat) => seatCount[seat.id!]) // Lọc ghế có số lượng vé
+      .map((seat, key) => ({
+        key,
+        seatName: seat.seatName as string,
+        quantity: seatCount[seat.id!] as number,
+        price: (seat.price! * bookingFlight.originPrice) / 100
+      }))
+  }
   let totalAmount = 0
   detailPriceData.forEach((value) => {
     totalAmount += value.price * value.quantity

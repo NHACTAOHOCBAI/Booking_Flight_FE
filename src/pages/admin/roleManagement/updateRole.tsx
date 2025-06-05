@@ -1,14 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Col, Form, message, Row } from 'antd'
-import { PlusOutlined } from '@ant-design/icons'
-import { onErrorUtil, SuccessResponse } from '@/globalType/util.type'
-import { FooterToolbar, ModalForm, ProCard, ProFormSwitch, ProFormText } from '@ant-design/pro-components'
+import { onErrorUtil } from '@/globalType/util.type'
 import { useUpdateRole } from '@/hooks/useRole'
-import { GroupPermission, IPermission } from '@/globalType/permission.type'
-import http from '@/utils/http'
-import { useQuery } from '@tanstack/react-query'
+import { PlusOutlined } from '@ant-design/icons'
+import { FooterToolbar, ModalForm, ProCard, ProFormSwitch, ProFormText } from '@ant-design/pro-components'
+import { Col, Form, message, Row } from 'antd'
 import ModuleApi from './moduleApi'
-import { groupByPermission } from '@/utils/utils'
+
 interface IProp {
   isUpdateOpen: boolean
   setIsUpdateOpen: (value: boolean) => void
@@ -23,9 +20,20 @@ const UpdateRole = (props: IProp) => {
   const updateRoleMutation = useUpdateRole()
 
   const onFinish = async (value: any) => {
+    const checkedPermissions = []
+    if (value.permissionId) {
+      for (const key in value.permissionId) {
+        if (value.permissionId[key] === true) {
+          checkedPermissions.push(key)
+        }
+      }
+    }
+    console.log(value.permissionId)
+    console.log(checkedPermissions)
     const body = {
+      id: updatedRole.id,
       roleName: value.roleName,
-      permissionIds: value.permissionIds,
+      permissionId: checkedPermissions,
       description: value.description
     }
     updateRoleMutation.mutate(body, {
@@ -52,21 +60,10 @@ const UpdateRole = (props: IProp) => {
       id: '',
       roleName: '',
       description: '',
-      permissionIds: []
+      permissionId: []
     })
     setIsUpdateOpen(false)
   }
-  const listPermissionData = useQuery({
-    queryKey: ['permissions'],
-    queryFn: async () => {
-      const res = await http.get<SuccessResponse<IPermission[]>>('api/permissions')
-      return res.data
-    },
-    enabled: isUpdateOpen
-  })
-  let listPermissions: GroupPermission[]
-  if (listPermissionData.data) listPermissions = groupByPermission(listPermissionData?.data.data)
-  else listPermissions = []
   return (
     <>
       {contextHolder}
@@ -87,14 +84,14 @@ const UpdateRole = (props: IProp) => {
         form={form}
         onFinish={onFinish}
         submitter={{
-          render: (_: any, dom: any) => <FooterToolbar>{dom}</FooterToolbar>,
+          searchConfig: {
+            resetText: 'Cancel',
+            submitText: 'Update role'
+          },
           submitButtonProps: {
             icon: <PlusOutlined />
           },
-          searchConfig: {
-            resetText: 'Cancel',
-            submitText: 'Create update'
-          }
+          render: (_: any, dom: any) => dom // render mặc định
         }}
       >
         <Row gutter={16}>
@@ -129,12 +126,7 @@ const UpdateRole = (props: IProp) => {
               size='small'
               bordered
             >
-              <ModuleApi
-                form={form}
-                listPermissions={listPermissions}
-                singleRole={updatedRole}
-                openModal={isUpdateOpen}
-              />
+              <ModuleApi form={form} singleRole={updatedRole} openModal={isUpdateOpen} />
             </ProCard>
           </Col>
         </Row>

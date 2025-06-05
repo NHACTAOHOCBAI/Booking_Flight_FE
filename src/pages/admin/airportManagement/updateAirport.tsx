@@ -1,7 +1,6 @@
-import cityApi from '@/apis/city.api'
 import { onErrorUtil } from '@/globalType/util.type'
 import { useUpdateAirport } from '@/hooks/useAirport'
-import { useQuery } from '@tanstack/react-query'
+import { useGetAllCities } from '@/hooks/useCity'
 import { Form, FormProps, Input, message, Modal, Select } from 'antd'
 import _ from 'lodash'
 import { useEffect, useMemo } from 'react'
@@ -83,11 +82,7 @@ const UpdateAirport = (props: IProp) => {
     })
   }, [form, updatedAirport])
 
-  const citiesData = useQuery({
-    queryKey: ['cities'],
-    queryFn: () => cityApi.getCities({}),
-    enabled: isUpdateOpen
-  })
+  const citiesData = useGetAllCities({}, isUpdateOpen)
   const cityOptions = useMemo(
     () =>
       citiesData.data?.data.result.map((value, index) => {

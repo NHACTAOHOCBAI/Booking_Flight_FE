@@ -8,7 +8,7 @@ import NewAirline from './newAirline'
 import DetailAirline from './detailAirline'
 import { useDeleteAirline } from '@/hooks/useAirline'
 import ErrorPage from '@/components/ErrorPage/ErrorPage'
-import airlineApi from '@/apis/airline.api'
+import airlineApi from '@/apis/apis/airline.api'
 import Access from '@/components/access'
 import { AppContext } from '@/context/app.context'
 
@@ -95,8 +95,8 @@ const AirlineManagement = () => {
             gap: 10
           }}
         >
-          {/* <Access permission={ALL_PERMISSIONS['ACCOUNTS']['UPDATE']} hideChildren> */}
-          <Access permission={permissions} hideChildren>
+          <Access permission={ALL_PERMISSIONS['AIRLINES']['PUT_AIRLINES']} hideChildren>
+            {/* <Access permission={permissions} hideChildren> */}
             <EditOutlined
               style={{
                 color: '#54a0ff'
@@ -107,7 +107,7 @@ const AirlineManagement = () => {
               }}
             />
           </Access>
-          <Access permission={permissions}>
+          <Access permission={ALL_PERMISSIONS['AIRLINES']['DELETE_AIRLINES']} hideChildren>
             <Popconfirm
               title='Delete the airline'
               description='Are you sure to delete this airline?'
@@ -115,8 +115,6 @@ const AirlineManagement = () => {
               onConfirm={() => handleDelete(record.id as string)}
               cancelText='Cancel'
             >
-              {/* <Access permission={ALL_PERMISSIONS['ACCOUNTS']['DELETE']} hideChildren> */}
-
               <DeleteOutlined
                 style={{
                   color: '#ee5253'
@@ -137,66 +135,65 @@ const AirlineManagement = () => {
         <ErrorPage />
       ) : (
         <>
-          {/* <Access permission={ALL_PERMISSIONS['ACCOUNTS']['GET_PAGINATE']}> */}
-          <Access permission={permissions}>
-            <ProTable<IAirlineTable>
-              rowKey='id'
-              search={{
-                labelWidth: 'auto'
-              }}
-              request={async (params) => {
-                setError(null)
+          {/* <Access permission={ALL_PERMISSIONS['AIRLINES']['GET_AIRLINES']} hideChildren> */}
+          {/* <Access permission={permissions}> */}
+          <ProTable<IAirlineTable>
+            rowKey='id'
+            search={{
+              labelWidth: 'auto'
+            }}
+            request={async (params) => {
+              setError(null)
 
-                try {
-                  const response = await airlineApi.getAirlines({
-                    page: params.current,
-                    size: params.pageSize
-                  })
+              try {
+                const response = await airlineApi.getAirlines({
+                  page: params.current,
+                  size: params.pageSize
+                })
 
-                  return {
-                    data: response.data?.result,
-                    success: true,
-                    total: response.data?.pagination.total
-                  }
-                } catch (err) {
-                  console.error(err)
-                  setError(err)
-
-                  return {
-                    data: [],
-                    success: false,
-                    total: 0
-                  }
+                return {
+                  data: response.data?.result,
+                  success: true,
+                  total: response.data?.pagination.total
                 }
-              }}
-              columns={columns}
-              actionRef={actionRef}
-              bordered
-              cardBordered
-              headerTitle='Airlines List'
-              toolBarRender={() => [
-                // <Access permission={ALL_PERMISSIONS['ACCOUNTS']['ADD']}>
-                <Access permission={permissions}>
-                  <Button
-                    key='button'
-                    icon={<PlusOutlined />}
-                    type='primary'
-                    onClick={() => {
-                      setIsNewOpen(true)
-                    }}
-                  >
-                    New Account
-                  </Button>
-                </Access>
-              ]}
-              pagination={{
-                pageSizeOptions: [5, 10, 20],
-                showSizeChanger: true,
-                defaultCurrent: 1,
-                defaultPageSize: 5
-              }}
-            />
-          </Access>
+              } catch (err) {
+                console.error(err)
+                setError(err)
+
+                return {
+                  data: [],
+                  success: false,
+                  total: 0
+                }
+              }
+            }}
+            columns={columns}
+            actionRef={actionRef}
+            bordered
+            cardBordered
+            headerTitle='Airlines List'
+            toolBarRender={() => [
+              <Access permission={ALL_PERMISSIONS['AIRLINES']['POST_AIRLINES']} hideChildren>
+                {/* <Access permission={permissions}> */}
+                <Button
+                  key='button'
+                  icon={<PlusOutlined />}
+                  type='primary'
+                  onClick={() => {
+                    setIsNewOpen(true)
+                  }}
+                >
+                  New Account
+                </Button>
+              </Access>
+            ]}
+            pagination={{
+              pageSizeOptions: [5, 10, 20],
+              showSizeChanger: true,
+              defaultCurrent: 1,
+              defaultPageSize: 5
+            }}
+          />
           <UpdatedAirline
             isUpdateOpen={isUpdateOpen}
             setIsUpdateOpen={setIsUpdateOpen}

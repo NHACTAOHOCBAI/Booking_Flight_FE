@@ -1,13 +1,13 @@
-import http from '@/utils/http'
+import http from '@/apis/http'
 import { SuccessResponse } from '@/globalType/util.type'
 import { TicketList } from '@/globalType/ticket.type'
-import { ListConfig } from '@/globalType/ListConfig.type'
+import { ListConfig } from '@/globalType/listConfig.type'
 
 const URL = 'api/tickets'
 
 const ticketApi = {
   getTicketById: async (params: string) => {
-    const res = await http.get<SuccessResponse<ITicketTable>>(URL, { params })
+    const res = await http.get<SuccessResponse<ITicketTable>>(`${URL}/${params}`)
     return res.data
   },
   getTickets: async (params: ListConfig) => {

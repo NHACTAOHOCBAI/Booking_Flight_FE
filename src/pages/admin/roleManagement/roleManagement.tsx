@@ -9,8 +9,7 @@ import UpdateRole from './updateRole.tsx'
 
 import { useDeleteRole } from '@/hooks/useRole.ts'
 import ErrorPage from '@/components/ErrorPage/ErrorPage.tsx'
-import LoadingError from '@/components/ErrorPage/LoadingError.tsx'
-import roleApi from '@/apis/role.api.ts'
+import roleApi from '@/apis/apis/role.api.ts'
 import { AppContext } from '@/context/app.context.tsx'
 import Access from '@/components/access.tsx'
 
@@ -27,7 +26,7 @@ const RoleManagement = () => {
     id: '',
     roleName: '',
     description: '',
-    permissionIds: []
+    permissionId: []
   })
 
   // delete
@@ -81,19 +80,20 @@ const RoleManagement = () => {
             gap: 10
           }}
         >
-          {/* <Access permission={ALL_PERMISSIONS['ACCOUNTS']['UPDATE']} hideChildren> */}
-          <Access permission={permissions} hideChildren>
+          <Access permission={ALL_PERMISSIONS['ROLES']['PUT_ROLES']} hideChildren>
+            {/* <Access permission={permissions} hideChildren> */}
             <EditOutlined
               style={{
                 color: '#54a0ff'
               }}
               onClick={() => {
+                console.log(record)
                 setUpdateRole(record)
                 setIsUpdateOpen(true)
               }}
             />
           </Access>
-          <Access permission={permissions}>
+          <Access permission={ALL_PERMISSIONS['ROLES']['DELETE_ROLES']} hideChildren>
             <Popconfirm
               title='Delete the role'
               description='Are you sure to delete this role?'
@@ -101,8 +101,6 @@ const RoleManagement = () => {
               onConfirm={() => handleDelete(record.id as string)}
               cancelText='Cancel'
             >
-              {/* <Access permission={ALL_PERMISSIONS['ACCOUNTS']['DELETE']} hideChildren> */}
-
               <DeleteOutlined
                 style={{
                   color: '#ee5253'
@@ -122,8 +120,8 @@ const RoleManagement = () => {
         <ErrorPage />
       ) : (
         <>
-          {/* <Access permission={ALL_PERMISSIONS['ACCOUNTS']['GET_PAGINATE']}> */}
-          <Access permission={permissions}>
+          <Access permission={ALL_PERMISSIONS['ROLES']['GET_ROLES']}>
+            {/* <Access permission={permissions}> */}
             <ProTable<IRoleTable>
               rowKey='id'
               search={{
@@ -160,8 +158,7 @@ const RoleManagement = () => {
               cardBordered
               headerTitle='Roles List'
               toolBarRender={() => [
-                // <Access permission={ALL_PERMISSIONS['ACCOUNTS']['ADD']}>
-                <Access permission={permissions}>
+                <Access permission={ALL_PERMISSIONS['ROLES']['POST_ROLES']}>
                   <Button
                     key='button'
                     icon={<PlusOutlined />}

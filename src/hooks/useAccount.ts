@@ -1,4 +1,4 @@
-import accountApi from '@/apis/account.api'
+import accountApi from '@/apis/apis/account.api'
 import { AccountListConfig } from '@/globalType/account.type'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 

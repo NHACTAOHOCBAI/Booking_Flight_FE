@@ -9,7 +9,7 @@ import DetailSeat from './detailSeat'
 import { useDeleteSeat } from '@/hooks/useSeat'
 import ErrorPage from '@/components/ErrorPage/ErrorPage'
 import LoadingError from '@/components/ErrorPage/LoadingError'
-import seatApi from '@/apis/seat.api'
+import seatApi from '@/apis/apis/seat.api'
 import { AppContext } from '@/context/app.context'
 import Access from '@/components/access'
 
@@ -106,8 +106,7 @@ const SeatManagement = () => {
             gap: 10
           }}
         >
-          {/* <Access permission={ALL_PERMISSIONS['ACCOUNTS']['UPDATE']} hideChildren> */}
-          <Access permission={permissions} hideChildren>
+          <Access permission={ALL_PERMISSIONS['SEATS']['PUT_SEATS']} hideChildren>
             <EditOutlined
               style={{
                 color: '#54a0ff'
@@ -118,7 +117,7 @@ const SeatManagement = () => {
               }}
             />
           </Access>
-          <Access permission={permissions}>
+          <Access permission={ALL_PERMISSIONS['SEATS']['DELETE_SEATS']} hideChildren>
             <Popconfirm
               title='Delete the seat'
               description='Are you sure to delete this seat?'
@@ -126,8 +125,6 @@ const SeatManagement = () => {
               onConfirm={() => handleDelete(record.id as string)}
               cancelText='Cancel'
             >
-              {/* <Access permission={ALL_PERMISSIONS['ACCOUNTS']['DELETE']} hideChildren> */}
-
               <DeleteOutlined
                 style={{
                   color: '#ee5253'
@@ -147,8 +144,8 @@ const SeatManagement = () => {
         <ErrorPage />
       ) : (
         <>
-          {/* <Access permission={ALL_PERMISSIONS['ACCOUNTS']['GET_PAGINATE']}> */}
-          <Access permission={permissions}>
+          <Access permission={ALL_PERMISSIONS['SEATS']['GET_SEATS']}>
+            {/* <Access permission={permissions}> */}
             <ProTable<ISeatTable>
               rowKey='id'
               search={{
@@ -185,8 +182,8 @@ const SeatManagement = () => {
               cardBordered
               headerTitle='Seats List'
               toolBarRender={() => [
-                // <Access permission={ALL_PERMISSIONS['ACCOUNTS']['ADD']}>
-                <Access permission={permissions}>
+                <Access permission={ALL_PERMISSIONS['SEATS']['POST_SEATS']}>
+                  {/* <Access permission={permissions}> */}
                   <Button
                     key='button'
                     icon={<PlusOutlined />}

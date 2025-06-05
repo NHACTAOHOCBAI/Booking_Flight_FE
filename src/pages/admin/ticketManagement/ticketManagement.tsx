@@ -12,7 +12,7 @@ import DetailTicket from './detailTicket'
 import UpdateTicket from './updateTicket'
 import { AppContext } from '@/context/app.context'
 import Access from '@/components/access'
-import ticketApi from '@/apis/ticket.api'
+import ticketApi from '@/apis/apis/ticket.api'
 
 const TicketManagement = () => {
   //detail
@@ -129,8 +129,7 @@ const TicketManagement = () => {
             gap: 10
           }}
         >
-          {/* <Access permission={ALL_PERMISSIONS['ACCOUNTS']['UPDATE']} hideChildren> */}
-          <Access permission={permissions} hideChildren>
+          <Access permission={ALL_PERMISSIONS['TICKETS']['PUT_TICKETS']} hideChildren>
             <EditOutlined
               style={{
                 color: '#54a0ff'
@@ -141,7 +140,7 @@ const TicketManagement = () => {
               }}
             />
           </Access>
-          <Access permission={permissions}>
+          <Access permission={ALL_PERMISSIONS['TICKETS']['DELETE_TICKETS']} hideChildren>
             <Popconfirm
               title='Delete the ticket'
               description='Are you sure to delete this ticket?'
@@ -149,8 +148,6 @@ const TicketManagement = () => {
               onConfirm={() => handleDelete(record.id as string)}
               cancelText='Cancel'
             >
-              {/* <Access permission={ALL_PERMISSIONS['ACCOUNTS']['DELETE']} hideChildren> */}
-
               <DeleteOutlined
                 style={{
                   color: '#ee5253'
@@ -171,8 +168,7 @@ const TicketManagement = () => {
         <ErrorPage />
       ) : (
         <>
-          {/* <Access permission={ALL_PERMISSIONS['ACCOUNTS']['GET_PAGINATE']}> */}
-          <Access permission={permissions}>
+          <Access permission={ALL_PERMISSIONS['TICKETS']['GET_TICKETS']}>
             <ProTable<ITicketTable>
               rowKey='id'
               search={{
@@ -209,8 +205,7 @@ const TicketManagement = () => {
               cardBordered
               headerTitle='Tickets List'
               toolBarRender={() => [
-                // <Access permission={ALL_PERMISSIONS['ACCOUNTS']['ADD']}>
-                <Access permission={permissions}>
+                <Access permission={ALL_PERMISSIONS['TICKETS']['POST_TICKETS']}>
                   <Button
                     key='button'
                     icon={<PlusOutlined />}

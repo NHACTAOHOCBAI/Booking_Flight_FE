@@ -4,7 +4,7 @@ import { AppContext } from '@/context/app.context'
 interface IProps {
   hideChildren?: boolean
   children: React.ReactNode
-  permission: { method: string; apiPath: string; model: string }
+  permission: { id?: string; name?: string; method?: string; apiPath?: string; model?: string }
 }
 
 const Access = (props: IProps) => {
@@ -13,14 +13,15 @@ const Access = (props: IProps) => {
   const { permission, hideChildren = false } = props
   const [allow, setAllow] = useState<boolean>(true)
 
-  const userPermissions = useContext(AppContext).profile?.permissions
-
+  const userPermissions = useContext(AppContext).profile?.role?.permissionId
   useEffect(() => {
     if (userPermissions?.length) {
-      const check = userPermissions.find(
-        (item) =>
+      const check = userPermissions.find((item) => {
+        if (typeof item === 'string') return false
+        return (
           item.apiPath === permission.apiPath && item.method === permission.method && item.model === permission.model
-      )
+        )
+      })
       if (check) {
         setAllow(true)
       } else setAllow(false)

@@ -15,7 +15,7 @@ export function isAxiosUnprocessableEntityError<FormData>(error: unknown): error
 export const groupByPermission = (data: IPermission[]): GroupPermission[] => {
   const groupedData = groupBy(data, (x) => x.model)
   return map(groupedData, (value, key) => {
-    return { model: key, permissions: value as IPermission[] }
+    return { model: key, permissionId: value as IPermission[] }
   })
 }
 
@@ -33,3 +33,14 @@ export function colorMethod(method: 'POST' | 'PUT' | 'GET' | 'DELETE' | string) 
       return grey[10]
   }
 }
+export const path = {
+  home: '/',
+  user: '/user',
+  booking: '/booking',
+  profile: '/user/profile',
+  changePassword: '/user/password',
+  historyPurchase: '/user/purchase',
+  login: '/login',
+  register: '/register',
+  logout: '/logout'
+} as const

@@ -32,6 +32,8 @@ import RoleManagement from './pages/admin/roleManagement/roleManagement'
 import ErrorPage from './components/ErrorPage/ErrorPage'
 import ProtectedRoute from './components/ProtectedRoute'
 import RejectedRoute from './components/RejectedRoute'
+import SuccessRegisterPage from './pages/auth/signUpPage/signUpSuccess'
+import MyProfile from './pages/client/myProfile/myProfile'
 
 // function ProtectedRoute() {
 //   const { isAuthenticated } = useContext(AppContext)
@@ -55,13 +57,25 @@ const router = createBrowserRouter([
       {
         path: '/booking',
         element: <BookingPage />
+      },
+      {
+        path: '/myProfile',
+        element: <MyProfile />
+      },
+      {
+        path: 'booking/:flightId',
+        element: <AdminBooking />
       }
     ]
   },
   {
     path: '/admin',
-    element: <AdminLayout />,
-    errorElement: <ErrorPage />,
+    element: (
+      <ProtectedRoute>
+        <AdminLayout />
+      </ProtectedRoute>
+    ),
+    // errorElement: <ErrorPage />,
     children: [
       {
         index: true,
@@ -95,14 +109,7 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         )
       },
-      {
-        path: 'manage-flight/booking/:flightId',
-        element: (
-          <ProtectedRoute>
-            <AdminBooking />
-          </ProtectedRoute>
-        )
-      },
+
       {
         path: 'manage-seat',
         element: (
@@ -147,7 +154,6 @@ const router = createBrowserRouter([
         path: 'manage-role',
         element: (
           <ProtectedRoute>
-            {' '}
             <RoleManagement />
           </ProtectedRoute>
         )
@@ -166,7 +172,17 @@ const router = createBrowserRouter([
   },
   {
     path: '/signup',
-    element: <SignUpPage />
+    element: <RejectedRoute />,
+    children: [
+      {
+        index: true,
+        element: <SignUpPage />
+      }
+    ]
+  },
+  {
+    path: '/signup/signupSuccess',
+    element: <SuccessRegisterPage />
   },
   {
     path: '*',
@@ -187,11 +203,11 @@ createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <ConfigProvider locale={enUS}>
       <QueryClientProvider client={queryClient}>
-        <AppProvider>
-          <Provider store={store}>
+        <Provider store={store}>
+          <AppProvider>
             <RouterProvider router={router} />
-          </Provider>
-        </AppProvider>
+          </AppProvider>
+        </Provider>
       </QueryClientProvider>
     </ConfigProvider>
   </StrictMode>

@@ -1,13 +1,13 @@
-import http from '@/utils/http'
+import http from '@/apis/http'
 import { SuccessResponse } from '@/globalType/util.type'
 import { AccountList } from '@/globalType/account.type'
-import { ListConfig } from '@/globalType/ListConfig.type'
+import { ListConfig } from '@/globalType/listConfig.type'
 
 const URL = 'api/accounts'
 
 const accountApi = {
   getAccountById: async (params: string) => {
-    const res = await http.get<SuccessResponse<IAccountTable>>(URL, { params })
+    const res = await http.get<SuccessResponse<IAccountTable>>(`${URL}/${params}`)
     return res.data
   },
   getAccounts: async (params: ListConfig) => {

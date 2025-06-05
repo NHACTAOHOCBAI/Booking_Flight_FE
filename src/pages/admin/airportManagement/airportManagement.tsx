@@ -8,8 +8,7 @@ import UpdateAirport from './updateAirport'
 import DetailAirport from './detailAirport'
 import { useDeleteAirport } from '@/hooks/useAirport'
 import ErrorPage from '@/components/ErrorPage/ErrorPage'
-import LoadingError from '@/components/ErrorPage/LoadingError'
-import airportApi from '@/apis/airport.api'
+import airportApi from '@/apis/apis/airport.api'
 import { AppContext } from '@/context/app.context'
 import Access from '@/components/access'
 const AirportManagement = () => {
@@ -100,8 +99,8 @@ const AirportManagement = () => {
             gap: 10
           }}
         >
-          {/* <Access permission={ALL_PERMISSIONS['ACCOUNTS']['UPDATE']} hideChildren> */}
-          <Access permission={permissions} hideChildren>
+          <Access permission={ALL_PERMISSIONS['AIRPORTS']['PUT_AIRPORTS']} hideChildren>
+            {/* <Access permission={permissions} hideChildren> */}
             <EditOutlined
               style={{
                 color: '#54a0ff'
@@ -112,7 +111,7 @@ const AirportManagement = () => {
               }}
             />
           </Access>
-          <Access permission={permissions}>
+          <Access permission={ALL_PERMISSIONS['AIRPORTS']['DELETE_AIRPORTS']} hideChildren>
             <Popconfirm
               title='Delete the airport'
               description='Are you sure to delete this airport?'
@@ -120,8 +119,6 @@ const AirportManagement = () => {
               onConfirm={() => handleDelete(record.id as string)}
               cancelText='Cancel'
             >
-              {/* <Access permission={ALL_PERMISSIONS['ACCOUNTS']['DELETE']} hideChildren> */}
-
               <DeleteOutlined
                 style={{
                   color: '#ee5253'
@@ -142,66 +139,65 @@ const AirportManagement = () => {
         <ErrorPage />
       ) : (
         <>
-          {/* <Access permission={ALL_PERMISSIONS['ACCOUNTS']['GET_PAGINATE']}> */}
-          <Access permission={permissions}>
-            <ProTable<IAirportTable>
-              rowKey='id'
-              search={{
-                labelWidth: 'auto'
-              }}
-              request={async (params) => {
-                setError(null)
+          {/* <Access permission={ALL_PERMISSIONS['AIRPORTS']['GET_USER']}> */}
+          {/* <Access permission={permissions}> */}
+          <ProTable<IAirportTable>
+            rowKey='id'
+            search={{
+              labelWidth: 'auto'
+            }}
+            request={async (params) => {
+              setError(null)
 
-                try {
-                  const response = await airportApi.getAirports({
-                    page: params.current,
-                    size: params.pageSize
-                  })
+              try {
+                const response = await airportApi.getAirports({
+                  page: params.current,
+                  size: params.pageSize
+                })
 
-                  return {
-                    data: response.data?.result,
-                    success: true,
-                    total: response.data?.pagination.total
-                  }
-                } catch (err) {
-                  console.error(err)
-                  setError(err)
-
-                  return {
-                    data: [],
-                    success: false,
-                    total: 0
-                  }
+                return {
+                  data: response.data?.result,
+                  success: true,
+                  total: response.data?.pagination.total
                 }
-              }}
-              columns={columns}
-              actionRef={actionRef}
-              bordered
-              cardBordered
-              headerTitle='airports List'
-              toolBarRender={() => [
-                // <Access permission={ALL_PERMISSIONS['ACCOUNTS']['ADD']}>
-                <Access permission={permissions}>
-                  <Button
-                    key='button'
-                    icon={<PlusOutlined />}
-                    type='primary'
-                    onClick={() => {
-                      setIsNewOpen(true)
-                    }}
-                  >
-                    New airport
-                  </Button>
-                </Access>
-              ]}
-              pagination={{
-                pageSizeOptions: [5, 10, 20],
-                showSizeChanger: true,
-                defaultCurrent: 1,
-                defaultPageSize: 5
-              }}
-            />
-          </Access>
+              } catch (err) {
+                console.error(err)
+                setError(err)
+
+                return {
+                  data: [],
+                  success: false,
+                  total: 0
+                }
+              }
+            }}
+            columns={columns}
+            actionRef={actionRef}
+            bordered
+            cardBordered
+            headerTitle='airports List'
+            toolBarRender={() => [
+              <Access permission={ALL_PERMISSIONS['AIRPORTS']['POST_AIRPORTS']}>
+                <Button
+                  key='button'
+                  icon={<PlusOutlined />}
+                  type='primary'
+                  onClick={() => {
+                    setIsNewOpen(true)
+                  }}
+                >
+                  New airport
+                </Button>
+              </Access>
+            ]}
+            pagination={{
+              pageSizeOptions: [5, 10, 20],
+              showSizeChanger: true,
+              defaultCurrent: 1,
+              defaultPageSize: 5
+            }}
+          />
+
           <NewAirport isNewOpen={isNewOpen} setIsNewOpen={setIsNewOpen} />
           <UpdateAirport
             updatedAirport={updatedAirport!}

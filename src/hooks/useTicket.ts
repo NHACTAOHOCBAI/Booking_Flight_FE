@@ -1,4 +1,4 @@
-import ticketApi from '@/apis/ticket.api'
+import ticketApi from '@/apis/apis/ticket.api'
 import { TicketListConfig } from '@/globalType/ticket.type'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 

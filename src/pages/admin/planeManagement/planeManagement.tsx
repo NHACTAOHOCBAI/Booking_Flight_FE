@@ -7,7 +7,7 @@ import UpdatePlane from './updatePlane'
 import DetailPlane from './detailPlane'
 import { useDeletePlane } from '@/hooks/usePlane'
 import ErrorPage from '@/components/ErrorPage/ErrorPage'
-import planeApi from '@/apis/plane.api'
+import planeApi from '@/apis/apis/plane.api'
 import { AppContext } from '@/context/app.context'
 import Access from '@/components/access'
 const PlaneManagement = () => {
@@ -100,8 +100,8 @@ const PlaneManagement = () => {
             gap: 10
           }}
         >
-          {/* <Access permission={ALL_PERMISSIONS['ACCOUNTS']['UPDATE']} hideChildren> */}
-          <Access permission={permissions} hideChildren>
+          <Access permission={ALL_PERMISSIONS['PLANES']['PUT_PLANES']} hideChildren>
+            {/* <Access permission={permissions} hideChildren> */}
             <EditOutlined
               style={{
                 color: '#54a0ff'
@@ -112,7 +112,7 @@ const PlaneManagement = () => {
               }}
             />
           </Access>
-          <Access permission={permissions}>
+          <Access permission={ALL_PERMISSIONS['PLANES']['DELETE_PLANES']} hideChildren>
             <Popconfirm
               title='Delete the plane'
               description='Are you sure to delete this plane?'
@@ -120,8 +120,6 @@ const PlaneManagement = () => {
               onConfirm={() => handleDelete(record.id as string)}
               cancelText='Cancel'
             >
-              {/* <Access permission={ALL_PERMISSIONS['ACCOUNTS']['DELETE']} hideChildren> */}
-
               <DeleteOutlined
                 style={{
                   color: '#ee5253'
@@ -141,8 +139,8 @@ const PlaneManagement = () => {
         <ErrorPage />
       ) : (
         <>
-          {/* <Access permission={ALL_PERMISSIONS['ACCOUNTS']['GET_PAGINATE']}> */}
-          <Access permission={permissions}>
+          <Access permission={ALL_PERMISSIONS['PLANES']['GET_PLANES']}>
+            {/* <Access permission={permissions}> */}
             <ProTable<IPlaneTable>
               rowKey='id'
               search={{
@@ -179,8 +177,7 @@ const PlaneManagement = () => {
               cardBordered
               headerTitle='Planes List'
               toolBarRender={() => [
-                // <Access permission={ALL_PERMISSIONS['ACCOUNTS']['ADD']}>
-                <Access permission={permissions}>
+                <Access permission={ALL_PERMISSIONS['PLANES']['POST_PLANES']}>
                   <Button
                     key='button'
                     icon={<PlusOutlined />}

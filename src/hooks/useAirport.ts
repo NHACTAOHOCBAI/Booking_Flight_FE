@@ -1,4 +1,4 @@
-import airportApi from '@/apis/airport.api'
+import airportApi from '@/apis/apis/airport.api'
 import { AirportListConfig } from '@/globalType/airport.type'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 

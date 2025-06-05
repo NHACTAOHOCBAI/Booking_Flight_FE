@@ -1,13 +1,13 @@
-import http from '@/utils/http'
+import http from '@/apis/http'
 import { SuccessResponse } from '@/globalType/util.type'
 import { RoleList } from '@/globalType/role.type'
-import { ListConfig } from '@/globalType/ListConfig.type'
+import { ListConfig } from '@/globalType/listConfig.type'
 
 const URL = 'api/roles'
 
 const roleApi = {
   getRoleById: async (params: string) => {
-    const res = await http.get<SuccessResponse<IRoleTable>>(URL, { params })
+    const res = await http.get<SuccessResponse<IRoleTable>>(`${URL}/${params}`)
     return res.data
   },
   getRoles: async (params: ListConfig) => {

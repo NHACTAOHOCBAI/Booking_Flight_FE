@@ -1,4 +1,4 @@
-import accountApi from '@/apis/account.api'
+import accountApi from '@/apis/apis/account.api'
 import authApi from '@/apis/auth.api'
 import { useMutation, useQuery } from '@tanstack/react-query'
 

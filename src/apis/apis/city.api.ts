@@ -1,13 +1,13 @@
-import http from '@/utils/http'
+import http from '@/apis/http'
 import { SuccessResponse } from '@/globalType/util.type'
 import { CityList } from '@/globalType/city.type'
-import { ListConfig } from '@/globalType/ListConfig.type'
+import { ListConfig } from '@/globalType/listConfig.type'
 
 const URL = 'api/cities'
 
 const cityApi = {
   getCItyById: async (params: string) => {
-    const res = await http.get<SuccessResponse<ICityTable>>(URL, { params })
+    const res = await http.get<SuccessResponse<ICityTable>>(`${URL}/${params}`)
     return res.data
   },
   getCities: async (params: ListConfig) => {

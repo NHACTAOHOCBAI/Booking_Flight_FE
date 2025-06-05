@@ -1,13 +1,13 @@
-import http from '@/utils/http'
+import http from '@/apis/http'
 import { SuccessResponse } from '@/globalType/util.type'
 import { PlaneList } from '@/globalType/plane.type'
-import { ListConfig } from '@/globalType/ListConfig.type'
+import { ListConfig } from '@/globalType/listConfig.type'
 
 const URL = 'api/planes'
 
 const planeApi = {
   getPlaneById: async (params: string) => {
-    const res = await http.get<SuccessResponse<IPlaneTable>>(URL, { params })
+    const res = await http.get<SuccessResponse<IPlaneTable>>(`${URL}/${params}`)
     return res.data
   },
   getPlanes: async (params: ListConfig) => {

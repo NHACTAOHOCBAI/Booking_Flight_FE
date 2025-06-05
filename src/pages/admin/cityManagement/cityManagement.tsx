@@ -11,7 +11,7 @@ import { useDeleteCity } from '@/hooks/useCity'
 import DetailCity from './detailCity'
 import LoadingError from '@/components/ErrorPage/LoadingError'
 import ErrorPage from '@/components/ErrorPage/ErrorPage'
-import cityApi from '@/apis/city.api'
+import cityApi from '@/apis/apis/city.api'
 import { AppContext } from '@/context/app.context'
 import Access from '@/components/access'
 const CityManagement = () => {
@@ -96,8 +96,7 @@ const CityManagement = () => {
             gap: 10
           }}
         >
-          {/* <Access permission={ALL_PERMISSIONS['ACCOUNTS']['UPDATE']} hideChildren> */}
-          <Access permission={permissions} hideChildren>
+          <Access permission={ALL_PERMISSIONS['CITIES']['PUT_CITIES']} hideChildren>
             <EditOutlined
               style={{
                 color: '#54a0ff'
@@ -108,7 +107,7 @@ const CityManagement = () => {
               }}
             />
           </Access>
-          <Access permission={permissions}>
+          <Access permission={ALL_PERMISSIONS['CITIES']['DELETE_CITIES']} hideChildren>
             <Popconfirm
               title='Delete the account'
               description='Are you sure to delete this account?'
@@ -116,8 +115,6 @@ const CityManagement = () => {
               onConfirm={() => handleDelete(record.id as string)}
               cancelText='Cancel'
             >
-              {/* <Access permission={ALL_PERMISSIONS['ACCOUNTS']['DELETE']} hideChildren> */}
-
               <DeleteOutlined
                 style={{
                   color: '#ee5253'
@@ -139,66 +136,65 @@ const CityManagement = () => {
         <ErrorPage />
       ) : (
         <>
-          {/* <Access permission={ALL_PERMISSIONS['ACCOUNTS']['GET_PAGINATE']}> */}
-          <Access permission={permissions}>
-            <ProTable<ICityTable>
-              rowKey='id'
-              search={{
-                labelWidth: 'auto'
-              }}
-              request={async (params) => {
-                setError(null)
+          {/* <Access permission={ALL_PERMISSIONS['CITIES']['GET_USER']}> */}
+          {/* <Access permission={permissions}> */}
+          <ProTable<ICityTable>
+            rowKey='id'
+            search={{
+              labelWidth: 'auto'
+            }}
+            request={async (params) => {
+              setError(null)
 
-                try {
-                  const response = await cityApi.getCities({
-                    page: params.current,
-                    size: params.pageSize
-                  })
+              try {
+                const response = await cityApi.getCities({
+                  page: params.current,
+                  size: params.pageSize
+                })
 
-                  return {
-                    data: response.data?.result,
-                    success: true,
-                    total: response.data?.pagination.total
-                  }
-                } catch (err) {
-                  console.error(err)
-                  setError(err)
-
-                  return {
-                    data: [],
-                    success: false,
-                    total: 0
-                  }
+                return {
+                  data: response.data?.result,
+                  success: true,
+                  total: response.data?.pagination.total
                 }
-              }}
-              columns={columns}
-              actionRef={actionRef}
-              bordered
-              cardBordered
-              headerTitle='Citys List'
-              toolBarRender={() => [
-                // <Access permission={ALL_PERMISSIONS['ACCOUNTS']['ADD']}>
-                <Access permission={permissions}>
-                  <Button
-                    key='button'
-                    icon={<PlusOutlined />}
-                    type='primary'
-                    onClick={() => {
-                      setIsNewOpen(true)
-                    }}
-                  >
-                    New City
-                  </Button>
-                </Access>
-              ]}
-              pagination={{
-                pageSizeOptions: [5, 10, 20],
-                showSizeChanger: true,
-                defaultCurrent: 1,
-                defaultPageSize: 5
-              }}
-            />
-          </Access>
+              } catch (err) {
+                console.error(err)
+                setError(err)
+
+                return {
+                  data: [],
+                  success: false,
+                  total: 0
+                }
+              }
+            }}
+            columns={columns}
+            actionRef={actionRef}
+            bordered
+            cardBordered
+            headerTitle='Citys List'
+            toolBarRender={() => [
+              <Access permission={ALL_PERMISSIONS['CITIES']['POST_CITIES']}>
+                {/* <Access permission={permissions}> */}
+                <Button
+                  key='button'
+                  icon={<PlusOutlined />}
+                  type='primary'
+                  onClick={() => {
+                    setIsNewOpen(true)
+                  }}
+                >
+                  New City
+                </Button>
+              </Access>
+            ]}
+            pagination={{
+              pageSizeOptions: [5, 10, 20],
+              showSizeChanger: true,
+              defaultCurrent: 1,
+              defaultPageSize: 5
+            }}
+          />
           <NewCity isNewOpen={isNewOpen} setIsNewOpen={setIsNewOpen} />
           <UpdateCity
             setUpdatedCity={setUpdatedCity}

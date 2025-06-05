@@ -1,8 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import roleApi from '@/apis/role.api'
 import { onErrorUtil } from '@/globalType/util.type'
 import { useUpdateAccount } from '@/hooks/useAccount'
-import { useQuery } from '@tanstack/react-query'
+import { useGetAllRoles } from '@/hooks/useRole'
 import { Col, Form, FormProps, Input, message, Modal, Row, Select } from 'antd'
 import _ from 'lodash'
 import { useEffect, useMemo } from 'react'
@@ -39,7 +38,7 @@ const UpdateAccount = (props: IProp) => {
       fullName: value.fullName,
       password: value.password,
       username: value.username,
-      roleId: value.roleId,
+      roleId: value.role,
       phone: value.phone
     }
     updateAccountMutation.mutate(body, {
@@ -72,7 +71,7 @@ const UpdateAccount = (props: IProp) => {
       fullName: '',
       email: '',
       password: '',
-      roleId: '3'
+      role: { roleName: '', description: '', permissionId: [] }
     })
     setIsUpdateOpen(false)
   }
@@ -84,15 +83,11 @@ const UpdateAccount = (props: IProp) => {
       email: updatedAccount.email,
       phone: updatedAccount.phone,
       fullName: updatedAccount.fullName,
-      roleId: updatedAccount.roleId
+      roleId: updatedAccount.role
     })
   }, [updatedAccount])
 
-  const roleData = useQuery({
-    queryKey: ['roles'],
-    queryFn: () => roleApi.getRoles({}),
-    enabled: isUpdateOpen
-  })
+  const roleData = useGetAllRoles({}, isUpdateOpen)
   const roleOptions = useMemo(
     () =>
       roleData.data?.data.result.map((value, index) => {
@@ -132,23 +127,6 @@ const UpdateAccount = (props: IProp) => {
                   {
                     required: true,
                     message: 'Please input email'
-                  }
-                ]}
-              >
-                <Input />
-              </Form.Item>
-
-              <Form.Item<IAccountTable>
-                label={
-                  <div>
-                    <MdOutlineDriveFileRenameOutline /> Username
-                  </div>
-                }
-                name='username'
-                rules={[
-                  {
-                    required: true,
-                    message: 'Please input username'
                   }
                 ]}
               >
@@ -228,7 +206,7 @@ const UpdateAccount = (props: IProp) => {
                       <GrUserAdmin /> Role
                     </div>
                   }
-                  name='roleId'
+                  name='role'
                   rules={[
                     {
                       required: true,
@@ -236,7 +214,7 @@ const UpdateAccount = (props: IProp) => {
                     }
                   ]}
                 >
-                  <Select placeholder={updatedAccount.roleId} options={roleOptions} />
+                  <Select placeholder={updatedAccount.role?.roleName} options={roleOptions} />
                 </Form.Item>
               </Col>
             </Col>

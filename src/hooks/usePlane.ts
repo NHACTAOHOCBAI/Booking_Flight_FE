@@ -1,4 +1,4 @@
-import planeApi from '@/apis/plane.api'
+import planeApi from '@/apis/apis/plane.api'
 import { PlaneListConfig } from '@/globalType/plane.type'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 

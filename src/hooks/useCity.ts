@@ -1,11 +1,12 @@
-import cityApi from '@/apis/city.api'
+import cityApi from '@/apis/apis/city.api'
 import { CityListConfig } from '@/globalType/city.type'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
-export const useGetAllCities = (queryConfig: CityListConfig) => {
+export const useGetAllCities = (queryConfig: CityListConfig, enabled: boolean = true) => {
   return useQuery({
     queryKey: ['cities', queryConfig],
-    queryFn: () => cityApi.getCities(queryConfig)
+    queryFn: () => cityApi.getCities(queryConfig),
+    enabled: enabled
   })
 }
 

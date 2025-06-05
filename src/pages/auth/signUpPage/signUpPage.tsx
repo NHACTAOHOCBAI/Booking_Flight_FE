@@ -3,9 +3,6 @@ import { Button, Col, Divider, Form, Input, message, Row, Select } from 'antd'
 import { GoogleOutlined } from '@ant-design/icons'
 import { Link, useNavigate } from 'react-router-dom'
 
-import { AppContext } from '@/context/app.context'
-import { getProfileFromLS } from '@/utils/auth'
-import { useContext } from 'react'
 import { onErrorUtil } from '@/globalType/util.type'
 
 import { useRegister } from '@/hooks/useAuth'
@@ -19,7 +16,6 @@ type FieldType = {
 }
 
 const SignUpPage = () => {
-  const { setIsAuthenticated, setProfile } = useContext(AppContext)
   const [messageApi, contextHolder] = message.useMessage()
   const navigate = useNavigate()
 
@@ -27,23 +23,17 @@ const SignUpPage = () => {
 
   const onFinish: FormProps<FieldType>['onFinish'] = (values) => {
     const body = {
-      // username: values.email?.split('@')[0] as string,
       password: values.password as string,
       email: values.email as string,
       fullName: values.fullName,
-      // gender: values.gender,
+      gender: values.gender,
       phone: values.phone,
-      roleId: '344a0a68-c6fc-40ab-af6c-903c2ef762b4'
+      roleId: import.meta.env.VITE_ROLE_ID as string
     }
     registerMutation.mutate(body, {
       onSuccess: (data) => {
-        messageApi.open({
-          type: 'success',
-          content: data.message
-        })
-        setIsAuthenticated(true)
-        setProfile(getProfileFromLS())
-        navigate('/', { replace: true })
+        console.log(data.message)
+        navigate('/signup/signupSuccess', { replace: true })
       },
       onError: (error) => {
         const messageError = onErrorUtil(error)
@@ -62,48 +52,13 @@ const SignUpPage = () => {
   return (
     <>
       {contextHolder}
-      <div
-        style={{
-          width: '100%',
-          height: '100%',
-          backgroundColor: '#ecf0f1',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center'
-        }}
-      >
-        <Col xs={22} sm={12} xl={7}>
-          <div
-            style={{
-              height: 'auto',
-              background: 'White',
-              padding: 30,
-              borderRadius: 10,
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center'
-            }}
-          >
-            <div
-              style={{
-                fontSize: 26,
-                fontWeight: 'bold'
-              }}
-            >
-              Join Us Today!
-            </div>
-            <div
-              style={{
-                fontSize: 14,
-                marginBottom: 20,
-                marginTop: 10,
-                color: '#95a5a6'
-              }}
-            >
-              Create your free account
-            </div>
+      <div className='w-full h-full bg-gray-100 flex justify-center items-center'>
+        <div className='w-full sm:w-11/12 md:w-1/2 lg:w-1/3 xl:w-1/4 max-w-md'>
+          <div className='h-auto bg-white p-8 rounded-xl shadow-lg flex flex-col items-center'>
+            <div className='text-3xl font-bold'>Join Us Today!</div>
+            <div className='text-sm mb-5 mt-2.5 text-gray-500'>Create your free account</div>
             <Form
-              style={{ width: '100%' }}
+              className='w-full'
               layout='vertical'
               name='basic'
               initialValues={{ remember: true }}
@@ -111,28 +66,12 @@ const SignUpPage = () => {
               onFinishFailed={onFinishFailed}
               autoComplete='off'
             >
-              <div
-                style={{
-                  fontSize: 14,
-                  fontWeight: 'bold',
-                  marginBottom: 5
-                }}
-              >
-                Email address
-              </div>
+              <div className='text-sm font-bold mb-1'>Email address</div>
               <Form.Item<FieldType> name='email' rules={[{ required: true, message: 'Please input your email!' }]}>
                 <Input placeholder='name@gmail.com' />
               </Form.Item>
 
-              <div
-                style={{
-                  fontSize: 14,
-                  fontWeight: 'bold',
-                  marginBottom: 5
-                }}
-              >
-                Password
-              </div>
+              <div className='text-sm font-bold mb-1'>Password</div>
               <Form.Item<FieldType>
                 name='password'
                 rules={[{ required: true, message: 'Please input your password!' }]}
@@ -140,46 +79,22 @@ const SignUpPage = () => {
                 <Input.Password placeholder='Enter your password' />
               </Form.Item>
 
-              <div
-                style={{
-                  fontSize: 14,
-                  fontWeight: 'bold',
-                  marginBottom: 5
-                }}
-              >
-                Full name
-              </div>
+              <div className='text-sm font-bold mb-1'>Full name</div>
               <Form.Item<FieldType> name='fullName' rules={[{ required: true, message: 'Please input your name!' }]}>
                 <Input placeholder='Dang Phuc Nguyen' />
               </Form.Item>
-              <Row gutter={10}>
-                <Col span={14}>
-                  <div
-                    style={{
-                      fontSize: 14,
-                      fontWeight: 'bold',
-                      marginBottom: 5
-                    }}
-                  >
-                    Phone
-                  </div>
+              <div className='grid grid-cols-10 gap-2'>
+                <div className='col-span-6'>
+                  <div className='text-sm font-bold mb-1'>Phone</div>
                   <Form.Item<FieldType>
                     name='phone'
                     rules={[{ required: true, message: 'Please input your phone number!' }]}
                   >
                     <Input placeholder='0838609516' />
                   </Form.Item>
-                </Col>
-                <Col span={10}>
-                  <div
-                    style={{
-                      fontSize: 14,
-                      fontWeight: 'bold',
-                      marginBottom: 5
-                    }}
-                  >
-                    Gender
-                  </div>
+                </div>
+                <div className='col-span-4'>
+                  <div className='text-sm font-bold mb-1'>Gender</div>
                   <Form.Item<FieldType>
                     name='gender'
                     rules={[{ required: true, message: 'Please input your gender!' }]}
@@ -191,49 +106,32 @@ const SignUpPage = () => {
                       ]}
                     />
                   </Form.Item>
-                </Col>
-              </Row>
+                </div>
+              </div>
               <Form.Item>
-                <Button block type='primary' htmlType='submit'>
+                <Button block type='primary' htmlType='submit' disabled={registerMutation.isPending} className='w-full'>
                   Sign up
                 </Button>
               </Form.Item>
             </Form>
             <Divider />
-            <div
-              style={{
-                fontSize: 14,
-                color: '#95a5a6'
-              }}
-            >
+            <div className='text-sm text-gray-500 flex items-center gap-1'>
               Or continue with
-              <Button>
+              <Button className='mx-1'>
                 <GoogleOutlined />
                 Google
               </Button>
             </div>
-            <div
-              style={{
-                marginTop: 10,
-                fontSize: 14,
-                color: '#95a5a6'
-              }}
-            >
+            <div className='mt-2.5 text-sm text-gray-500'>
               You already had an account ?
-              <span
-                style={{
-                  fontSize: 14,
-                  color: '#3498db',
-                  cursor: 'pointer'
-                }}
-              >
+              <span className='text-blue-500 cursor-pointer hover:underline'>
                 <Link to='/login' className='mx-1'>
                   Login here
                 </Link>
               </span>
             </div>
           </div>
-        </Col>
+        </div>
       </div>
     </>
   )

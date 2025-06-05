@@ -1,13 +1,13 @@
 import type { FormProps } from 'antd'
-import { Button, Checkbox, Col, Divider, Flex, Form, Input } from 'antd'
+import { Button, Checkbox, Divider, Form, Input } from 'antd'
 import { ArrowLeftOutlined, GoogleOutlined } from '@ant-design/icons'
-import { Link, useNavigate } from 'react-router-dom'
-import { useContext, useState } from 'react'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { useContext, useEffect, useState } from 'react'
 import classNames from 'classnames'
 import { isAxiosUnprocessableEntityError } from '@/utils/utils'
 import { ErrorResponse } from '@/globalType/util.type'
 import { AppContext } from '@/context/app.context'
-import { getProfileFromLS } from '@/utils/auth'
+import { saveAccessTokenToLS, saveProfileToLS } from '@/apis/auth.api'
 import { useLogin } from '@/hooks/useAuth'
 
 type FieldType = {
@@ -21,16 +21,29 @@ const LoginPage = () => {
   const [errorLogin, setErrorLogin] = useState(false)
   const navigate = useNavigate()
 
+  const location = useLocation()
+  const params = new URLSearchParams(location.search)
+  const callback = params?.get('callback')
+
   const loginMutation = useLogin()
+  const { isAuthenticated } = useContext(AppContext)
+
+  useEffect(() => {
+    //đã login => redirect to '/'
+    if (isAuthenticated) {
+      navigate('/')
+      // window.location.href = '/'
+    }
+  }, [])
 
   const onFinish: FormProps<FieldType>['onFinish'] = (values) => {
     const body = { username: values.username as string, password: values.password as string }
     loginMutation.mutate(body, {
       onSuccess: (data) => {
         setIsAuthenticated(true)
-        setProfile(getProfileFromLS())
-        console.log(data)
-        navigate('/', { replace: true })
+        setProfile(data.data.account)
+        saveProfileToLS(data.data.account)
+        saveAccessTokenToLS(data.data.accessToken)
       },
       onError: (error) => {
         console.log(error)
@@ -44,163 +57,91 @@ const LoginPage = () => {
     console.log('Failed:', errorInfo)
   }
   return (
-    <div>
-      <div
-        style={{
-          width: '100%',
-          height: '100%',
-          backgroundColor: '#ecf0f1',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center'
-        }}
-      >
-        <Col xs={22} sm={12} xl={6}>
-          <div
-            style={{
-              height: 'auto',
-              background: 'White',
-              padding: 30,
-              borderRadius: 10,
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center'
-            }}
+    <div className='min-h-screen bg-gray-100 flex items-center justify-center p-4 font-sans'>
+      <div className='w-full sm:w-11/12 md:w-1/2 lg:w-1/3 xl:w-1/4 max-w-md'>
+        <div className='bg-white p-8 rounded-xl shadow-lg flex flex-col items-center'>
+          <div className='text-3xl font-extrabold text-gray-800 mb-2'>Welcome back</div>
+          <div className='text-sm mb-5 mt-2.5 text-gray-500'>Please enter your credentials to login</div>
+
+          <Form
+            className='w-full'
+            layout='vertical'
+            name='basic'
+            initialValues={{ remember: true }}
+            onFinish={onFinish}
+            onFinishFailed={onFinishFailed}
+            autoComplete='off'
           >
             <div
-              style={{
-                fontSize: 26,
-                fontWeight: 'bold'
-              }}
+              className={classNames('flex gap-1 text-sm font-bold mb-1', {
+                'text-red-500': errorLogin
+              })}
             >
-              Welcome back
+              UserName {errorLogin && <div className='text-red-500 pt-1'> *</div>}
             </div>
-            <div
-              style={{
-                fontSize: 14,
-                marginBottom: 20,
-                marginTop: 10,
-                color: '#95a5a6'
-              }}
-            >
-              Please enter your credentials to login
-            </div>
-            <Form
-              style={{ width: '100%' }}
-              layout='vertical'
-              name='basic'
-              initialValues={{ remember: true }}
-              onFinish={onFinish}
-              onFinishFailed={onFinishFailed}
-              autoComplete='off'
-            >
-              <div
-                style={{
-                  fontSize: 14,
-                  fontWeight: 'bold',
-                  marginBottom: 5
-                }}
-                className={classNames('flex gap-1', {
-                  'text-red-500 ': errorLogin
-                })}
-              >
-                UserName {errorLogin && <div className='text-red-500 pt-1'> *</div>}
-              </div>
-              <Form.Item<FieldType>
-                name='username'
-                rules={[{ required: true, message: 'Please input your username!' }]}
-              >
-                <Input placeholder='name' />
-              </Form.Item>
-              <div
-                style={{
-                  fontSize: 14,
-                  fontWeight: 'bold',
-                  marginBottom: 5
-                }}
-                className={classNames('flex gap-1', {
-                  'text-red-500 ': errorLogin
-                })}
-              >
-                Password{errorLogin && <div className='text-red-500 pt-1'> *</div>}
-              </div>
-              <Form.Item<FieldType>
-                name='password'
-                rules={[{ required: true, message: 'Please input your password!' }]}
-              >
-                <Input.Password placeholder='Enter your password' />
-              </Form.Item>
+            <Form.Item<FieldType> name='username' rules={[{ required: true, message: 'Please input your username!' }]}>
+              <Input placeholder='name' />
+            </Form.Item>
 
-              <Form.Item>
-                <Flex justify='space-between' align='center'>
-                  <Form.Item name='remember' valuePropName='checked' noStyle>
-                    <Checkbox>Remember me</Checkbox>
-                  </Form.Item>
-                  <a>Forgot password?</a>
-                </Flex>
-              </Form.Item>
-              {errorLogin && <div className='text-red-500'> Wrong username or password</div>}
-              <Form.Item>
-                <Button block type='primary' htmlType='submit'>
-                  Log in
-                </Button>
-              </Form.Item>
-            </Form>
             <div
-              style={{
-                width: '100%',
-                display: 'flex',
-                alignItems: 'left' /* Căn giữa theo chiều dọc */,
-                justifyContent: 'flex-start'
-              }}
+              className={classNames('flex gap-1 text-sm font-bold mb-1', {
+                'text-red-500': errorLogin
+              })}
             >
-              <Link to='/'>
-                <ArrowLeftOutlined />
-                <span> Go to HomePage</span>
-              </Link>
+              Password{errorLogin && <div className='text-red-500 pt-1'> *</div>}
             </div>
-            <Divider
-              style={{
-                marginTop: 10
-              }}
-            />
-            <div
-              style={{
-                fontSize: 14,
-                color: '#95a5a6'
-              }}
-            >
-              Or continue with
-              <Button className='mx-1'>
-                <GoogleOutlined />
-                Google
+            <Form.Item<FieldType> name='password' rules={[{ required: true, message: 'Please input your password!' }]}>
+              <Input.Password placeholder='Enter your password' />
+            </Form.Item>
+
+            <Form.Item>
+              <div className='flex justify-between items-center'>
+                <Form.Item name='remember' valuePropName='checked' noStyle>
+                  <Checkbox>Remember me</Checkbox>
+                </Form.Item>
+                <a href='#' className='text-blue-600 hover:underline text-sm'>
+                  Forgot password?
+                </a>
+              </div>
+            </Form.Item>
+
+            {errorLogin && <div className='text-red-500 mb-4 text-sm'> Wrong username or password</div>}
+
+            <Form.Item>
+              <Button block type='primary' htmlType='submit' className='w-full' disabled={isAuthenticated}>
+                Log in
               </Button>
-            </div>
-            <div
-              style={{
-                marginTop: 10,
-                fontSize: 14,
-                color: '#95a5a6'
-              }}
-            >
-              Don't have an account ?
-              <span
-                style={{
-                  fontSize: 14,
-                  color: '#3498db',
-                  cursor: 'pointer'
-                }}
-              >
-                <Link to='/signup' className='mx-1'>
-                  Sign up here
-                </Link>
-              </span>
-            </div>
+            </Form.Item>
+          </Form>
+
+          <div className='w-full flex items-start justify-start text-blue-600 hover:underline'>
+            <Link to='/' className='flex items-center gap-1 text-sm'>
+              <ArrowLeftOutlined />
+              <span> Go to HomePage</span>
+            </Link>
           </div>
-        </Col>
+
+          <Divider className='mt-2' />
+
+          <div className='text-sm text-gray-500 flex items-center gap-2'>
+            Or continue with
+            <Button className='mx-1'>
+              <GoogleOutlined />
+              Google
+            </Button>
+          </div>
+
+          <div className='mt-2 text-sm text-gray-500'>
+            Don't have an account ?
+            <span className='text-blue-500 cursor-pointer hover:underline'>
+              <Link to='/signup' className='mx-1'>
+                Sign up here
+              </Link>
+            </span>
+          </div>
+        </div>
       </div>
     </div>
   )
 }
-
 export default LoginPage
