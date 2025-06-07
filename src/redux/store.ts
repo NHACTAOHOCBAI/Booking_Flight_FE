@@ -1,15 +1,42 @@
 import { configureStore } from '@reduxjs/toolkit'
+import { combineReducers } from 'redux'
+import { persistStore, persistReducer, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER } from 'redux-persist'
+import storage from 'redux-persist/lib/storage' // defaults to localStorage for web
+
+// Reducers
 import bookingFlightReducer from './features/bookingFlight/bookingFlightSlice'
 import bookingTicketsListReducer from './features/bookingTicket/bookingTicketsList'
-export const store = configureStore({
-  reducer: {
-    bookingFlight: bookingFlightReducer,
-    bookingTicketsList: bookingTicketsListReducer
-  }
+
+// Combine reducers
+const rootReducer = combineReducers({
+  bookingFlight: bookingFlightReducer,
+  bookingTicketsList: bookingTicketsListReducer
 })
 
-// Infer the `RootState`,  `AppDispatch`, and `AppStore` types from the store itself
+// Persist config
+const persistConfig = {
+  key: 'root',
+  storage,
+  whitelist: ['bookingFlight', 'bookingTicketsList'] // những reducer muốn lưu
+}
+
+const persistedReducer = persistReducer(persistConfig, rootReducer)
+
+// Tạo store với middleware redux-persist
+export const store = configureStore({
+  reducer: persistedReducer,
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: {
+        // Cấu hình để tránh lỗi khi dùng redux-persist
+        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER]
+      }
+    })
+})
+
+export const persistor = persistStore(store) // cần export ra để dùng với <PersistGate />
+
+// Types
 export type RootState = ReturnType<typeof store.getState>
-// Inferred type: {posts: PostsState, comments: CommentsState, users: UsersState}
 export type AppDispatch = typeof store.dispatch
 export type AppStore = typeof store

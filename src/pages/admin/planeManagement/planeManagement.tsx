@@ -139,7 +139,7 @@ const PlaneManagement = () => {
         <ErrorPage />
       ) : (
         <>
-          <Access permission={ALL_PERMISSIONS['PLANES']['GET_PLANES']}>
+          <Access permission={ALL_PERMISSIONS['PLANES']['GET_PLANES']} hideChildren>
             {/* <Access permission={permissions}> */}
             <ProTable<IPlaneTable>
               rowKey='id'

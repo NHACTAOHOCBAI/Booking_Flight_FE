@@ -13,7 +13,7 @@ const Access = (props: IProps) => {
   const { permission, hideChildren = false } = props
   const [allow, setAllow] = useState<boolean>(true)
 
-  const userPermissions = useContext(AppContext).profile?.role?.permissionId
+  const userPermissions = useContext(AppContext).profile?.role?.permissions
   useEffect(() => {
     if (userPermissions?.length) {
       const check = userPermissions.find((item) => {

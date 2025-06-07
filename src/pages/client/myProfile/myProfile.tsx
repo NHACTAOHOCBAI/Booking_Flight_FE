@@ -1,11 +1,10 @@
-import { HomeOutlined, MailOutlined, PhoneOutlined, UserOutlined } from '@ant-design/icons' // For icons
+import { useUpdateAccount } from '@/hooks/useAccount'
+import { useGetMyProfile } from '@/hooks/useMyProfile'
+import { MailOutlined, PhoneOutlined, UserOutlined } from '@ant-design/icons' // For icons
 import { Avatar, Button, Card, Form, Input, message, Tabs } from 'antd'
 import { useEffect, useState } from 'react'
 import ChangePasswordPage from './changePassword'
 import TicketPurchasedPage from './ticketPurchased'
-import { useGetMyProfile } from '@/hooks/useMyProfile'
-import { onErrorUtil } from '@/globalType/util.type'
-import { useUpdateAccount } from '@/hooks/useAccount'
 
 function MyProfile() {
   // const [personalInfo, setPersonalInfo] = useState({})

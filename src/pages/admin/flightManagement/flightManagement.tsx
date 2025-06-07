@@ -221,7 +221,7 @@ const FlightManagement = () => {
             type='dashed'
             onClick={() => {
               dispatch(setBookingFlight(record))
-              navigate(`/booking/${record.id}`)
+              navigate(`/booking/passenger`)
             }}
           >
             <IoTicketOutline />
@@ -276,7 +276,7 @@ const FlightManagement = () => {
             cardBordered
             headerTitle='Flights List'
             toolBarRender={() => [
-              <Access permission={ALL_PERMISSIONS['FLIGHTS']['POST_FLIGHTS']}>
+              <Access permission={ALL_PERMISSIONS['FLIGHTS']['POST_FLIGHTS']} hideChildren>
                 {/* <Access permission={permissions}> */}
                 <Button
                   key='button'

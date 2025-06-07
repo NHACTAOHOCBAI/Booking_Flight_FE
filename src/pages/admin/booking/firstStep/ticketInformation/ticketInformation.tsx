@@ -1,17 +1,13 @@
-import { Checkbox, Form, Input, Select } from 'antd'
+import { setBookingTicketsList } from '@/redux/features/bookingTicket/bookingTicketsList'
+import { useAppDispatch, useAppSelector } from '@/redux/hooks'
+import { CloseOutlined } from '@ant-design/icons'
+import { Button, Checkbox, Form, Input } from 'antd'
+import { FormProps } from 'antd/lib'
+import { useEffect } from 'react'
 import { BsFillTicketPerforatedFill } from 'react-icons/bs'
 import { FiPhone } from 'react-icons/fi'
 import { HiOutlineIdentification } from 'react-icons/hi'
 import { MdOutlineDriveFileRenameOutline, MdOutlineMail } from 'react-icons/md'
-import { PiSeatBold } from 'react-icons/pi'
-import { CloseOutlined } from '@ant-design/icons'
-import { Button } from 'antd'
-import { FormProps } from 'antd/lib'
-import { useAppDispatch, useAppSelector } from '@/redux/hooks'
-import { setBookingTicketsList } from '@/redux/features/bookingTicket/bookingTicketsList'
-import { useEffect, useMemo } from 'react'
-import seatApi from '@/apis/apis/seat.api'
-import { useQuery } from '@tanstack/react-query'
 
 interface TicketInfo {
   seatId: string
@@ -35,20 +31,6 @@ const TicketInformation = ({ openNotification }: IProp) => {
   const bookingFlight = useAppSelector((state) => state.bookingFlight)
   const bookingTicketsList = useAppSelector((state) => state.bookingTicketsList)
 
-  const seatData = useQuery({
-    queryKey: ['seats'],
-    queryFn: () => seatApi.getSeats({})
-  })
-
-  const seatOptions = useMemo(
-    () =>
-      seatData.data?.data.result.map((value) => ({
-        value: value.id,
-        label: value.seatName
-      })) || [],
-    [seatData.data]
-  )
-
   const [form] = Form.useForm()
 
   const onFinish: FormProps<FormValues>['onFinish'] = (values) => {
@@ -59,8 +41,6 @@ const TicketInformation = ({ openNotification }: IProp) => {
     }
     openNotification(true)
     const data = values.tickets.map((value) => ({
-      flightId: bookingFlight.id,
-      seatId: value.seatId,
       passengerName: value.passengerName,
       passengerPhone: value.passengerPhone,
       passengerIDCard: value.passengerIDCard,
@@ -72,7 +52,6 @@ const TicketInformation = ({ openNotification }: IProp) => {
 
   useEffect(() => {
     const data = bookingTicketsList.map((value) => ({
-      seatId: value.seatId,
       passengerName: value.passengerName,
       passengerPhone: value.passengerPhone,
       passengerEmail: value.passengerEmail,
@@ -81,6 +60,24 @@ const TicketInformation = ({ openNotification }: IProp) => {
     }))
     form.setFieldsValue({ tickets: data })
   }, [bookingTicketsList, form])
+
+  useEffect(() => {
+    const passengerNumber = Number(bookingFlight.queryConfig.passengerNumber)
+    const currentTickets = form.getFieldValue('tickets') || []
+    console.log(currentTickets)
+    console.log(passengerNumber)
+    // Nếu thiếu form so với passengerNumber thì thêm vào
+    if (passengerNumber > 0 && currentTickets.length < passengerNumber) {
+      const newTickets = [...currentTickets]
+      for (let i = currentTickets.length; i < passengerNumber; i++) {
+        // if (bookingFlight.returnFlightDetails)
+        //   newTickets.push({ seatId: bookingFlight.returnFlightDetails.selectedSeat.seatId, haveBaggage: false })
+        newTickets.push({ seatId: bookingFlight.departureFlightDetails?.selectedSeat.seatId, haveBaggage: false })
+      }
+      console.log(newTickets)
+      form.setFieldsValue({ tickets: newTickets })
+    }
+  }, [bookingFlight.departureFlightDetails?.selectedSeat.seatId, bookingFlight.queryConfig.passengerNumber, form])
 
   return (
     <Form
@@ -97,20 +94,22 @@ const TicketInformation = ({ openNotification }: IProp) => {
           <div className='flex flex-col gap-4'>
             {fields.map((field) => (
               <div key={field.key} className='border rounded-lg p-4 shadow-sm bg-white relative'>
-                <button
-                  type='button'
-                  className='absolute top-2 right-2 text-gray-400 hover:text-red-500'
-                  onClick={() => remove(field.name)}
-                >
-                  <CloseOutlined />
-                </button>
+                {!bookingFlight.departureFlightDetails && (
+                  <button
+                    type='button'
+                    className='absolute top-2 right-2 text-gray-400 hover:text-red-500'
+                    onClick={() => remove(field.name)}
+                  >
+                    <CloseOutlined />
+                  </button>
+                )}
 
                 <div className='text-lg font-semibold mb-4 flex items-center'>
                   <BsFillTicketPerforatedFill className='w-5 h-5 mr-2' />
                   {`Ticket ${field.name + 1}`}
                 </div>
 
-                <Form.Item
+                {/* <Form.Item
                   label={
                     <div className='flex items-center'>
                       <PiSeatBold className='w-5 h-5 mr-2' />
@@ -122,7 +121,7 @@ const TicketInformation = ({ openNotification }: IProp) => {
                   className='text-left'
                 >
                   <Select showSearch placeholder='Select a seat' optionFilterProp='label' options={seatOptions} />
-                </Form.Item>
+                </Form.Item> */}
 
                 <Form.Item
                   label={
@@ -191,9 +190,12 @@ const TicketInformation = ({ openNotification }: IProp) => {
 
             {/* Button actions */}
             <div className=' gap-2'>
-              <Button type='dashed' onClick={() => add()} className='w-full'>
-                + New Ticket
-              </Button>
+              {Number(bookingFlight.queryConfig.passengerNumber) === 0 && (
+                <Button type='dashed' onClick={() => add()} className='w-full'>
+                  + New Ticket
+                </Button>
+              )}
+
               <Button onClick={() => form.submit()} className='mt-3 w-32 bg-blue-500 text-white hover:bg-blue-600'>
                 Save
               </Button>

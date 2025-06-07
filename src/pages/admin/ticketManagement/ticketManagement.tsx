@@ -205,7 +205,7 @@ const TicketManagement = () => {
               cardBordered
               headerTitle='Tickets List'
               toolBarRender={() => [
-                <Access permission={ALL_PERMISSIONS['TICKETS']['POST_TICKETS']}>
+                <Access permission={ALL_PERMISSIONS['TICKETS']['POST_TICKETS']} hideChildren>
                   <Button
                     key='button'
                     icon={<PlusOutlined />}

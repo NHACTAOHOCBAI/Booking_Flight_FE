@@ -140,12 +140,6 @@ const UpdateAccount = (props: IProp) => {
                   </div>
                 }
                 name='password'
-                rules={[
-                  {
-                    required: true,
-                    message: 'Please input password'
-                  }
-                ]}
               >
                 <Input />
               </Form.Item>

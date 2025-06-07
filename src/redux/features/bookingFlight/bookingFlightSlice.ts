@@ -1,23 +1,26 @@
+import { QueryConfig } from '@/hooks/useQueryConfig'
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
-const initialState: IFlightTable = {
-  id: '',
-  flightCode: '',
-  planeId: '',
-  departureAirportId: '',
-  arrivalAirportId: '',
-  departureTime: '',
-  arrivalTime: '',
-  originPrice: 0,
-  listFlight_Airport: [],
-  listFlight_Seat: []
+interface BookingState {
+  departureFlightDetails: (IFlightTable & { selectedSeat: ISeat }) | null
+  returnFlightDetails: (IFlightTable & { selectedSeat: ISeat }) | null
+  queryConfig: QueryConfig
+}
+
+const initialState: BookingState = {
+  departureFlightDetails: null,
+  returnFlightDetails: null,
+  queryConfig: {
+    page: '1',
+    size: '5'
+  }
 }
 
 const bookingFlightSlice = createSlice({
   name: 'bookingFlight',
   initialState,
   reducers: {
-    setBookingFlight: (_, action: PayloadAction<IFlightTable>) => {
+    setBookingFlight: (_, action: PayloadAction<BookingState>) => {
       return action.payload
     }
   }

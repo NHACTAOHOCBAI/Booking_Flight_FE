@@ -22,7 +22,7 @@ import PlaneManagement from './pages/admin/planeManagement/planeManagement'
 import AdminBooking from './pages/admin/booking/adminBooking'
 import CityManagement from './pages/admin/cityManagement/cityManagement'
 import { Provider } from 'react-redux'
-import { store } from './redux/store'
+import { persistor, store } from './redux/store'
 import AirlineManagement from './pages/admin/airlineManagement/airlineManagement'
 import HomePage from './pages/client/homePage/homePage'
 import { AppProvider } from './context/app.context'
@@ -34,6 +34,7 @@ import ProtectedRoute from './components/ProtectedRoute'
 import RejectedRoute from './components/RejectedRoute'
 import SuccessRegisterPage from './pages/auth/signUpPage/signUpSuccess'
 import MyProfile from './pages/client/myProfile/myProfile'
+import { PersistGate } from 'redux-persist/integration/react'
 
 // function ProtectedRoute() {
 //   const { isAuthenticated } = useContext(AppContext)
@@ -63,7 +64,7 @@ const router = createBrowserRouter([
         element: <MyProfile />
       },
       {
-        path: 'booking/:flightId',
+        path: '/booking/passenger',
         element: <AdminBooking />
       }
     ]
@@ -205,7 +206,9 @@ createRoot(document.getElementById('root')!).render(
       <QueryClientProvider client={queryClient}>
         <Provider store={store}>
           <AppProvider>
-            <RouterProvider router={router} />
+            <PersistGate loading={null} persistor={persistor}>
+              <RouterProvider router={router} />
+            </PersistGate>
           </AppProvider>
         </Provider>
       </QueryClientProvider>

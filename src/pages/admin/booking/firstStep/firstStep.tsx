@@ -4,18 +4,15 @@ import DetailFlight from './detailFlight/detailFlight'
 
 interface IProp {
   openNotification: (check?: boolean) => void
-  passengerNumber: number
 }
 
-const FirstStep = ({ passengerNumber, openNotification }: IProp) => {
+const FirstStep = ({ openNotification }: IProp) => {
   return (
     <div className='flex flex-col lg:flex-row gap-4 p-2'>
       {/* Left side: Ticket information */}
       <div className='lg:w-3/4 w-full'>
         <div className='grid grid-cols-1 gap-4'>
-          {Array.from({ length: passengerNumber }).map((_, index) => (
-            <TicketInformation key={index} openNotification={openNotification} />
-          ))}
+          <TicketInformation openNotification={openNotification} />
         </div>
       </div>
 

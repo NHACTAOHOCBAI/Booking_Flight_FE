@@ -336,9 +336,9 @@ interface BookingState {
 }
 
 const BookingPage = () => {
-  const initialQueryConfig = useQueryConfig()
+  const queryConfigFromUrl = useQueryConfig()
 
-  const queryConfigFromUrl = omit(initialQueryConfig, ['passengerNumber'])
+  // const queryConfigFromUrl = omit(initialQueryConfig, ['passengerNumber'])
   const [bookingState, setBookingState] = useState<BookingState>({
     currentStep: 'departure',
     departureFlightDetails: null,
@@ -349,7 +349,7 @@ const BookingPage = () => {
       departureTime: queryConfigFromUrl.departureTime || '2025-12-10T10:00:00Z',
       tripType: queryConfigFromUrl.tripType || 'round-trip',
       returnTime: queryConfigFromUrl.returnTime || '2025-12-15T14:00:00Z',
-      // passengerNumber: queryConfigFromUrl.passengerNumber || '1',
+      passengerNumber: queryConfigFromUrl.passengerNumber || '1',
       ...queryConfigFromUrl
     }
   })
@@ -507,9 +507,8 @@ const BookingPage = () => {
   const handleProceedToCheckout = () => {
     console.log('Proceeding to checkout with:', bookingState)
     message.success('Proceeding to Checkout!')
-    dispatch(setBookingFlight(bookingState.departureFlightDetails as IFlightTable))
-    dispatch(setBookingFlight(bookingState.returnFlightDetails as IFlightTable))
-    navigate(`${bookingState.departureFlightDetails?.id}`)
+    dispatch(setBookingFlight(bookingState))
+    navigate('passenger')
   }
 
   const currentTitle =

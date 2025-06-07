@@ -158,7 +158,7 @@ const RoleManagement = () => {
               cardBordered
               headerTitle='Roles List'
               toolBarRender={() => [
-                <Access permission={ALL_PERMISSIONS['ROLES']['POST_ROLES']}>
+                <Access permission={ALL_PERMISSIONS['ROLES']['POST_ROLES']} hideChildren>
                   <Button
                     key='button'
                     icon={<PlusOutlined />}

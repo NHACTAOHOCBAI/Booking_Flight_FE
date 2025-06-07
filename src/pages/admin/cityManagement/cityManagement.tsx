@@ -174,7 +174,7 @@ const CityManagement = () => {
             cardBordered
             headerTitle='Citys List'
             toolBarRender={() => [
-              <Access permission={ALL_PERMISSIONS['CITIES']['POST_CITIES']}>
+              <Access permission={ALL_PERMISSIONS['CITIES']['POST_CITIES']} hideChildren>
                 {/* <Access permission={permissions}> */}
                 <Button
                   key='button'

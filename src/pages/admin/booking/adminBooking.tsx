@@ -1,22 +1,14 @@
+import { setBookingTicketsList } from '@/redux/features/bookingTicket/bookingTicketsList'
+import { useAppDispatch, useAppSelector } from '@/redux/hooks'
+import { message } from 'antd'
 import React, { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import FirstStep from './firstStep/firstStep'
 import SecondStep from './secondStep/secondStep'
 import ThirdStep from './thirdStep/thirdStep'
-import { useNavigate, useParams } from 'react-router-dom'
-import { useAppDispatch, useAppSelector } from '@/redux/hooks'
-import { setBookingFlight } from '@/redux/features/bookingFlight/bookingFlightSlice'
-import { setBookingTicketsList } from '@/redux/features/bookingTicket/bookingTicketsList'
-import { useGetFlightById } from '@/hooks/useFlight'
-import { message } from 'antd'
 
-interface AdminBookingProps {
-  passengerNumber?: number
-}
-
-const AdminBooking: React.FC<AdminBookingProps> = ({ passengerNumber = 1 }) => {
+const AdminBooking: React.FC = () => {
   const bookingTicketsList = useAppSelector((state) => state.bookingTicketsList)
-  const { flightId } = useParams()
-  const bookingFlight = useGetFlightById(flightId as string).data?.data
   const dispatch = useAppDispatch()
   const [current, setCurrent] = useState(0)
   const navigate = useNavigate()
@@ -24,8 +16,10 @@ const AdminBooking: React.FC<AdminBookingProps> = ({ passengerNumber = 1 }) => {
   const [showNotification, setShowNotification] = useState(false)
   const [nextDisabled, setNextDisabled] = useState(false)
 
+  const bookingFlight = useAppSelector((state) => state.bookingFlight)
+
   useEffect(() => {
-    dispatch(setBookingFlight(bookingFlight as IFlightTable))
+    // dispatch(setBookingFlight(bookingFlight as IFlightTable))
     dispatch(setBookingTicketsList([]))
   }, [bookingFlight, dispatch])
 
@@ -47,7 +41,7 @@ const AdminBooking: React.FC<AdminBookingProps> = ({ passengerNumber = 1 }) => {
   const steps = [
     {
       title: 'Ticket information',
-      content: <FirstStep passengerNumber={passengerNumber} openNotification={openNotification} />
+      content: <FirstStep openNotification={openNotification} />
     },
     {
       title: 'Review',
@@ -97,6 +91,7 @@ const AdminBooking: React.FC<AdminBookingProps> = ({ passengerNumber = 1 }) => {
                 openNotification()
                 return
               }
+              console.log(current)
               setCurrent(current + 1)
               setShowNotification(false)
             }}

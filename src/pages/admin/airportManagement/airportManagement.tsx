@@ -177,7 +177,7 @@ const AirportManagement = () => {
             cardBordered
             headerTitle='airports List'
             toolBarRender={() => [
-              <Access permission={ALL_PERMISSIONS['AIRPORTS']['POST_AIRPORTS']}>
+              <Access permission={ALL_PERMISSIONS['AIRPORTS']['POST_AIRPORTS']} hideChildren>
                 <Button
                   key='button'
                   icon={<PlusOutlined />}

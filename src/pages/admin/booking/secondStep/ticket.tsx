@@ -1,15 +1,18 @@
-import { useAirportGetById } from '@/hooks/useAirport'
 import { useGetSeatById } from '@/hooks/useSeat'
 import { useAppSelector } from '@/redux/hooks'
 import dayjs from 'dayjs'
 import { BsFillTicketPerforatedFill } from 'react-icons/bs'
 
-const Ticket = () => {
+interface Props {
+  FlightDetails: IFlightTable & { selectedSeat: ISeat }
+}
+
+const Ticket = ({ FlightDetails }: Props) => {
   const bookingTicketsList = useAppSelector((state) => state.bookingTicketsList)
   const bookingFlight = useAppSelector((state) => state.bookingFlight)
 
-  const departureCityName = useAirportGetById(bookingFlight.departureAirportId as string).data?.data.cityName
-  const arrivalCityName = useAirportGetById(bookingFlight.arrivalAirportId as string).data?.data.cityName
+  const departureCityName = bookingFlight.queryConfig['departureAirport.city.cityName']
+  const arrivalCityName = bookingFlight.queryConfig['arrivalAirport.city.cityName']
 
   const handleGetSeatId = (id: string) => {
     // eslint-disable-next-line react-hooks/rules-of-hooks
@@ -17,7 +20,7 @@ const Ticket = () => {
     return data?.data
   }
   console.log(bookingTicketsList)
-  if (!bookingFlight) return null
+  if (!FlightDetails) return null
 
   return (
     <div className='flex flex-col gap-2'>
@@ -51,17 +54,17 @@ const Ticket = () => {
                 </div>
               </div>
               <div className='flex gap-4'>
-                <div className='w-[33%] text-left'>
+                <div className='w-[40%] text-left'>
                   <div className='font-bold text-base mb-1'>Seat :</div>
                   <div className='text-base'>{handleGetSeatId(value.seatId as string)?.seatName}</div>
                 </div>
-                <div className='w-[33%] text-left'>
+                <div className='w-[30%] text-left'>
                   <div className='font-bold text-base mb-1'>Boarding Time :</div>
-                  <div className='text-base'>{dayjs(bookingFlight.departureTime).format('HH:mm DD/MM/YYYY')}</div>
+                  <div className='text-base'>{dayjs(FlightDetails.departureTime).format('HH:mm DD/MM/YYYY')}</div>
                 </div>
-                <div className='w-[33%] text-left'>
+                <div className='w-[30%] text-left'>
                   <div className='font-bold text-base mb-1'>Flight Code :</div>
-                  <div className='text-base'>{bookingFlight.flightCode}</div>
+                  <div className='text-base'>{FlightDetails.flightCode}</div>
                 </div>
               </div>
             </div>
@@ -70,7 +73,7 @@ const Ticket = () => {
             <div className='w-[2px] border-l-2 border-dashed border-[#0984e3]'></div>
 
             {/* Right Side */}
-            <div className='w-[30%] flex flex-col gap-2 m-4 text-sm'>
+            <div className='w-[30%] items-start flex flex-col gap-2 m-4 text-sm'>
               <div>
                 <span className='font-bold'>Passenger Name:</span> {value.passengerName}
               </div>
@@ -85,7 +88,7 @@ const Ticket = () => {
               </div>
               <div>
                 <span className='font-bold'>Boarding Time:</span>{' '}
-                {dayjs(bookingFlight.departureTime).format('HH:mm DD/MM/YYYY')}
+                {dayjs(FlightDetails.departureTime).format('HH:mm DD/MM/YYYY')}
               </div>
             </div>
           </div>
