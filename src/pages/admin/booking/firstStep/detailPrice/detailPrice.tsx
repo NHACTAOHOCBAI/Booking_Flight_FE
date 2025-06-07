@@ -62,7 +62,7 @@ const DetailPrice = () => {
   let totalAmount = 0
 
   detailPriceData.forEach((value) => {
-    totalAmount += value.price
+    totalAmount += value.price * Number(bookingFlight.queryConfig.passengerNumber)
   })
   return (
     <Card

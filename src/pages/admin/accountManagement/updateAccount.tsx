@@ -71,7 +71,7 @@ const UpdateAccount = (props: IProp) => {
       fullName: '',
       email: '',
       password: '',
-      role: { roleName: '', description: '', permissionId: [] }
+      role: { roleName: '', description: '', permissions: [] }
     })
     setIsUpdateOpen(false)
   }

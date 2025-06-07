@@ -26,7 +26,7 @@ const RoleManagement = () => {
     id: '',
     roleName: '',
     description: '',
-    permissionId: []
+    permissions: []
   })
 
   // delete

@@ -29,7 +29,7 @@ const AccountManagement = () => {
     role: {
       roleName: '',
       description: '',
-      permissionId: []
+      permissions: []
     },
     username: ''
   })
@@ -49,7 +49,7 @@ const AccountManagement = () => {
     role: {
       roleName: '',
       description: '',
-      permissionId: []
+      permissions: []
     }
   })
 

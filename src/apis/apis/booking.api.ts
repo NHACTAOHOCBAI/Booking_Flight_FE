@@ -1,30 +1,22 @@
 import http from '@/apis/http'
 import { SuccessResponse } from '@/globalType/util.type'
-import { AccountList } from '@/globalType/account.type'
-import { ListConfig } from '@/globalType/listConfig.type'
+
+import { CheckPaymentStatusRes, PaymentReq, PaymentRes } from '@/globalType/booking.type'
 
 const URLPAYMENT = 'api/payment'
 const URLBOOKING = 'api/booking-flight'
 
 const bookingApi = {
-  bookingFlight: async (params: string) => {
-    const res = await http.post<SuccessResponse<IAccountTable>>(URLBOOKING)
+  bookingFlight: async (params: IBookingTable) => {
+    const res = await http.post<SuccessResponse<string>>(URLBOOKING, params)
     return res.data
   },
-  getAccounts: async (params: ListConfig) => {
-    const res = await http.get<SuccessResponse<AccountList>>(URL, { params })
+  createPayment: async (params: PaymentReq) => {
+    const res = await http.post<SuccessResponse<PaymentRes>>(URLPAYMENT, params)
     return res.data
   },
-  createAccount: async (param: IAccountTable) => {
-    const res = await http.post<SuccessResponse<IAccountTable>>(URL, param)
-    return res.data
-  },
-  deleteAccount: async (id: string) => {
-    const res = await http.delete<SuccessResponse<string>>(`${URL}/${id}`)
-    return res.data
-  },
-  updateAccount: async (param: IAccountTable) => {
-    const res = await http.put<SuccessResponse<string>>(`${URL}/${param.id}`, param)
+  checkPaymentStatus: async (param: string) => {
+    const res = await http.get<SuccessResponse<CheckPaymentStatusRes>>(`${URLPAYMENT}/${param}`)
     return res.data
   }
 }

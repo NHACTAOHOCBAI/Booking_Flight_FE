@@ -41,7 +41,7 @@ const ModuleApi = (props: IProps) => {
           p[permId] = false
           console.log(permId)
           if (userModel) {
-            const hasPerm = userModel.permissionId.find((perm) => perm.name === permId)
+            const hasPerm = userModel.permissions.find((perm) => perm.name === permId)
             console.log(hasPerm)
             if (hasPerm) {
               p[permId] = true
@@ -73,7 +73,7 @@ const ModuleApi = (props: IProps) => {
   const handleSwitchAll = (value: boolean, model: string) => {
     const perms = listPermissions[model]
     if (!perms) return
-    const current = form.getFieldValue('permissionId') || {}
+    const current = form.getFieldValue('permissions') || {}
 
     const updates: Record<string, boolean> = {}
 
@@ -94,7 +94,7 @@ const ModuleApi = (props: IProps) => {
 
     console.log(current, value, updates)
     form.setFieldsValue({
-      permissionId: {
+      permissions: {
         ...current,
         [model]: value,
         ...updates
@@ -102,7 +102,7 @@ const ModuleApi = (props: IProps) => {
     })
   }
   const handleSingleCheck = (value: boolean, permId: string, model: string) => {
-    const currentPermissions = form.getFieldValue('permissionId') || {}
+    const currentPermissions = form.getFieldValue('permissions') || {}
 
     // Cập nhật hoặc xóa quyền con
     if (value) {
@@ -122,7 +122,7 @@ const ModuleApi = (props: IProps) => {
     }
 
     form.setFieldsValue({
-      permissionId: {
+      permissions: {
         ...currentPermissions
       }
     })
@@ -155,7 +155,7 @@ const ModuleApi = (props: IProps) => {
             <Card size='small' className='flex flex-row'>
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                 <ProFormSwitch
-                  name={['permissionId', perm.id]} // dùng perm.id làm key cho switch con
+                  name={['permissions', perm.id]} // dùng perm.id làm key cho switch con
                   valuePropName='checked'
                   fieldProps={{
                     onChange: (v) => handleSingleCheck(v, perm.id as string, model)

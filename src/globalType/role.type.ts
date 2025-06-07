@@ -7,7 +7,7 @@ declare global {
     id?: string
     roleName: string
     description: string
-    permissionId: string[] | IPermission[]
+    permissions: string[] | IPermission[]
   }
 }
 

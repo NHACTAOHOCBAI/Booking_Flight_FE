@@ -3,7 +3,7 @@ import { useAppDispatch, useAppSelector } from '@/redux/hooks'
 import { CloseOutlined } from '@ant-design/icons'
 import { Button, Checkbox, Form, Input } from 'antd'
 import { FormProps } from 'antd/lib'
-import { useEffect } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { BsFillTicketPerforatedFill } from 'react-icons/bs'
 import { FiPhone } from 'react-icons/fi'
 import { HiOutlineIdentification } from 'react-icons/hi'
@@ -61,24 +61,31 @@ const TicketInformation = ({ openNotification }: IProp) => {
     form.setFieldsValue({ tickets: data })
   }, [bookingTicketsList, form])
 
-  useEffect(() => {
-    const passengerNumber = Number(bookingFlight.queryConfig.passengerNumber)
-    const currentTickets = form.getFieldValue('tickets') || []
-    console.log(currentTickets)
-    console.log(passengerNumber)
-    // Nếu thiếu form so với passengerNumber thì thêm vào
-    if (passengerNumber > 0 && currentTickets.length < passengerNumber) {
-      const newTickets = [...currentTickets]
-      for (let i = currentTickets.length; i < passengerNumber; i++) {
-        // if (bookingFlight.returnFlightDetails)
-        //   newTickets.push({ seatId: bookingFlight.returnFlightDetails.selectedSeat.seatId, haveBaggage: false })
-        newTickets.push({ seatId: bookingFlight.departureFlightDetails?.selectedSeat.seatId, haveBaggage: false })
-      }
-      console.log(newTickets)
-      form.setFieldsValue({ tickets: newTickets })
-    }
-  }, [bookingFlight.departureFlightDetails?.selectedSeat.seatId, bookingFlight.queryConfig.passengerNumber, form])
+  const addRef = useRef<((defaultValue?: any) => void) | null>(null)
+  const [isAddReady, setIsAddReady] = useState(false)
 
+  const passengerNumber = Number(bookingFlight.queryConfig.passengerNumber)
+
+  useEffect(() => {
+    if (!addRef.current || !isAddReady) return
+
+    const currentTickets = form.getFieldValue('tickets') || []
+    const missing = passengerNumber - currentTickets.length
+
+    if (passengerNumber > 0 && missing > 0) {
+      for (let i = 0; i < missing; ++i) {
+        addRef.current({
+          seatId: bookingFlight.departureFlightDetails?.selectedSeat.seatId || '',
+          haveBaggage: false
+        })
+      }
+    }
+  }, [
+    passengerNumber,
+    bookingFlight.departureFlightDetails?.selectedSeat.seatId,
+    form,
+    isAddReady // đảm bảo chạy sau khi addRef đã gán
+  ])
   return (
     <Form
       form={form}
@@ -90,26 +97,29 @@ const TicketInformation = ({ openNotification }: IProp) => {
       className='w-full'
     >
       <Form.List name='tickets'>
-        {(fields, { add, remove }) => (
-          <div className='flex flex-col gap-4'>
-            {fields.map((field) => (
-              <div key={field.key} className='border rounded-lg p-4 shadow-sm bg-white relative'>
-                {!bookingFlight.departureFlightDetails && (
-                  <button
-                    type='button'
-                    className='absolute top-2 right-2 text-gray-400 hover:text-red-500'
-                    onClick={() => remove(field.name)}
-                  >
-                    <CloseOutlined />
-                  </button>
-                )}
+        {(fields, { add, remove }) => {
+          addRef.current = add
+          setIsAddReady(true)
+          return (
+            <div className='flex flex-col gap-4'>
+              {fields.map((field) => (
+                <div key={field.key} className='border rounded-lg p-4 shadow-sm bg-white relative'>
+                  {!bookingFlight.departureFlightDetails && (
+                    <button
+                      type='button'
+                      className='absolute top-2 right-2 text-gray-400 hover:text-red-500'
+                      onClick={() => remove(field.name)}
+                    >
+                      <CloseOutlined />
+                    </button>
+                  )}
 
-                <div className='text-lg font-semibold mb-4 flex items-center'>
-                  <BsFillTicketPerforatedFill className='w-5 h-5 mr-2' />
-                  {`Ticket ${field.name + 1}`}
-                </div>
+                  <div className='text-lg font-semibold mb-4 flex items-center'>
+                    <BsFillTicketPerforatedFill className='w-5 h-5 mr-2' />
+                    {`Ticket ${field.name + 1}`}
+                  </div>
 
-                {/* <Form.Item
+                  {/* <Form.Item
                   label={
                     <div className='flex items-center'>
                       <PiSeatBold className='w-5 h-5 mr-2' />
@@ -123,85 +133,86 @@ const TicketInformation = ({ openNotification }: IProp) => {
                   <Select showSearch placeholder='Select a seat' optionFilterProp='label' options={seatOptions} />
                 </Form.Item> */}
 
-                <Form.Item
-                  label={
-                    <div className='flex items-center'>
-                      <MdOutlineDriveFileRenameOutline className='w-5 h-5 mr-2' />
-                      Name
-                    </div>
-                  }
-                  name={[field.name, 'passengerName']}
-                  rules={[{ required: true, message: 'Please input passenger name!' }]}
-                  className='text-left'
-                >
-                  <Input placeholder='Enter passenger name' />
-                </Form.Item>
+                  <Form.Item
+                    label={
+                      <div className='flex items-center'>
+                        <MdOutlineDriveFileRenameOutline className='w-5 h-5 mr-2' />
+                        Name
+                      </div>
+                    }
+                    name={[field.name, 'passengerName']}
+                    rules={[{ required: true, message: 'Please input passenger name!' }]}
+                    className='text-left'
+                  >
+                    <Input placeholder='Enter passenger name' />
+                  </Form.Item>
 
-                <Form.Item
-                  label={
-                    <div className='flex items-center'>
-                      <FiPhone className='w-5 h-5 mr-2' />
-                      Phone
-                    </div>
-                  }
-                  name={[field.name, 'passengerPhone']}
-                  rules={[{ required: true, message: 'Please input passenger phone number!' }]}
-                  className='text-left'
-                >
-                  <Input placeholder='Enter phone number' />
-                </Form.Item>
+                  <Form.Item
+                    label={
+                      <div className='flex items-center'>
+                        <FiPhone className='w-5 h-5 mr-2' />
+                        Phone
+                      </div>
+                    }
+                    name={[field.name, 'passengerPhone']}
+                    rules={[{ required: true, message: 'Please input passenger phone number!' }]}
+                    className='text-left'
+                  >
+                    <Input placeholder='Enter phone number' />
+                  </Form.Item>
 
-                <Form.Item
-                  label={
-                    <div className='flex items-center'>
-                      <MdOutlineMail className='w-5 h-5 mr-2' />
-                      Email
-                    </div>
-                  }
-                  name={[field.name, 'passengerEmail']}
-                  rules={[
-                    { required: true, message: 'Please input passenger email!' },
-                    { type: 'email', message: 'Please enter a valid email!' }
-                  ]}
-                  className='text-left'
-                >
-                  <Input placeholder='Enter email address' />
-                </Form.Item>
+                  <Form.Item
+                    label={
+                      <div className='flex items-center'>
+                        <MdOutlineMail className='w-5 h-5 mr-2' />
+                        Email
+                      </div>
+                    }
+                    name={[field.name, 'passengerEmail']}
+                    rules={[
+                      { required: true, message: 'Please input passenger email!' },
+                      { type: 'email', message: 'Please enter a valid email!' }
+                    ]}
+                    className='text-left'
+                  >
+                    <Input placeholder='Enter email address' />
+                  </Form.Item>
 
-                <Form.Item
-                  label={
-                    <div className='flex items-center'>
-                      <HiOutlineIdentification className='w-5 h-5 mr-2' />
-                      Identity card
-                    </div>
-                  }
-                  name={[field.name, 'passengerIDCard']}
-                  rules={[{ required: true, message: 'Please input passenger ID card!' }]}
-                  className='text-left'
-                >
-                  <Input placeholder='Enter ID card number' />
-                </Form.Item>
+                  <Form.Item
+                    label={
+                      <div className='flex items-center'>
+                        <HiOutlineIdentification className='w-5 h-5 mr-2' />
+                        Identity card
+                      </div>
+                    }
+                    name={[field.name, 'passengerIDCard']}
+                    rules={[{ required: true, message: 'Please input passenger ID card!' }]}
+                    className='text-left'
+                  >
+                    <Input placeholder='Enter ID card number' />
+                  </Form.Item>
 
-                <Form.Item name={[field.name, 'haveBaggage']} valuePropName='checked' className='text-left'>
-                  <Checkbox>Does passenger have carry-on baggage?</Checkbox>
-                </Form.Item>
-              </div>
-            ))}
+                  <Form.Item name={[field.name, 'haveBaggage']} valuePropName='checked' className='text-left'>
+                    <Checkbox>Does passenger have carry-on baggage?</Checkbox>
+                  </Form.Item>
+                </div>
+              ))}
 
-            {/* Button actions */}
-            <div className=' gap-2'>
-              {Number(bookingFlight.queryConfig.passengerNumber) === 0 && (
-                <Button type='dashed' onClick={() => add()} className='w-full'>
-                  + New Ticket
+              {/* Button actions */}
+              <div className=' gap-2'>
+                {Number(bookingFlight.queryConfig.passengerNumber) === 0 && (
+                  <Button type='dashed' onClick={() => add()} className='w-full'>
+                    + New Ticket
+                  </Button>
+                )}
+
+                <Button onClick={() => form.submit()} className='mt-3 w-32 bg-blue-500 text-white hover:bg-blue-600'>
+                  Save
                 </Button>
-              )}
-
-              <Button onClick={() => form.submit()} className='mt-3 w-32 bg-blue-500 text-white hover:bg-blue-600'>
-                Save
-              </Button>
+              </div>
             </div>
-          </div>
-        )}
+          )
+        }}
       </Form.List>
     </Form>
   )

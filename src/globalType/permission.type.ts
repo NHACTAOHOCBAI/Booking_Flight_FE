@@ -8,7 +8,7 @@ export interface IPermission {
 
 export interface GroupPermission {
   model: string
-  permissionId: IPermission[]
+  permissions: IPermission[]
 }
 
 export interface PermissionList {

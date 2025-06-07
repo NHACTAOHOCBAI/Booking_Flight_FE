@@ -30,7 +30,7 @@ const PassengerCounter: React.FC<PassengerCounterProps> = ({
   max = 9
 }) => (
   <div className='flex items-center justify-between py-2'>
-    <Text className='text-gray-700 text-sm'>{label}</Text>
+    <Text className='text-gray-700 text-[1rem]'>{label}</Text>
     <Space>
       <Button
         onClick={onDecrement}
@@ -63,7 +63,7 @@ const SearchFlightComponent: React.FC = () => {
   const [returnDate, setReturnDate] = useState<Dayjs | null>(null)
 
   const [adults, setAdults] = useState<number>(1) // Only adults, default to 1
-  const [showPassengerSelector, setShowPassengerSelector] = useState<boolean>(false)
+  // const [showPassengerSelector, setShowPassengerSelector] = useState<boolean>(false)
 
   const handleExchange = (): void => {
     const temp = departureValue
@@ -207,40 +207,29 @@ const SearchFlightComponent: React.FC = () => {
         </div>
 
         <div className='relative'>
-          <Button
+          {/* <Button
             size='large'
             onClick={() => setShowPassengerSelector(!showPassengerSelector)}
             className='w-full flex items-center justify-between text-left h-auto py-2.5'
             icon={<UserOutlined className='text-red-500 text-lg' />}
           >
             <span className='text-gray-700'>
-              {adults} Adult{adults > 1 ? 's' : ''}
+              {adults} Person{adults > 1 ? 's' : ''}
             </span>
             {showPassengerSelector ? (
               <UpOutlined className='text-gray-500 text-base' />
             ) : (
               <DownOutlined className='text-gray-500 text-base' />
             )}
-          </Button>
-          {showPassengerSelector && (
-            <div className='absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-xl p-4 space-y-1'>
-              <PassengerCounter
-                label='Adults'
-                count={adults}
-                onIncrement={() => handleAdultsChange('increment')}
-                onDecrement={() => handleAdultsChange('decrement')}
-                min={1} // Minimum 1 adult
-                max={MAX_ADULTS} // Max adults
-              />
-              <Button
-                onClick={() => setShowPassengerSelector(false)}
-                type='primary'
-                className='mt-3 w-full !bg-red-500 hover:!bg-red-600 focus:!bg-red-600'
-              >
-                Done
-              </Button>
-            </div>
-          )}
+          </Button> */}
+          <PassengerCounter
+            label='Persons'
+            count={adults}
+            onIncrement={() => handleAdultsChange('increment')}
+            onDecrement={() => handleAdultsChange('decrement')}
+            min={1} // Minimum 1 adult
+            max={MAX_ADULTS} // Max adults
+          />
         </div>
 
         <div className='pt-2'>
