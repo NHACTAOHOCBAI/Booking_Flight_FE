@@ -15,8 +15,8 @@ const bookingApi = {
     const res = await http.post<SuccessResponse<PaymentRes>>(URLPAYMENT, params)
     return res.data
   },
-  checkPaymentStatus: async (param: string) => {
-    const res = await http.get<SuccessResponse<CheckPaymentStatusRes>>(`${URLPAYMENT}/${param}`)
+  checkPaymentStatus: async (id: string) => {
+    const res = await http.get<SuccessResponse<CheckPaymentStatusRes>>(`${URLPAYMENT}/${id}`)
     return res.data
   }
 }

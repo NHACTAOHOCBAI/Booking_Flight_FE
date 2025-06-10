@@ -10,10 +10,22 @@ interface IProp {
 }
 
 function getTimeDifference(arrivalTime: string, departureTime: string): string {
-  const arrival = Date.parse(arrivalTime)
-  const departure = Date.parse(departureTime)
+  const formatString = 'HH:mm DD/MM/YYYY'
 
-  const diffMs = departure - arrival
+  const arrival = dayjs(arrivalTime, formatString)
+  const departure = dayjs(departureTime, formatString)
+
+  if (!arrival.isValid() || !departure.isValid()) {
+    console.error("Lỗi: Định dạng thời gian không hợp lệ. Vui lòng sử dụng 'HH:mm DD/MM/YYYY'.")
+    return 'Invalid Date'
+  }
+
+  const diffMs = departure.diff(arrival, 'millisecond')
+
+  if (diffMs < 0) {
+    return '0h0m (Departure before Arrival)'
+  }
+
   const totalMinutes = Math.floor(diffMs / (1000 * 60))
   const hours = Math.floor(totalMinutes / 60)
   const minutes = totalMinutes % 60
@@ -39,7 +51,9 @@ const DesAirport = ({ airportId, startTime, arrivalTime }: IProp) => {
       {/* Time and airport row */}
       <div className='flex items-center'>
         <div className='w-1/2'>
-          <div className='text-sm font-medium text-gray-700'>{dayjs(arrivalTime).format('HH:mm DD/MM/YYYY')}</div>
+          <div className='text-sm font-medium text-gray-700'>
+            {dayjs(arrivalTime, 'HH:mm DD/MM/YYYY').format('HH:mm DD/MM/YYYY')}
+          </div>
         </div>
         <div className='w-[8.33%] flex justify-center'>
           <IoLocationOutline className='w-5 h-5 mt-1 text-gray-600' />

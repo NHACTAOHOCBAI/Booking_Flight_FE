@@ -75,7 +75,7 @@ const UserHeader = () => {
         <div className='container'>
           <div className='flex justify-between'>
             <Link to='/' className='h-14 w-64 flex items-center justify-center'>
-              <img src='/logo4.png' alt='Logo' className='h-48 w-auto' />
+              <img src='/logo4.png' alt='Logo' className='h-14 w-auto' />
             </Link>
 
             <div className='flex justify-end items-center'>

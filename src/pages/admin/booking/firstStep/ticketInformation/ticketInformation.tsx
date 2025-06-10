@@ -51,6 +51,9 @@ const TicketInformation = ({ openNotification }: IProp) => {
   }
 
   useEffect(() => {
+    const currentTickets = form.getFieldValue('tickets') || []
+    if (currentTickets.length > 0) return // tránh ghi đè dữ liệu
+
     const data = bookingTicketsList.map((value) => ({
       passengerName: value.passengerName,
       passengerPhone: value.passengerPhone,
@@ -61,11 +64,11 @@ const TicketInformation = ({ openNotification }: IProp) => {
     form.setFieldsValue({ tickets: data })
   }, [bookingTicketsList, form])
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const addRef = useRef<((defaultValue?: any) => void) | null>(null)
   const [isAddReady, setIsAddReady] = useState(false)
 
   const passengerNumber = Number(bookingFlight.queryConfig.passengerNumber)
-
   useEffect(() => {
     if (!addRef.current || !isAddReady) return
 
@@ -80,12 +83,23 @@ const TicketInformation = ({ openNotification }: IProp) => {
         })
       }
     }
-  }, [
-    passengerNumber,
-    bookingFlight.departureFlightDetails?.selectedSeat.seatId,
-    form,
-    isAddReady // đảm bảo chạy sau khi addRef đã gán
-  ])
+  }, [isAddReady])
+  useEffect(() => {
+    if (!addRef.current || !isAddReady) return
+    console.log(1111)
+    const currentTickets = form.getFieldValue('tickets') || []
+    const missing = passengerNumber - currentTickets.length
+
+    if (passengerNumber > 0 && missing > 0) {
+      for (let i = 0; i < missing; ++i) {
+        addRef.current({
+          seatId: bookingFlight.departureFlightDetails?.selectedSeat.seatId || '',
+          haveBaggage: false
+        })
+      }
+    }
+  }, [passengerNumber, bookingFlight.departureFlightDetails?.selectedSeat.seatId, form, isAddReady])
+  console.log(form.getFieldValue('tickets'))
   return (
     <Form
       form={form}
@@ -98,8 +112,11 @@ const TicketInformation = ({ openNotification }: IProp) => {
     >
       <Form.List name='tickets'>
         {(fields, { add, remove }) => {
-          addRef.current = add
-          setIsAddReady(true)
+          console.log('Form.List init')
+          if (!addRef.current) {
+            addRef.current = add
+            setIsAddReady(true)
+          }
           return (
             <div className='flex flex-col gap-4'>
               {fields.map((field) => (

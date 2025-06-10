@@ -12,7 +12,7 @@ import {
 } from '@ant-design/icons'
 import { useQuery } from '@tanstack/react-query'
 import { Button, Typography, message } from 'antd'
-import { omit } from 'lodash'
+
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
@@ -333,6 +333,7 @@ interface BookingState {
   departureFlightDetails: (IFlightTable & { selectedSeat: ISeat }) | null
   returnFlightDetails: (IFlightTable & { selectedSeat: ISeat }) | null
   queryConfig: QueryConfig
+  amountPayment: number
 }
 
 const BookingPage = () => {
@@ -351,7 +352,8 @@ const BookingPage = () => {
       returnTime: queryConfigFromUrl.returnTime || '2025-12-15T14:00:00Z',
       passengerNumber: queryConfigFromUrl.passengerNumber || '1',
       ...queryConfigFromUrl
-    }
+    },
+    amountPayment: 0
   })
 
   const [currentFlights, setCurrentFlights] = useState<IFlightTable[]>([])

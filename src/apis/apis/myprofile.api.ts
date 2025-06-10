@@ -1,6 +1,6 @@
 import http from '@/apis/http'
 import { ListConfig } from '@/globalType/listConfig.type'
-import { MyProfileTicketRes, MyProfileTicketResList, UPdatePassword } from '@/globalType/myProfile.type'
+import { MyProfileTicketResList, UPdatePassword } from '@/globalType/myProfile.type'
 import { SuccessResponse } from '@/globalType/util.type'
 
 const URL = 'api/my-profile'

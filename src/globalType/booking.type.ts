@@ -16,7 +16,6 @@ declare global {
 export interface PaymentReq {
   amount: number
   orderInfo: string
-  bankCode: string
 }
 
 export interface PaymentRes {

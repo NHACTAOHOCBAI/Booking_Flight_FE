@@ -1,12 +1,17 @@
-import { useAppSelector } from '@/redux/hooks'
+import { setAmountPayment } from '@/redux/features/bookingFlight/bookingFlightSlice'
+import { useAppDispatch, useAppSelector } from '@/redux/hooks'
 import { Card, Table } from 'antd'
 import { TableProps } from 'antd/lib'
+import { useEffect, useRef } from 'react'
+
 import { FaMoneyCheckAlt } from 'react-icons/fa'
 import { ImPriceTags } from 'react-icons/im'
 
 const DetailPrice = () => {
   const bookingTicketsList = useAppSelector((state) => state.bookingTicketsList)
   const bookingFlight = useAppSelector((state) => state.bookingFlight)
+  const dispatch = useAppDispatch()
+
   const detailPriceColumns: TableProps<ISeat>['columns'] = [
     {
       title: 'Seat Class',
@@ -26,14 +31,12 @@ const DetailPrice = () => {
       )
     }
   ]
-  // Bước 1: Nhóm số lượng vé theo `seatId`
+
   const seatCount: Record<string, number> = {}
   bookingTicketsList.forEach((ticket) => {
     seatCount[ticket.seatId as string] = (seatCount[ticket.seatId as string] || 0) + 1
   })
 
-  // Bước 2: Chuyển dữ liệu sang danh sách chi tiết giá
-  // const allSeat = useGetAllSeats({}).data
   const detailPriceData: ISeat[] = [
     {
       ...bookingFlight.departureFlightDetails!.selectedSeat,
@@ -64,6 +67,10 @@ const DetailPrice = () => {
   detailPriceData.forEach((value) => {
     totalAmount += value.price * Number(bookingFlight.queryConfig.passengerNumber)
   })
+
+  useEffect(() => {
+    dispatch(setAmountPayment(totalAmount))
+  }, [totalAmount])
   return (
     <Card
       title={

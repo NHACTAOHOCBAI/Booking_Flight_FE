@@ -1,11 +1,13 @@
+import { useBookingFlight, useCreatePayment } from '@/hooks/useBooking'
 import { setBookingTicketsList } from '@/redux/features/bookingTicket/bookingTicketsList'
 import { useAppDispatch, useAppSelector } from '@/redux/hooks'
 import { message } from 'antd'
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import FirstStep from './firstStep/firstStep'
 import SecondStep from './secondStep/secondStep'
 import ThirdStep from './thirdStep/thirdStep'
+import { AppContext } from '@/context/app.context'
 
 const AdminBooking: React.FC = () => {
   const bookingTicketsList = useAppSelector((state) => state.bookingTicketsList)
@@ -38,6 +40,38 @@ const AdminBooking: React.FC = () => {
     }
   }
 
+  const { profile } = useContext(AppContext)
+  const bookingFlightMutation = useBookingFlight()
+  const paymentMutation = useCreatePayment()
+  const handlePayment = () => {
+    const body = {
+      amount: bookingFlight.amountPayment,
+      orderInfo: 'Flight ticket checkout'
+    }
+    paymentMutation.mutate(body, {
+      onSuccess() {},
+      onError(error: Error) {
+        console.log(error)
+        message.error('Ticket booking error, please try again')
+      }
+    })
+  }
+
+  const handleBooking = (flightId: string, seatId: string) => {
+    const body = {
+      flightId: flightId,
+
+      seatId: seatId,
+      ...(profile ? { accountId: profile.id } : {}),
+      passengers: [...bookingTicketsList]
+    }
+    bookingFlightMutation.mutate(body, {
+      onError(error: Error) {
+        console.log(error)
+        message.error('Payment fails, please try again')
+      }
+    })
+  }
   const steps = [
     {
       title: 'Ticket information',
@@ -91,6 +125,8 @@ const AdminBooking: React.FC = () => {
                 openNotification()
                 return
               }
+              if (current === 2) handlePayment()
+
               console.log(current)
               setCurrent(current + 1)
               setShowNotification(false)

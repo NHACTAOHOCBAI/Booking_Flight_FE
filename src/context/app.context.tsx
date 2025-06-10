@@ -1,4 +1,4 @@
-import { AllPermissions, loadPermissions, usePermissions } from '@/hooks/usePermission'
+import { AllPermissions, loadPermissions } from '@/hooks/usePermission'
 import { getAccessTokenFromLS, getProfileFromLS } from '@/apis/auth.api'
 
 import { createContext, useEffect, useMemo, useState } from 'react'

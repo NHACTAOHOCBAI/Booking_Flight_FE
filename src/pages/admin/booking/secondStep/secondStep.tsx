@@ -3,6 +3,7 @@ import Ticket from './ticket'
 import { SendOutlined, RightOutlined, SwapOutlined } from '@ant-design/icons'
 const SecondStep = () => {
   const bookingFlight = useAppSelector((state) => state.bookingFlight)
+  console.log(bookingFlight)
   return (
     <div className='flex flex-col justify-center items-center p-6 bg-white rounded-lg shadow-inner'>
       <h2 className='text-2xl font-bold text-gray-800 mb-6'>Review Your Booking</h2>
