@@ -21,22 +21,22 @@ const UpdateRole = (props: IProp) => {
 
   const onFinish = async (value: any) => {
     const checkedPermissions = []
-    if (value.permissions) {
-      for (const key in value.permissions) {
-        if (value.permissions[key] === true) {
+    if (value.permissionIds) {
+      for (const key in value.permissionIds) {
+        if (value.permissionIds[key] === true) {
           checkedPermissions.push(key)
         }
       }
     }
-    console.log(value.permissions)
+    console.log(value.permissionIds)
     console.log(checkedPermissions)
     const body = {
       id: updatedRole.id,
       roleName: value.roleName,
-      permissions: checkedPermissions,
+      permissionId: checkedPermissions,
       description: value.description
     }
-    updateRoleMutation.mutate(body, {
+    updateRoleMutation.mutate(body as any, {
       onSuccess(data) {
         messageApi.open({
           type: 'success',

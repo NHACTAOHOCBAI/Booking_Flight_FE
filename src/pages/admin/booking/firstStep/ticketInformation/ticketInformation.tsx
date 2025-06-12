@@ -52,7 +52,7 @@ const TicketInformation = ({ openNotification }: IProp) => {
 
   useEffect(() => {
     const currentTickets = form.getFieldValue('tickets') || []
-    if (currentTickets.length > 0) return // tránh ghi đè dữ liệu
+    if (currentTickets.length > 0) return
 
     const data = bookingTicketsList.map((value) => ({
       passengerName: value.passengerName,

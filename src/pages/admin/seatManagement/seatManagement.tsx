@@ -1,17 +1,16 @@
+import seatApi from '@/apis/apis/seat.api'
+import Access from '@/components/access'
+import ErrorPage from '@/components/ErrorPage/ErrorPage'
+import { AppContext } from '@/context/app.context'
+import { useDeleteSeat } from '@/hooks/useSeat'
 import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons'
 import type { ActionType, ProColumns } from '@ant-design/pro-components'
 import { ProTable } from '@ant-design/pro-components'
 import { Button, message, Popconfirm } from 'antd'
 import { useContext, useRef, useState } from 'react'
+import DetailSeat from './detailSeat'
 import NewSeat from './newSeat'
 import UpdateSeat from './updateSeat'
-import DetailSeat from './detailSeat'
-import { useDeleteSeat } from '@/hooks/useSeat'
-import ErrorPage from '@/components/ErrorPage/ErrorPage'
-import LoadingError from '@/components/ErrorPage/LoadingError'
-import seatApi from '@/apis/apis/seat.api'
-import { AppContext } from '@/context/app.context'
-import Access from '@/components/access'
 
 const SeatManagement = () => {
   //detail
@@ -58,11 +57,7 @@ const SeatManagement = () => {
   }
   //Table
   const ALL_PERMISSIONS = useContext(AppContext).PERMISSIONS.permissions
-  const permissions = {
-    method: '',
-    apiPath: '',
-    model: ''
-  }
+
   const actionRef = useRef<ActionType>(null)
   const columns: ProColumns<ISeatTable>[] = [
     {
@@ -72,7 +67,7 @@ const SeatManagement = () => {
     },
     {
       title: 'Seat Code',
-      search: false,
+      dataIndex: 'seatCode',
       render: (_, record) => (
         <a
           style={{ color: '#3498db' }}
@@ -91,14 +86,17 @@ const SeatManagement = () => {
     },
     {
       title: 'Price',
+      search: false,
       render: (_, record) => <div>{record.price}% </div>
     },
     {
       title: 'Description',
+      search: false,
       dataIndex: 'description'
     },
     {
       title: 'Action',
+      search: false,
       render: (_, record) => (
         <div
           style={{
@@ -155,9 +153,22 @@ const SeatManagement = () => {
                 setError(null)
 
                 try {
+                  const filters: string[] = []
+
+                  if (params.seatCode) {
+                    filters.push(`seatCode:'${params.seatCode.trim()}'`)
+                  }
+
+                  if (params.seatName) {
+                    filters.push(`seatName~'${params.seatName.trim()}'`)
+                  }
+
+                  const filterString = filters.length > 0 ? filters.join(' and ') : undefined
+
                   const response = await seatApi.getSeats({
                     page: params.current,
-                    size: params.pageSize
+                    size: params.pageSize,
+                    filter: filterString
                   })
 
                   return {

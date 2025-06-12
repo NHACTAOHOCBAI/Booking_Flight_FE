@@ -1,9 +1,13 @@
 import { useAppSelector } from '@/redux/hooks'
+import { SendOutlined, SwapOutlined } from '@ant-design/icons'
 import Ticket from './ticket'
-import { SendOutlined, RightOutlined, SwapOutlined } from '@ant-design/icons'
-const SecondStep = () => {
+
+interface Props {
+  captureRef: React.RefObject<HTMLDivElement | null>
+}
+const SecondStep = ({ captureRef }: Props) => {
   const bookingFlight = useAppSelector((state) => state.bookingFlight)
-  console.log(bookingFlight)
+
   return (
     <div className='flex flex-col justify-center items-center p-6 bg-white rounded-lg shadow-inner'>
       <h2 className='text-2xl font-bold text-gray-800 mb-6'>Review Your Booking</h2>
@@ -13,17 +17,15 @@ const SecondStep = () => {
           <SendOutlined className='mr-2 text-blue-500' /> Departure Flight:{' '}
           {bookingFlight.departureFlightDetails!.flightCode}
         </h3>
-        <Ticket FlightDetails={bookingFlight.departureFlightDetails!} />
+        <Ticket captureRef={captureRef} FlightDetails={bookingFlight.departureFlightDetails!} />
       </div>
 
-      {/* Enhanced Divider for round trip */}
       {bookingFlight?.departureFlightDetails && bookingFlight?.returnFlightDetails && (
         <div className='flex items-center justify-center my-8 w-full max-w-md'></div>
       )}
-      {/* Fallback for one-way trip to ensure spacing */}
+
       {bookingFlight?.departureFlightDetails && !bookingFlight?.returnFlightDetails && <div className='my-8'></div>}
 
-      {/* Return Flight Details with contextual title and icon */}
       {bookingFlight?.returnFlightDetails && (
         <div className='mb-6'>
           {/* Added div to contain title/icon and Ticket */}
@@ -31,7 +33,7 @@ const SecondStep = () => {
             <SwapOutlined className='mr-2 text-blue-500' /> Return Flight:
             {bookingFlight.returnFlightDetails.flightCode}
           </h3>
-          <Ticket FlightDetails={bookingFlight.returnFlightDetails} />
+          <Ticket captureRef={captureRef} FlightDetails={bookingFlight.returnFlightDetails} />
         </div>
       )}
 

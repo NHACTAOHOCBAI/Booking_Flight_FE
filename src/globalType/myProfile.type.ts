@@ -18,6 +18,7 @@ export interface MyProfileTicketRes {
   passengerEmail: string
   haveBaggage: boolean
   flight: IFlight
+  seatNumber: number
 }
 
 export interface IFlight {
@@ -26,9 +27,10 @@ export interface IFlight {
   plane: IPlane
   departureAirport: IAirport
   arrivalAirport: IAirport
-  departureTime: string // Có thể đổi thành Date nếu bạn parse
+  departureTime: string
   arrivalTime: string
   originPrice: number
+  flightStatus: string
 }
 
 export interface IPlane {

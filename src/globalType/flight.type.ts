@@ -6,6 +6,7 @@ declare global {
     flightCode: string
     planeId?: string
     planeName?: string
+    flightStatus?: string
     departureAirportId?: string
     departureAirportName?: string
     arrivalAirportId?: string
@@ -30,6 +31,7 @@ declare global {
     seatName?: string
     price: number
     quantity: number
+    quantityAvailable: number
   }
 }
 
@@ -41,16 +43,4 @@ export interface FlightList {
     page_size: number
     total: number
   }
-}
-export interface FlightListConfig {
-  page?: number | string
-  size?: number | string
-  sort_by?: 'createdAt' | 'view' | 'sold' | 'price'
-  order?: 'asc' | 'desc'
-  exclude?: string
-  rating_filter?: number | string
-  price_max?: number | string
-  price_min?: number | string
-  name?: string
-  category?: string
 }

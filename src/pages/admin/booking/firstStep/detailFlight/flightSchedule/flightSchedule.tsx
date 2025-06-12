@@ -32,7 +32,7 @@ const FlightSchedule = () => {
                   <InterAirport
                     key={index}
                     departureTime={value.departureTime}
-                    airportId={value.airportName as string}
+                    airportId={value.airportId as string}
                     startTime={startTime}
                     arrivalTime={value.arrivalTime}
                     note={value.note}

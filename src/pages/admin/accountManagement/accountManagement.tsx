@@ -3,7 +3,7 @@ import type { ActionType, ProColumns } from '@ant-design/pro-components'
 import { ProTable } from '@ant-design/pro-components'
 import { Button, message, Popconfirm } from 'antd'
 
-import { useContext, useRef, useState } from 'react'
+import { useContext, useMemo, useRef, useState } from 'react'
 import NewAccount from './newAccount'
 import UpdateAccount from './updateAccount.tsx'
 import DetailAccount from './detailAccount.tsx'
@@ -13,6 +13,8 @@ import ErrorPage from '@/components/ErrorPage/ErrorPage.tsx'
 import accountApi from '@/apis/apis/account.api.ts'
 import Access from '@/components/access.tsx'
 import { AppContext } from '@/context/app.context.tsx'
+import { useGetAllRoles } from '@/hooks/useRole.ts'
+import type { ProSchemaValueEnumType } from '@ant-design/pro-components'
 
 const AccountManagement = () => {
   //table
@@ -73,7 +75,20 @@ const AccountManagement = () => {
       }
     })
   }
+  const roleData = useGetAllRoles({}).data?.data.result as IRoleTable[] | undefined
+  const roleEnum: Record<string, ProSchemaValueEnumType> = useMemo(() => {
+    if (!roleData) return {}
 
+    return roleData.reduce(
+      (acc, role) => {
+        acc[role.roleName] = {
+          text: role.roleName
+        }
+        return acc
+      },
+      {} as Record<string, ProSchemaValueEnumType>
+    )
+  }, [roleData])
   const { PERMISSIONS } = useContext(AppContext)
   const ALL_PERMISSIONS = PERMISSIONS.permissions
 
@@ -85,19 +100,25 @@ const AccountManagement = () => {
     },
     {
       title: 'Email',
-      dataIndex: 'email'
+      dataIndex: 'email',
+      valueType: 'text'
     },
     {
       title: 'Full name',
+      search: false,
       dataIndex: 'fullName'
     },
     // role hien thi
     {
       title: 'Phone',
+      search: false,
       dataIndex: 'phone'
     },
     {
       title: 'Role',
+      dataIndex: 'roleName', // must match the key in params
+      valueType: 'select',
+      valueEnum: roleEnum,
       render: (_, record) => {
         return <div>{record.role?.roleName}</div>
       }
@@ -145,6 +166,7 @@ const AccountManagement = () => {
   ]
 
   const [error, setError] = useState<unknown>(null)
+
   return (
     <>
       {contextHolder}
@@ -163,9 +185,22 @@ const AccountManagement = () => {
                 setError(null)
 
                 try {
+                  const filters: string[] = []
+
+                  if (params.email) {
+                    filters.push(`email~'${params.email.trim()}'`)
+                  }
+
+                  if (params.roleName) {
+                    filters.push(`role.roleName:'${params.roleName}'`)
+                  }
+
+                  const filterString = filters.length > 0 ? filters.join(' and ') : undefined
+
                   const response = await accountApi.getAccounts({
                     page: params.current,
-                    size: params.pageSize
+                    size: params.pageSize,
+                    filter: filterString
                   })
 
                   return {

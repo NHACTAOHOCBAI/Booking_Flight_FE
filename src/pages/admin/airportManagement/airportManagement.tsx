@@ -56,11 +56,7 @@ const AirportManagement = () => {
   })
   const [isDetailOpen, setIsDetailOpen] = useState(false)
   const ALL_PERMISSIONS = useContext(AppContext).PERMISSIONS.permissions
-  const permissions = {
-    method: '',
-    apiPath: '',
-    model: ''
-  }
+
   const columns: ProColumns<IAirportTable>[] = [
     {
       dataIndex: 'index',
@@ -69,6 +65,7 @@ const AirportManagement = () => {
     },
     {
       title: 'Code',
+      dataIndex: 'airportCode',
       render: (_, record) => (
         <a
           style={{ color: '#3498db' }}
@@ -87,6 +84,7 @@ const AirportManagement = () => {
     },
     {
       title: 'Airport',
+      search: false,
       dataIndex: 'cityName'
     },
     {
@@ -150,9 +148,22 @@ const AirportManagement = () => {
               setError(null)
 
               try {
+                const filters: string[] = []
+
+                if (params.airportCode) {
+                  filters.push(`airportCode:'${params.airportCode.trim()}'`)
+                }
+
+                if (params.airportName) {
+                  filters.push(`airportName~'${params.airportName.trim()}'`)
+                }
+
+                const filterString = filters.length > 0 ? filters.join(' and ') : undefined
+
                 const response = await airportApi.getAirports({
                   page: params.current,
-                  size: params.pageSize
+                  size: params.pageSize,
+                  filter: filterString
                 })
 
                 return {

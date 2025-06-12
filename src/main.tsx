@@ -35,6 +35,9 @@ import RejectedRoute from './components/RejectedRoute'
 import SuccessRegisterPage from './pages/auth/signUpPage/signUpSuccess'
 import MyProfile from './pages/client/myProfile/myProfile'
 import { PersistGate } from 'redux-persist/integration/react'
+import ThirdStep from './pages/admin/booking/thirdStep/thirdStep'
+import BookingFailed from './components/ErrorPage/BookingFailed'
+import LoginCallbackPage from './pages/auth/LoginCallbackPage '
 
 // function ProtectedRoute() {
 //   const { isAuthenticated } = useContext(AppContext)
@@ -66,6 +69,14 @@ const router = createBrowserRouter([
       {
         path: '/booking/passenger',
         element: <AdminBooking />
+      },
+      {
+        path: '/payment/success',
+        element: <ThirdStep />
+      },
+      {
+        path: '/payment/fail',
+        element: <BookingFailed />
       }
     ]
   },
@@ -170,6 +181,10 @@ const router = createBrowserRouter([
         element: <LoginPage />
       }
     ]
+  },
+  {
+    path: '/callback',
+    element: <LoginCallbackPage />
   },
   {
     path: '/signup',

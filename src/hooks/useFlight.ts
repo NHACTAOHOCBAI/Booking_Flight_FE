@@ -1,12 +1,24 @@
 import flightApi from '@/apis/apis/flight.api'
 import { ListConfig } from '@/globalType/listConfig.type'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useMemo } from 'react'
 
 export const useGetAllFlights = (queryConfig: ListConfig, enabled: boolean = true) => {
+  const stableQueryConfig = useMemo(() => JSON.stringify(queryConfig), [queryConfig])
+
   return useQuery({
-    queryKey: ['flights', queryConfig],
+    queryKey: ['flights', stableQueryConfig],
     queryFn: () => flightApi.getFlights(queryConfig),
-    enabled: enabled
+    enabled
+  })
+}
+export const useUpdateFlight = () => {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: flightApi.updateFlight,
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['flights'], exact: false })
+    }
   })
 }
 export const useGetFlightById = (id: string) => {
@@ -31,15 +43,6 @@ export const useCreateFlight = () => {
   })
 }
 
-export const useUpdateFlight = () => {
-  const queryClient = useQueryClient()
-  return useMutation({
-    mutationFn: flightApi.updateFlight,
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ['flights'] })
-    }
-  })
-}
 export const useDeleteFlight = () => {
   const queryClient = useQueryClient()
   return useMutation({

@@ -1,8 +1,9 @@
 import accountApi from '@/apis/apis/account.api'
-import { AccountListConfig } from '@/globalType/account.type'
+
+import { ListConfig } from '@/globalType/listConfig.type'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
-export const useGetAllAccounts = (queryConfig: AccountListConfig) => {
+export const useGetAllAccounts = (queryConfig: ListConfig) => {
   return useQuery({
     queryKey: ['accounts', queryConfig],
     queryFn: () => accountApi.getAccounts(queryConfig)

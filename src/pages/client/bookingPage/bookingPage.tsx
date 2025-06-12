@@ -2,6 +2,7 @@ import flightApi from '@/apis/apis/flight.api'
 import useQueryConfig, { QueryConfig } from '@/hooks/useQueryConfig'
 import { setBookingFlight } from '@/redux/features/bookingFlight/bookingFlightSlice'
 import { useAppDispatch } from '@/redux/hooks'
+import { getTimeDifference } from '@/utils/utils'
 import {
   ArrowLeftOutlined,
   ArrowRightOutlined,
@@ -17,178 +18,6 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 const { Text, Title } = Typography
-
-const mockFlightsData: IFlightTable[] = [
-  {
-    id: '1', // Example ID
-    flightCode: 'VJ123',
-    planeId: 'VJ-A321', // Placeholder
-    planeName: 'Airbus A321', // Placeholder
-    departureAirportId: 'SGN_APT', // Placeholder
-    departureAirportName: 'Tan Son Nhat Intl',
-    arrivalAirportId: 'HAN_APT', // Placeholder
-    arrivalAirportName: 'Noi Bai Intl',
-    departureTime: '08:00', // Changed to time for duration calc
-    arrivalTime: '10:00', // Changed to time for duration calc
-    originPrice: 1500000, // Using the lowest Seat as origin price for simplicity
-    listFlight_Airport: [], // Direct flight, no intermediate airports
-    listFlight_Seat: [
-      // Example seats
-      { seatId: 'S1A', seatName: '1A', price: 1500000, quantity: 10 },
-      { seatId: 'S2B', seatName: '2B', price: 2200000, quantity: 5 },
-      { seatId: 'S3C', seatName: '3C', price: 3500000, quantity: 2 }
-    ]
-  },
-  {
-    id: '2',
-    flightCode: 'VJ456',
-    planeId: 'VJ-A320',
-    planeName: 'Airbus A320',
-    departureAirportId: 'SGN_APT',
-    departureAirportName: 'Tan Son Nhat Intl',
-    arrivalAirportId: 'HAN_APT',
-    arrivalAirportName: 'Noi Bai Intl',
-    departureTime: '14:30',
-    arrivalTime: '16:35',
-    originPrice: 1650000,
-    listFlight_Airport: [],
-    listFlight_Seat: [
-      { seatId: 'S4D', seatName: '4D', price: 1650000, quantity: 8 },
-      { seatId: 'S5E', seatName: '5E', price: 2400000, quantity: 4 }
-    ]
-  },
-  {
-    id: '3',
-    flightCode: 'VJ789',
-    planeId: 'VJ-A321',
-    planeName: 'Airbus A321',
-    departureAirportId: 'DAD_APT',
-    departureAirportName: 'Da Nang Intl',
-    arrivalAirportId: 'SGN_APT',
-    arrivalAirportName: 'Tan Son Nhat Intl',
-    departureTime: '10:00',
-    arrivalTime: '11:20',
-    originPrice: 950000,
-    listFlight_Airport: [],
-    listFlight_Seat: [
-      { seatId: 'S6F', seatName: '6F', price: 950000, quantity: 12 },
-      { seatId: 'S7G', seatName: '7G', price: 1500000, quantity: 7 },
-      { seatId: 'S8H', seatName: '8H', price: 2800000, quantity: 3 }
-    ]
-  },
-  {
-    id: '4',
-    flightCode: 'VN101',
-    planeId: 'VN-B787',
-    planeName: 'Boeing 787',
-    departureAirportId: 'SGN_APT',
-    departureAirportName: 'Tan Son Nhat Intl',
-    arrivalAirportId: 'HUI_APT', // Assuming Hue airport code
-    arrivalAirportName: 'Phu Bai Intl',
-    departureTime: '06:30',
-    arrivalTime: '08:00',
-    originPrice: 1200000,
-    listFlight_Airport: [],
-    listFlight_Seat: [
-      { seatId: 'S9I', seatName: '9I', price: 1200000, quantity: 15 },
-      { seatId: 'S10J', seatName: '10J', price: 1900000, quantity: 6 },
-      { seatId: 'S11K', seatName: '11K', price: 3200000, quantity: 2 }
-    ]
-  },
-  {
-    id: '5',
-    flightCode: 'QH303',
-    planeId: 'QH-E190',
-    planeName: 'Embraer 190',
-    departureAirportId: 'HAN_APT',
-    departureAirportName: 'Noi Bai Intl',
-    arrivalAirportId: 'CXR_APT',
-    arrivalAirportName: 'Cam Ranh Intl',
-    departureTime: '09:15',
-    arrivalTime: '11:15',
-    originPrice: 1350000,
-    listFlight_Airport: [],
-    listFlight_Seat: [
-      { seatId: 'S12L', seatName: '12L', price: 1350000, quantity: 10 },
-      { seatId: 'S13M', seatName: '13M', price: 1850000, quantity: 5 }
-    ]
-  },
-  {
-    id: '6',
-    flightCode: 'BL202',
-    planeId: 'BL-A320',
-    planeName: 'Airbus A320',
-    departureAirportId: 'SGN_APT',
-    departureAirportName: 'Tan Son Nhat Intl',
-    arrivalAirportId: 'PQC_APT',
-    arrivalAirportName: 'Phu Quoc Intl',
-    departureTime: '17:00',
-    arrivalTime: '18:00',
-    originPrice: 700000,
-    listFlight_Airport: [],
-    listFlight_Seat: [
-      { seatId: 'S14N', seatName: '14N', price: 700000, quantity: 20 },
-      { seatId: 'S15O', seatName: '15O', price: 1200000, quantity: 8 }
-    ]
-  },
-  {
-    id: '7',
-    flightCode: 'VJ999',
-    planeId: 'VJ-A321',
-    planeName: 'Airbus A321',
-    departureAirportId: 'HAN_APT',
-    departureAirportName: 'Noi Bai Intl',
-    arrivalAirportId: 'SGN_APT',
-    arrivalAirportName: 'Tan Son Nhat Intl',
-    departureTime: '21:00',
-    arrivalTime: '23:10',
-    originPrice: 1400000,
-    listFlight_Airport: [],
-    listFlight_Seat: [
-      { seatId: 'S16P', seatName: '16P', price: 1400000, quantity: 10 },
-      { seatId: 'S17Q', seatName: '17Q', price: 3300000, quantity: 4 }
-    ]
-  }
-]
-
-const mockReturnFlightsData: IFlightTable[] = [
-  {
-    id: 'R1', // Example ID for return flight
-    flightCode: 'VN789',
-    planeId: 'VN-A321',
-    planeName: 'Airbus A321',
-    departureAirportId: 'HAN_APT',
-    departureAirportName: 'Noi Bai Intl',
-    arrivalAirportId: 'SGN_APT',
-    arrivalAirportName: 'Tan Son Nhat Intl',
-    departureTime: '13:00',
-    arrivalTime: '15:15',
-    originPrice: 1800000,
-    listFlight_Airport: [],
-    listFlight_Seat: [
-      { seatId: 'RS1A', seatName: 'R1A', price: 1800000, quantity: 8 },
-      { seatId: 'RS2B', seatName: 'R2B', price: 2500000, quantity: 3 }
-    ]
-  },
-  {
-    id: 'R2',
-    flightCode: 'QH123',
-    planeId: 'QH-B737',
-    planeName: 'Boeing 737',
-    departureAirportId: 'HAN_APT',
-    departureAirportName: 'Noi Bai Intl',
-    arrivalAirportId: 'SGN_APT',
-    arrivalAirportName: 'Tan Son Nhat Intl',
-    departureTime: '18:00',
-    arrivalTime: '20:05',
-    originPrice: 1700000,
-    listFlight_Airport: [],
-    listFlight_Seat: [
-      { seatId: 'RS3C', seatName: 'R3C', price: 1700000, quantity: 10 },
-      { seatId: 'RS4D', seatName: 'R4D', price: 2300000, quantity: 5 }
-    ]
-  }
-]
 
 interface FlightCardProps {
   flight: IFlightTable
@@ -211,21 +40,7 @@ const FlightCard: React.FC<FlightCardProps> = ({ flight, onSelectSeat, isSelecte
     }
   }, [isSelected])
 
-  const calculateDuration = (depTime: string, arrTime: string): string => {
-    const dep = new Date(`2000/01/01 ${depTime}`) // Use a dummy date
-    const arr = new Date(`2000/01/01 ${arrTime}`)
-
-    if (arr.getTime() < dep.getTime()) {
-      arr.setDate(arr.getDate() + 1) // Add a day
-    }
-
-    const diffMs = arr.getTime() - dep.getTime()
-    const diffHrs = Math.floor(diffMs / (1000 * 60 * 60))
-    const diffMins = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60))
-    return `${diffHrs}h ${diffMins}m`
-  }
-
-  const duration = calculateDuration(flight.departureTime, flight.arrivalTime)
+  const duration = getTimeDifference(flight.departureTime, flight.arrivalTime)
 
   return (
     <div
@@ -249,7 +64,7 @@ const FlightCard: React.FC<FlightCardProps> = ({ flight, onSelectSeat, isSelecte
             </div>
           </div>
           <Text type='secondary' className='!text-sm'>
-            Duration: 2h
+            Duration: {duration}
           </Text>
         </div>
       </div>
@@ -309,7 +124,7 @@ const FlightCard: React.FC<FlightCardProps> = ({ flight, onSelectSeat, isSelecte
                 level={3}
                 className={`!text-xl !font-bold !mb-2 ${selectedSeatDetails?.seatId === seat.seatId ? '!text-red-600' : '!text-gray-900'}`}
               >
-                {seat.price.toLocaleString('vi-VN')} VND
+                {(seat.price * flight.originPrice).toLocaleString('vi-VN')} VND
               </Title>
               <ul className='text-xs text-gray-600 space-y-1'>
                 <li className='flex items-start'>
@@ -317,7 +132,7 @@ const FlightCard: React.FC<FlightCardProps> = ({ flight, onSelectSeat, isSelecte
                     style={{ fontSize: '14px' }}
                     className='mr-1.5 mt-0.5 text-green-500 flex-shrink-0'
                   />
-                  Available Quantity: {seat.quantity}
+                  Available Quantity: {seat.quantityAvailable}
                 </li>
               </ul>
             </span>
@@ -327,7 +142,6 @@ const FlightCard: React.FC<FlightCardProps> = ({ flight, onSelectSeat, isSelecte
     </div>
   )
 }
-
 interface BookingState {
   currentStep: 'departure' | 'return' | 'checkout'
   departureFlightDetails: (IFlightTable & { selectedSeat: ISeat }) | null

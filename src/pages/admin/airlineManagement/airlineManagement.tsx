@@ -1,16 +1,16 @@
-import { ProTable } from '@ant-design/pro-components'
-import type { ActionType, ProColumns } from '@ant-design/pro-components'
-import { Button, message, Popconfirm } from 'antd'
-import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons'
-import { useContext, useRef, useState } from 'react'
-import UpdatedAirline from './updateAirline'
-import NewAirline from './newAirline'
-import DetailAirline from './detailAirline'
-import { useDeleteAirline } from '@/hooks/useAirline'
-import ErrorPage from '@/components/ErrorPage/ErrorPage'
 import airlineApi from '@/apis/apis/airline.api'
 import Access from '@/components/access'
+import ErrorPage from '@/components/ErrorPage/ErrorPage'
 import { AppContext } from '@/context/app.context'
+import { useDeleteAirline } from '@/hooks/useAirline'
+import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons'
+import type { ActionType, ProColumns } from '@ant-design/pro-components'
+import { ProTable } from '@ant-design/pro-components'
+import { Button, message, Popconfirm } from 'antd'
+import { useContext, useRef, useState } from 'react'
+import DetailAirline from './detailAirline'
+import NewAirline from './newAirline'
+import UpdatedAirline from './updateAirline'
 
 const AirlineManagement = () => {
   //data
@@ -55,11 +55,7 @@ const AirlineManagement = () => {
     })
   }
   const ALL_PERMISSIONS = useContext(AppContext).PERMISSIONS.permissions
-  const permissions = {
-    method: '',
-    apiPath: '',
-    model: ''
-  }
+
   const columns: ProColumns<IAirlineTable>[] = [
     {
       dataIndex: 'index',
@@ -68,7 +64,7 @@ const AirlineManagement = () => {
     },
     {
       title: 'Airline Code',
-      search: false,
+      dataIndex: 'airlineCode',
       render: (_, record) => (
         <a
           style={{ color: '#3498db' }}
@@ -146,9 +142,22 @@ const AirlineManagement = () => {
               setError(null)
 
               try {
+                const filters: string[] = []
+
+                if (params.airlineCode) {
+                  filters.push(`airlineCode:'${params.airlineCode.trim()}'`)
+                }
+
+                if (params.airlineName) {
+                  filters.push(`airlineName~'${params.airlineName.trim()}'`)
+                }
+
+                const filterString = filters.length > 0 ? filters.join(' and ') : undefined
+
                 const response = await airlineApi.getAirlines({
                   page: params.current,
-                  size: params.pageSize
+                  size: params.pageSize,
+                  filter: filterString
                 })
 
                 return {

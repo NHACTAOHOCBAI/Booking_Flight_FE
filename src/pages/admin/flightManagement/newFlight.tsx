@@ -3,13 +3,13 @@ import planeApi from '@/apis/apis/plane.api'
 import seatApi from '@/apis/apis/seat.api'
 import { onErrorUtil } from '@/globalType/util.type'
 import { useCreateFlight } from '@/hooks/useFlight'
-import { useCreateTicket } from '@/hooks/useTicket'
+
 import { CloseOutlined } from '@ant-design/icons'
 import { useQuery } from '@tanstack/react-query'
 import { Button, Col, DatePicker, Form, FormProps, Input, InputNumber, message, Modal, Row, Select, Space } from 'antd'
 import TextArea from 'antd/es/input/TextArea'
-import dayjs from 'dayjs'
-import { useMemo } from 'react'
+import dayjs, { Dayjs } from 'dayjs'
+import { useMemo, useState } from 'react'
 import { AiOutlineDollarCircle } from 'react-icons/ai'
 import { LuScanBarcode } from 'react-icons/lu'
 import { PiAirplaneInFlight } from 'react-icons/pi'
@@ -22,6 +22,10 @@ interface IProp {
 const NewFlight = (props: IProp) => {
   const { isNewOpen, setIsNewOpen } = props
   const [form] = Form.useForm()
+  const [departureDate, setDepartureDate] = useState<Dayjs | null>(null)
+  const [returnDate, setReturnDate] = useState<Dayjs | null>(null)
+  const [departureInterDate, setDepartureInterDate] = useState<Dayjs | null>(null)
+  const [returnInterDate, setReturnInterDate] = useState<Dayjs | null>(null)
 
   const [messageApi, contextHolder] = message.useMessage()
   const newFlightMutation = useCreateFlight()
@@ -249,11 +253,14 @@ const NewFlight = (props: IProp) => {
                     ]}
                   >
                     <DatePicker
-                      format={{
-                        format: 'HH:mm DD/MM/YYYY'
-                      }}
-                      placeholder='Select departure time'
-                      showTime
+                      size='large'
+                      placeholder='Departure Date'
+                      className='w-full'
+                      format='DD MMM, YYYY, HH:mm'
+                      value={departureDate}
+                      onChange={(dateVal: Dayjs | null) => setDepartureDate(dateVal)}
+                      disabledDate={(current) => current && current < dayjs().startOf('day')}
+                      showTime={{ format: 'HH:mm' }}
                     />
                   </Form.Item>
                 </Col>
@@ -274,11 +281,41 @@ const NewFlight = (props: IProp) => {
                     ]}
                   >
                     <DatePicker
-                      format={{
-                        format: 'HH:mm DD/MM/YYYY'
+                      size='large'
+                      placeholder='Arrival Date'
+                      className='w-full'
+                      format='DD MMM, YYYY, HH:mm'
+                      showTime={{ format: 'HH:mm' }}
+                      value={returnDate}
+                      onChange={(dateVal: Dayjs | null) => setReturnDate(dateVal)}
+                      disabledDate={(current) => {
+                        const isBeforeDeparture = departureDate ? current.isBefore(departureDate, 'day') : false
+
+                        return isBeforeDeparture
                       }}
-                      placeholder='Select arrival time'
-                      showTime
+                      disabledTime={(current) => {
+                        if (!departureDate || !current) return {}
+
+                        const isSameDay = current.isSame(departureDate, 'day')
+
+                        if (!isSameDay) return {}
+
+                        const depHour = departureDate.hour()
+                        const depMinute = departureDate.minute()
+
+                        return {
+                          disabledHours: () =>
+                            Array.from({ length: 24 }, (_, i) => (i < depHour ? i : -1)).filter((i) => i !== -1),
+                          disabledMinutes: (selectedHour) => {
+                            if (selectedHour === depHour) {
+                              return Array.from({ length: 60 }, (_, i) => (i < depMinute ? i : -1)).filter(
+                                (i) => i !== -1
+                              )
+                            }
+                            return []
+                          }
+                        }
+                      }}
                     />
                   </Form.Item>
                 </Col>
@@ -316,18 +353,63 @@ const NewFlight = (props: IProp) => {
                                   rules={[
                                     {
                                       required: true,
-                                      message: 'Please input arrival time'
+                                      message: 'Please input departure time'
                                     }
                                   ]}
-                                  noStyle
-                                  name={[subField.name, 'arrivalTime']}
+                                  name={[subField.name, 'departureTime']}
                                 >
                                   <DatePicker
-                                    format={{
-                                      format: 'HH:mm DD/MM/YYYY'
+                                    size='large'
+                                    placeholder='Departure Date'
+                                    className='w-full'
+                                    format='DD MMM, YYYY, HH:mm'
+                                    showTime={{ format: 'HH:mm' }}
+                                    onChange={(dateVal: Dayjs | null) => setDepartureInterDate(dateVal)}
+                                    disabledDate={(current) => {
+                                      const isAfterReturnDate = current && current > dayjs(returnDate).startOf('day')
+                                      const isBeforeDeparture = current && current < dayjs(departureDate).startOf('day')
+                                      return isAfterReturnDate || isBeforeDeparture
                                     }}
-                                    placeholder='Select arrival time'
-                                    showTime
+                                    disabledTime={(current) => {
+                                      if (!departureDate || !current || !returnDate) return {}
+
+                                      const isSameDayAsDeparture = current.isSame(departureDate, 'day')
+                                      const isSameDayAsReturn = current.isSame(returnDate, 'day')
+
+                                      const depHour = departureDate.hour()
+                                      const depMinute = departureDate.minute()
+                                      const returnHour = returnDate.hour()
+                                      const returnMinute = returnDate.minute()
+
+                                      return {
+                                        disabledHours: () => {
+                                          const disabled: number[] = []
+
+                                          if (isSameDayAsDeparture) {
+                                            for (let i = 0; i < depHour; i++) disabled.push(i)
+                                          }
+
+                                          if (isSameDayAsReturn) {
+                                            for (let i = returnHour + 1; i < 24; i++) disabled.push(i)
+                                          }
+
+                                          return disabled
+                                        },
+                                        disabledMinutes: (selectedHour) => {
+                                          const disabled: number[] = []
+
+                                          if (isSameDayAsDeparture && selectedHour === depHour) {
+                                            for (let i = 0; i < depMinute; i++) disabled.push(i)
+                                          }
+
+                                          if (isSameDayAsReturn && selectedHour === returnHour) {
+                                            for (let i = returnMinute + 1; i < 60; i++) disabled.push(i)
+                                          }
+
+                                          return disabled
+                                        }
+                                      }
+                                    }}
                                   />
                                 </Form.Item>
                               </Col>
@@ -336,18 +418,66 @@ const NewFlight = (props: IProp) => {
                                   rules={[
                                     {
                                       required: true,
-                                      message: 'Please input departure time'
+                                      message: 'Please input arrival time'
                                     }
                                   ]}
                                   noStyle
-                                  name={[subField.name, 'departureTime']}
+                                  name={[subField.name, 'arrivalTime']}
                                 >
                                   <DatePicker
-                                    format={{
-                                      format: 'HH:mm DD/MM/YYYY'
+                                    size='large'
+                                    placeholder='Arrival Date'
+                                    className='w-full'
+                                    format='DD MMM, YYYY, HH:mm'
+                                    showTime={{ format: 'HH:mm' }}
+                                    value={returnInterDate}
+                                    onChange={(dateVal: Dayjs | null) => setReturnInterDate(dateVal)}
+                                    disabledDate={(current) => {
+                                      const isAfterReturnDate = current && current > dayjs(returnDate).startOf('day')
+                                      const isBeforeDeparture =
+                                        current && current < dayjs(departureInterDate).startOf('day')
+                                      return isAfterReturnDate || isBeforeDeparture
                                     }}
-                                    placeholder='Select departure time'
-                                    showTime
+                                    disabledTime={(current) => {
+                                      if (!departureInterDate || !current || !returnDate) return {}
+
+                                      const isSameDayAsDeparture = current.isSame(departureInterDate, 'day')
+                                      const isSameDayAsReturn = current.isSame(returnDate, 'day')
+
+                                      const depHour = departureInterDate.hour()
+                                      const depMinute = departureInterDate.minute()
+                                      const returnHour = returnDate.hour()
+                                      const returnMinute = returnDate.minute()
+
+                                      return {
+                                        disabledHours: () => {
+                                          const disabled: number[] = []
+
+                                          if (isSameDayAsDeparture) {
+                                            for (let i = 0; i < depHour; i++) disabled.push(i)
+                                          }
+
+                                          if (isSameDayAsReturn) {
+                                            for (let i = returnHour + 1; i < 24; i++) disabled.push(i)
+                                          }
+
+                                          return disabled
+                                        },
+                                        disabledMinutes: (selectedHour) => {
+                                          const disabled: number[] = []
+
+                                          if (isSameDayAsDeparture && selectedHour === depHour) {
+                                            for (let i = 0; i < depMinute; i++) disabled.push(i)
+                                          }
+
+                                          if (isSameDayAsReturn && selectedHour === returnHour) {
+                                            for (let i = returnMinute + 1; i < 60; i++) disabled.push(i)
+                                          }
+
+                                          return disabled
+                                        }
+                                      }
+                                    }}
                                   />
                                 </Form.Item>
                               </Col>
@@ -388,67 +518,70 @@ const NewFlight = (props: IProp) => {
               >
                 Manage Tickets
               </div>
-              <Form.Item<IFlightTable> label=' '>
-                <Form.List name='listFlight_Seat'>
-                  {(subFields, subOpt) => (
-                    <div style={{ display: 'flex', flexDirection: 'column', rowGap: 16 }}>
-                      {subFields.map((subField) => (
-                        <Space key={subField.key}>
-                          <Row gutter={20}>
-                            <Col span={12}>
-                              <Form.Item
-                                rules={[
-                                  {
-                                    required: true,
-                                    message: 'Please input seat class'
-                                  }
-                                ]}
-                                noStyle
-                                name={[subField.name, 'seatId']}
-                              >
-                                <Select
-                                  style={{ width: '100%' }}
-                                  showSearch
-                                  placeholder='Seat class'
-                                  optionFilterProp='label'
-                                  options={seatOptions}
-                                />
-                              </Form.Item>
-                            </Col>
-                            <Col span={12}>
-                              <Form.Item
-                                rules={[
-                                  {
-                                    required: true,
-                                    message: 'Please input quantity'
-                                  }
-                                ]}
-                                noStyle
-                                name={[subField.name, 'quantity']}
-                              >
-                                <InputNumber
-                                  addonAfter='Tickets'
-                                  min={0}
-                                  style={{ width: '100%' }}
-                                  placeholder='Quantity'
-                                />
-                              </Form.Item>
-                            </Col>
-                          </Row>
-                          <CloseOutlined
-                            onClick={() => {
-                              subOpt.remove(subField.name)
-                            }}
-                          />
+
+              <Form.Item label='Seat Class' required>
+                <Form.List
+                  name='listFlight_Seat'
+                  rules={[
+                    {
+                      validator: async (_, value) => {
+                        if (!value || value.length === 0) {
+                          return Promise.reject(new Error('Please input at least one seat class'))
+                        }
+
+                        const seenSeatIds = new Set()
+                        for (const item of value) {
+                          if (!item || !item.seatId) {
+                            return
+                          }
+                          if (seenSeatIds.has(item.seatId)) {
+                            return Promise.reject(new Error('Seat class must be unique'))
+                          }
+                          seenSeatIds.add(item.seatId)
+                        }
+
+                        return Promise.resolve()
+                      }
+                    }
+                  ]}
+                >
+                  {(fields, { add, remove }, { errors }) => (
+                    <>
+                      {fields.map((field) => (
+                        <Space key={field.key} align='baseline' style={{ display: 'flex', marginBottom: 8 }}>
+                          <Form.Item
+                            name={[field.name, 'seatId']}
+                            rules={[{ required: true, message: 'Please select seat class' }]}
+                          >
+                            <Select
+                              placeholder='Seat class'
+                              options={seatOptions?.map((s) => ({
+                                label: s.label,
+                                value: s.value
+                              }))}
+                              style={{ width: 200 }}
+                            />
+                          </Form.Item>
+                          <Form.Item
+                            name={[field.name, 'quantity']}
+                            rules={[{ required: true, message: 'Please input quantity' }]}
+                          >
+                            <InputNumber min={1} placeholder='Quantity' />
+                          </Form.Item>
+                          <CloseOutlined onClick={() => remove(field.name)} />
                         </Space>
                       ))}
-                      <Button type='dashed' onClick={() => subOpt.add()} block>
-                        + Add Sub Item
+
+                      <Button type='dashed' onClick={() => add()} block>
+                        + Add Seat Class
                       </Button>
-                    </div>
+
+                      <Form.ErrorList errors={errors} />
+                    </>
                   )}
                 </Form.List>
               </Form.Item>
+
               <Form.Item<IFlightTable>
                 label={
                   <div>

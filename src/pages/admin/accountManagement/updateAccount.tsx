@@ -36,11 +36,12 @@ const UpdateAccount = (props: IProp) => {
       id: updatedAccount.id,
       email: value.email,
       fullName: value.fullName,
-      password: value.password,
+      password: updatedAccount.password || '123',
       username: value.username,
       roleId: value.role,
       phone: value.phone
     }
+    console.log(body)
     updateAccountMutation.mutate(body, {
       onSuccess(data) {
         messageApi.open({
@@ -70,7 +71,6 @@ const UpdateAccount = (props: IProp) => {
       phone: '',
       fullName: '',
       email: '',
-      password: '',
       role: { roleName: '', description: '', permissions: [] }
     })
     setIsUpdateOpen(false)
@@ -79,7 +79,7 @@ const UpdateAccount = (props: IProp) => {
     form.setFieldsValue({
       id: updatedAccount.id,
       username: updatedAccount.username,
-      password: updatedAccount.password,
+
       email: updatedAccount.email,
       phone: updatedAccount.phone,
       fullName: updatedAccount.fullName,
@@ -102,117 +102,76 @@ const UpdateAccount = (props: IProp) => {
   return (
     <>
       {contextHolder}
-      <Modal width={1050} title='Update Account' open={isUpdateOpen} onOk={handleOk} onCancel={handleCancel}>
+      <Modal title='Update Account' open={isUpdateOpen} onOk={handleOk} onCancel={handleCancel}>
         <Form layout='vertical' name='basic' onFinish={onFinish} autoComplete='off' form={form}>
-          <Row gutter={10}>
-            <Col span={12}>
-              <div
-                style={{
-                  fontSize: 20,
-                  fontWeight: 'bold',
-                  color: '#95a5a6'
-                }}
-              >
-                Account information
-              </div>
+          <div
+            style={{
+              fontSize: 20,
+              fontWeight: 'bold',
+              color: '#95a5a6'
+            }}
+          >
+            Account information
+          </div>
 
-              <Form.Item<IAccountTable>
-                label={
-                  <div>
-                    <TfiEmail /> Email
-                  </div>
-                }
-                name='email'
-                rules={[
-                  {
-                    required: true,
-                    message: 'Please input email'
-                  }
-                ]}
-              >
-                <Input />
-              </Form.Item>
-
-              <Form.Item<IAccountTable>
-                label={
-                  <div>
-                    <RiLockPasswordLine /> Password
-                  </div>
-                }
-                name='password'
-              >
-                <Input />
-              </Form.Item>
-            </Col>
-            <Col span={1}>
-              <div style={{ marginLeft: 18, backgroundColor: '#c8d6e5', height: '100%', width: 1.5 }}></div>
-            </Col>
-            <Col span={11}>
-              <div
-                style={{
-                  fontSize: 20,
-                  fontWeight: 'bold',
-                  color: '#95a5a6'
-                }}
-              >
-                Personal information
+          <Form.Item<IAccountTable>
+            label={
+              <div>
+                <TfiEmail /> Email
               </div>
-              <Col span={24}>
-                <Form.Item<IAccountTable>
-                  label={
-                    <div>
-                      <MdOutlineDriveFileRenameOutline /> Full name
-                    </div>
-                  }
-                  name='fullName'
-                  rules={[
-                    {
-                      required: true,
-                      message: 'Please input full name'
-                    }
-                  ]}
-                >
-                  <Input />
-                </Form.Item>
-              </Col>
-              <Col span={15}>
-                <Form.Item<IAccountTable>
-                  label={
-                    <div>
-                      <MdOutlinePhone /> Phone
-                    </div>
-                  }
-                  name='phone'
-                  rules={[
-                    {
-                      required: true,
-                      message: 'Please input phone'
-                    }
-                  ]}
-                >
-                  <Input />
-                </Form.Item>
-              </Col>
-              <Col span={15}>
-                <Form.Item<IAccountTable>
-                  label={
-                    <div>
-                      <GrUserAdmin /> Role
-                    </div>
-                  }
-                  name='role'
-                  rules={[
-                    {
-                      required: true,
-                      message: 'Please input roleId'
-                    }
-                  ]}
-                >
-                  <Select placeholder={updatedAccount.role?.roleName} options={roleOptions} />
-                </Form.Item>
-              </Col>
-            </Col>
-          </Row>
+            }
+            name='email'
+            rules={[
+              {
+                required: true,
+                message: 'Please input email'
+              }
+            ]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item<IAccountTable>
+            label={
+              <div>
+                <MdOutlineDriveFileRenameOutline /> Full name
+              </div>
+            }
+            name='fullName'
+            rules={[
+              {
+                required: true,
+                message: 'Please input full name'
+              }
+            ]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item<IAccountTable>
+            label={
+              <div>
+                <MdOutlinePhone /> Phone
+              </div>
+            }
+            name='phone'
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item<IAccountTable>
+            label={
+              <div>
+                <GrUserAdmin /> Role
+              </div>
+            }
+            name='role'
+            rules={[
+              {
+                required: true,
+                message: 'Please input roleId'
+              }
+            ]}
+          >
+            <Select placeholder={updatedAccount.role?.roleName} options={roleOptions} />
+          </Form.Item>
         </Form>
       </Modal>
     </>

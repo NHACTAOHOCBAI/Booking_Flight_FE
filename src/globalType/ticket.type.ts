@@ -7,11 +7,13 @@ declare global {
     flightCode?: string
     seatId?: string
     seatName?: string
+    seatNumber?: number
     passengerName?: string
     passengerPhone?: string
     passengerIDCard?: string
     passengerEmail?: string
     haveBaggage?: boolean
+    imageUrl?: string
   }
 }
 
@@ -23,16 +25,4 @@ export interface TicketList {
     page_size: number
     total: number
   }
-}
-export interface TicketListConfig {
-  page?: number | string
-  size?: number | string
-  sort_by?: 'createdAt' | 'view' | 'sold' | 'price'
-  order?: 'asc' | 'desc'
-  exclude?: string
-  rating_filter?: number | string
-  price_max?: number | string
-  price_min?: number | string
-  name?: string
-  category?: string
 }

@@ -10,7 +10,7 @@ import { GoLocation } from 'react-icons/go'
 import { IoAirplaneOutline, IoTicketOutline, IoSettingsOutline } from 'react-icons/io5'
 import { MdOutlineAirlines } from 'react-icons/md'
 import { PiCityLight, PiAirplaneInFlight, PiSeat } from 'react-icons/pi'
-import { IPermission } from '@/globalType/permission.type'
+
 const { Header, Sider, Content } = Layout
 
 const AdminLayout = () => {
@@ -39,19 +39,21 @@ const AdminLayout = () => {
           item.method === ALL_PERMISSIONS['ACCOUNTS']['GET_ACCOUNTS'].method
       )
 
-      // const viewCity = permissions?.find(
-      //   (item) =>
-      //     item.apiPath === ALL_PERMISSIONS['CITIES']['GET_CITIES'].apiPath &&
-      //     item.method === ALL_PERMISSIONS['CITIES']['GET_CITIES'].method
-      // )
-      const viewCity = 1
+      const viewCity = permissions?.find(
+        (item) =>
+          typeof item === 'object' &&
+          item.apiPath === ALL_PERMISSIONS['CITIES']['GET_CITIES'].apiPath &&
+          item.method === ALL_PERMISSIONS['CITIES']['GET_CITIES'].method
+      )
+      // const viewCity = 1
 
-      const viewAirport = 1
-      // const viewAirport = permissions?.find(
-      //   (item) =>
-      //     item.apiPath === ALL_PERMISSIONS['AIRPORTS']['GET_AIRPORTS'].apiPath &&
-      //     item.method === ALL_PERMISSIONS['AIRPORTS']['GET_AIRPORTS'].method
-      // )
+      // const viewAirport = 1
+      const viewAirport = permissions?.find(
+        (item) =>
+          typeof item === 'object' &&
+          item.apiPath === ALL_PERMISSIONS['AIRPORTS']['GET_AIRPORTS'].apiPath &&
+          item.method === ALL_PERMISSIONS['AIRPORTS']['GET_AIRPORTS'].method
+      )
 
       const viewPlane = permissions?.find(
         (item) =>
@@ -60,18 +62,20 @@ const AdminLayout = () => {
           item.method === ALL_PERMISSIONS['PLANES']['GET_PLANES'].method
       )
 
-      // const viewFlight = permissions?.find(
-      //   (item) =>
-      //     item.apiPath === ALL_PERMISSIONS['FLIGHTS']['GET_FLIGHTS'].apiPath &&
-      //     item.method === ALL_PERMISSIONS['FLIGHTS']['GET_FLIGHTS'].method
-      // )
-      const viewFlight = 1
-      // const viewAirline = permissions?.find(
-      //   (item) =>
-      //     item.apiPath === ALL_PERMISSIONS['AIRLINES']['GET_AIRLINES'].apiPath &&
-      //     item.method === ALL_PERMISSIONS['AIRLINES']['GET_AIRLINES'].method
-      // )
-      const viewAirline = 1
+      const viewFlight = permissions?.find(
+        (item) =>
+          typeof item === 'object' &&
+          item.apiPath === ALL_PERMISSIONS['FLIGHTS']['GET_FLIGHTS'].apiPath &&
+          item.method === ALL_PERMISSIONS['FLIGHTS']['GET_FLIGHTS'].method
+      )
+      // const viewFlight = 1
+      const viewAirline = permissions?.find(
+        (item) =>
+          typeof item === 'object' &&
+          item.apiPath === ALL_PERMISSIONS['AIRLINES']['GET_AIRLINES'].apiPath &&
+          item.method === ALL_PERMISSIONS['AIRLINES']['GET_AIRLINES'].method
+      )
+      // const viewAirline = 1
       const viewSeatClass = permissions?.find(
         (item) =>
           typeof item === 'object' &&

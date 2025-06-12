@@ -20,7 +20,7 @@ export const useUpdatePassword = () => {
 
 export const useGetMyPurchaseTicket = (queryConfig: ListConfig) => {
   return useQuery({
-    queryKey: ['my-profile'],
+    queryKey: ['my-profile-ticket-purchased', queryConfig],
     queryFn: () => myProfileApi.getMyPurchaseTicket(queryConfig)
   })
 }

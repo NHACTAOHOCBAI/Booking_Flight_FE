@@ -12,11 +12,11 @@ const bookingApi = {
     return res.data
   },
   createPayment: async (params: PaymentReq) => {
-    const res = await http.post<SuccessResponse<PaymentRes>>(URLPAYMENT, params)
+    const res = await http.post<SuccessResponse<PaymentRes>>(URLPAYMENT + '/create', params)
     return res.data
   },
   checkPaymentStatus: async (id: string) => {
-    const res = await http.get<SuccessResponse<CheckPaymentStatusRes>>(`${URLPAYMENT}/${id}`)
+    const res = await http.get<SuccessResponse<CheckPaymentStatusRes>>(`${URLPAYMENT}/status/${id}`)
     return res.data
   }
 }

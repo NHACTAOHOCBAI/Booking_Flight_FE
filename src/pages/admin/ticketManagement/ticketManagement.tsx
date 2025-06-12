@@ -5,14 +5,13 @@ import { Button, message, Popconfirm } from 'antd'
 import { useContext, useRef, useState } from 'react'
 import NewTicket from './newTicket'
 
+import ticketApi from '@/apis/apis/ticket.api'
+import Access from '@/components/access'
 import ErrorPage from '@/components/ErrorPage/ErrorPage'
-import LoadingError from '@/components/ErrorPage/LoadingError'
+import { AppContext } from '@/context/app.context'
 import { useDeleteTicket } from '@/hooks/useTicket'
 import DetailTicket from './detailTicket'
 import UpdateTicket from './updateTicket'
-import { AppContext } from '@/context/app.context'
-import Access from '@/components/access'
-import ticketApi from '@/apis/apis/ticket.api'
 
 const TicketManagement = () => {
   //detail
@@ -64,11 +63,7 @@ const TicketManagement = () => {
     })
   }
   const ALL_PERMISSIONS = useContext(AppContext).PERMISSIONS.permissions
-  const permissions = {
-    method: '',
-    apiPath: '',
-    model: ''
-  }
+
   //Table
   const actionRef = useRef<ActionType>(null)
   const columns: ProColumns<ITicketTable>[] = [
@@ -94,10 +89,12 @@ const TicketManagement = () => {
     },
     {
       title: 'Flight Code',
+
       dataIndex: 'flightCode'
     },
     {
       title: 'Seat Name',
+      search: false,
       dataIndex: 'seatName'
     },
     {
@@ -106,10 +103,12 @@ const TicketManagement = () => {
     },
     {
       title: 'Passenger Id Card',
+      search: false,
       dataIndex: 'passengerIDCard'
     },
     {
       title: 'Passenger Phone',
+      search: false,
       dataIndex: 'passengerPhone'
     },
     {
@@ -118,10 +117,12 @@ const TicketManagement = () => {
     },
     {
       title: 'Have Baggage',
+      search: false,
       render: (_, record) => <div>{record.haveBaggage ? 'Yes' : 'No'}</div>
     },
     {
       title: 'Action',
+      search: false,
       render: (_, record) => (
         <div
           style={{
@@ -178,9 +179,25 @@ const TicketManagement = () => {
                 setError(null)
 
                 try {
+                  const filters: string[] = []
+
+                  if (params.flightCode) {
+                    filters.push(`flight.flightCode:'${params.flightCode.trim()}'`)
+                  }
+
+                  if (params.passengerName) {
+                    filters.push(`passengerName~'${params.passengerName.trim()}'`)
+                  }
+                  if (params.passengerEmail) {
+                    filters.push(`account.email~'${params.passengerEmail.trim()}'`)
+                  }
+
+                  const filterString = filters.length > 0 ? filters.join(' and ') : undefined
+
                   const response = await ticketApi.getTickets({
                     page: params.current,
-                    size: params.pageSize
+                    size: params.pageSize,
+                    filter: filterString
                   })
 
                   return {

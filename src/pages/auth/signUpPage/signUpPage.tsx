@@ -117,7 +117,12 @@ const SignUpPage = () => {
             <Divider />
             <div className='text-sm text-gray-500 flex items-center gap-1'>
               Or continue with
-              <Button className='mx-1'>
+              <Button
+                onClick={() => {
+                  window.open('http://localhost:8080/oauth2/authorization/google', '_self')
+                }}
+                className='mx-1'
+              >
                 <GoogleOutlined />
                 Google
               </Button>

@@ -30,7 +30,7 @@ function MyProfile() {
         id: personalInfo?.id || '',
         email: value.email,
         fullName: value.fullName,
-        password: value.password,
+        password: value.password, // This seems to be included in your original code, typically password updates are separate.
         username: value.username,
         roleId: value.role,
         phone: value.phone
@@ -46,10 +46,10 @@ function MyProfile() {
       })
 
       setIsEditingInfo(false)
-      message.success('Thông tin cá nhân đã được lưu thành công!')
+      message.success('Personal information has been saved successfully!')
     } catch (errorInfo) {
       console.log('Validate Failed:', errorInfo)
-      message.error('Vui lòng kiểm tra lại thông tin đã nhập.')
+      message.error('Please check the entered information.')
     }
   }
 
@@ -61,29 +61,30 @@ function MyProfile() {
   const tabItems = [
     {
       key: 'personalInfo',
-      label: 'Thông tin cá nhân',
+      label: 'Personal Information',
       children: (
         <Card className='rounded-xl shadow-lg'>
           <div className='p-6'>
-            <h2 className='text-2xl font-semibold text-gray-800 mb-1'>Thông tin cá nhân</h2>
-            <p className='mt-1 text-sm text-gray-500 mb-6'>Quản lý thông tin hồ sơ của bạn.</p>
+            <h2 className='text-2xl font-semibold text-gray-800 mb-1'>Personal Information</h2>
+            <p className='mt-1 text-sm text-gray-500 mb-6'>Manage your profile details.</p>
             <Form form={personalInfoForm} layout='vertical' initialValues={personalInfo} onFinish={handleSaveInfo}>
               <div className='flex items-center space-x-4 mb-6'>
                 <Avatar
                   size={96}
-                  src={personalInfoForm.getFieldValue('avatar')}
+                  src={personalInfo?.avatar}
                   icon={<UserOutlined />}
                   className='border-4 border-blue-200 shadow-md'
                 />
+
                 <Form.Item
-                  label='URL Ảnh đại diện'
+                  label='Avatar URL'
                   name='avatar'
                   className='flex-grow'
-                  rules={[{ required: true, message: 'Vui lòng nhập URL ảnh đại diện!' }]}
+                  rules={[{ required: true, message: 'Please enter avatar URL!' }]}
                 >
                   <Input
                     prefix={<UserOutlined />}
-                    placeholder='Nhập URL ảnh đại diện'
+                    placeholder='Enter avatar URL'
                     readOnly={!isEditingInfo}
                     className={!isEditingInfo ? 'bg-gray-50 text-gray-600' : ''}
                   />
@@ -91,13 +92,13 @@ function MyProfile() {
               </div>
 
               <Form.Item
-                label='Họ và Tên'
+                label='Full Name'
                 name='fullName'
-                rules={[{ required: true, message: 'Vui lòng nhập họ và tên!' }]}
+                rules={[{ required: true, message: 'Please enter your full name!' }]}
               >
                 <Input
                   prefix={<UserOutlined />}
-                  placeholder='Họ và tên của bạn'
+                  placeholder='Your full name'
                   readOnly={!isEditingInfo}
                   className={!isEditingInfo ? 'bg-gray-50 text-gray-600' : ''}
                 />
@@ -105,23 +106,23 @@ function MyProfile() {
               <Form.Item
                 label='Email'
                 name='email'
-                rules={[{ required: true, message: 'Vui lòng nhập email!', type: 'email' }]}
+                rules={[{ required: true, message: 'Please enter your email!', type: 'email' }]}
               >
                 <Input
                   prefix={<MailOutlined />}
-                  placeholder='Email của bạn'
+                  placeholder='Your email'
                   readOnly={!isEditingInfo}
                   className={!isEditingInfo ? 'bg-gray-50 text-gray-600' : ''}
                 />
               </Form.Item>
               <Form.Item
-                label='Số điện thoại'
+                label='Phone Number'
                 name='phone'
-                rules={[{ required: true, message: 'Vui lòng nhập số điện thoại!' }]}
+                rules={[{ required: true, message: 'Please enter your phone number!' }]}
               >
                 <Input
                   prefix={<PhoneOutlined />}
-                  placeholder='Số điện thoại của bạn'
+                  placeholder='Your phone number'
                   readOnly={!isEditingInfo}
                   className={!isEditingInfo ? 'bg-gray-50 text-gray-600' : ''}
                 />
@@ -131,15 +132,15 @@ function MyProfile() {
                 {isEditingInfo ? (
                   <>
                     <Button onClick={handleCancelEditInfo} className='mr-2'>
-                      Hủy
+                      Cancel
                     </Button>
                     <Button type='primary' htmlType='submit'>
-                      Lưu thay đổi
+                      Save Changes
                     </Button>
                   </>
                 ) : (
                   <Button type='primary' onClick={handleEditInfo}>
-                    Chỉnh sửa
+                    Edit
                   </Button>
                 )}
               </div>
@@ -150,22 +151,33 @@ function MyProfile() {
     },
     {
       key: 'changePassword',
-      label: 'Đổi mật khẩu',
+      label: 'Change Password',
       children: <ChangePasswordPage />
     },
     {
-      key: 'purchasedTickets',
-      label: 'Vé đã mua',
-      children: <TicketPurchasedPage />
+      key: 'IncomingFlightTickets',
+      label: 'Incoming Tickets',
+      children: <TicketPurchasedPage type='incoming' key={'incoming'} />
+    },
+    {
+      key: 'flownTickets',
+      label: 'Flown Tickets',
+      children: <TicketPurchasedPage type='flown' key={'flown'} />
+    },
+    {
+      key: 'cancelTickets',
+      label: 'Cancel Tickets',
+      children: <TicketPurchasedPage type='cancelled' key={'cancelled'} />
     }
   ]
 
   return (
     <div className='min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4 sm:p-6 lg:p-8 font-sans'>
       <div className='max-w-4xl mx-auto'>
-        <h1 className='text-4xl font-extrabold text-gray-900 mb-8 text-center drop-shadow-sm'>Hồ Sơ Cá Nhân</h1>
+        <h1 className='text-4xl font-extrabold text-gray-900 mb-8 text-center drop-shadow-sm'>My Profile</h1>
 
         <Tabs
+          destroyOnHidden={true}
           defaultActiveKey='personalInfo'
           items={tabItems}
           className='w-full'

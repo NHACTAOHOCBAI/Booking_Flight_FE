@@ -9,7 +9,7 @@ import UpdateCity from './updateCity'
 
 import { useDeleteCity } from '@/hooks/useCity'
 import DetailCity from './detailCity'
-import LoadingError from '@/components/ErrorPage/LoadingError'
+
 import ErrorPage from '@/components/ErrorPage/ErrorPage'
 import cityApi from '@/apis/apis/city.api'
 import { AppContext } from '@/context/app.context'
@@ -57,11 +57,7 @@ const CityManagement = () => {
     cityName: ''
   })
   const ALL_PERMISSIONS = useContext(AppContext).PERMISSIONS.permissions
-  const permissions = {
-    method: '',
-    apiPath: '',
-    model: ''
-  }
+
   const columns: ProColumns<ICityTable>[] = [
     {
       dataIndex: 'index',
@@ -70,6 +66,7 @@ const CityManagement = () => {
     },
     {
       title: 'Code',
+      dataIndex: 'cityCode',
       render: (_, record) => (
         <a
           style={{ color: '#3498db' }}
@@ -147,9 +144,21 @@ const CityManagement = () => {
               setError(null)
 
               try {
+                const filters: string[] = []
+
+                if (params.cityCode) {
+                  filters.push(`cityCode:'${params.cityCode.trim()}'`)
+                }
+
+                if (params.cityName) {
+                  filters.push(`cityName~'${params.cityName.trim()}'`)
+                }
+
+                const filterString = filters.length > 0 ? filters.join(' and ') : undefined
                 const response = await cityApi.getCities({
                   page: params.current,
-                  size: params.pageSize
+                  size: params.pageSize,
+                  filter: filterString
                 })
 
                 return {

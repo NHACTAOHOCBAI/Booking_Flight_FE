@@ -1,13 +1,13 @@
 import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons'
-import type { ActionType, ProColumns } from '@ant-design/pro-components'
+import type { ActionType, ProColumns, ProSchemaValueEnumType } from '@ant-design/pro-components'
 import { ProTable } from '@ant-design/pro-components'
 import { Button, message, Popconfirm } from 'antd'
 
-import { useContext, useRef, useState } from 'react'
+import { useContext, useMemo, useRef, useState } from 'react'
 import NewRole from './newRole.tsx'
 import UpdateRole from './updateRole.tsx'
 
-import { useDeleteRole } from '@/hooks/useRole.ts'
+import { useDeleteRole, useGetAllRoles } from '@/hooks/useRole.ts'
 import ErrorPage from '@/components/ErrorPage/ErrorPage.tsx'
 import roleApi from '@/apis/apis/role.api.ts'
 import { AppContext } from '@/context/app.context.tsx'
@@ -49,12 +49,23 @@ const RoleManagement = () => {
       }
     })
   }
+  const roleData = useGetAllRoles({}).data?.data.result as IRoleTable[] | undefined
+  const roleEnum: Record<string, ProSchemaValueEnumType> = useMemo(() => {
+    if (!roleData) return {}
+
+    return roleData.reduce(
+      (acc, role) => {
+        acc[role.roleName] = {
+          text: role.roleName
+        }
+        return acc
+      },
+      {} as Record<string, ProSchemaValueEnumType>
+    )
+  }, [roleData])
+
   const ALL_PERMISSIONS = useContext(AppContext).PERMISSIONS.permissions
-  const permissions = {
-    method: '',
-    apiPath: '',
-    model: ''
-  }
+
   const columns: ProColumns<IRoleTable>[] = [
     {
       dataIndex: 'index',
@@ -63,11 +74,13 @@ const RoleManagement = () => {
     },
     {
       title: 'RoleName',
-      dataIndex: 'roleName'
+      dataIndex: 'roleName',
+      valueEnum: roleEnum
     },
 
     {
       title: 'Description',
+      search: false,
       dataIndex: 'description'
     },
     {
@@ -87,7 +100,6 @@ const RoleManagement = () => {
                 color: '#54a0ff'
               }}
               onClick={() => {
-                console.log(record)
                 setUpdateRole(record)
                 setIsUpdateOpen(true)
               }}
@@ -131,9 +143,17 @@ const RoleManagement = () => {
                 setError(null)
 
                 try {
+                  const filters: string[] = []
+
+                  if (params.roleName) {
+                    filters.push(`roleName:'${params.roleName.trim()}'`)
+                  }
+
+                  const filterString = filters.length > 0 ? filters.join(' and ') : undefined
                   const response = await roleApi.getRoles({
                     page: params.current,
-                    size: params.pageSize
+                    size: params.pageSize,
+                    filter: filterString
                   })
 
                   return {

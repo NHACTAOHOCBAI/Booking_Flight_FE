@@ -1,31 +1,30 @@
+import flightApi from '@/apis/apis/flight.api'
+import Access from '@/components/access'
+import ErrorPage from '@/components/ErrorPage/ErrorPage'
+import { AppContext } from '@/context/app.context'
+import { useGetAllAirports } from '@/hooks/useAirport'
+import { useDeleteFlight } from '@/hooks/useFlight'
+import { BookingState, setBookingFlight } from '@/redux/features/bookingFlight/bookingFlightSlice'
+import { useAppDispatch } from '@/redux/hooks'
 import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons'
 import type { ActionType, ProColumns } from '@ant-design/pro-components'
 import { ProTable } from '@ant-design/pro-components'
 import { Button, message, Popconfirm } from 'antd'
+import dayjs from 'dayjs'
 import { useContext, useMemo, useRef, useState } from 'react'
+import { IoTicketOutline } from 'react-icons/io5'
+import { useNavigate } from 'react-router-dom'
+import DetailFlight from './detailFlight'
 import NewFlight from './newFlight'
 import UpdateFlight from './updateFlight'
-import DetailFlight from './detailFlight'
-import { useNavigate } from 'react-router-dom'
-import { IoTicketOutline } from 'react-icons/io5'
-import dayjs from 'dayjs'
-import { useAppDispatch } from '@/redux/hooks'
-import { setBookingFlight } from '@/redux/features/bookingFlight/bookingFlightSlice'
-import ErrorPage from '@/components/ErrorPage/ErrorPage'
-import LoadingError from '@/components/ErrorPage/LoadingError'
-import { useDeleteFlight } from '@/hooks/useFlight'
-import airportApi from '@/apis/apis/airport.api'
-import { useQuery } from '@tanstack/react-query'
-import flightApi from '@/apis/apis/flight.api'
-import { AppContext } from '@/context/app.context'
-import Access from '@/components/access'
 const FlightManagement = () => {
   //detail
-  const [detailFlight, setDetailFlight] = useState<IFlightTable>({
+  const initialSetup = {
     id: '',
     flightCode: '',
     planeId: '',
     planeName: '',
+    flightStatus: 'AVAILABLE',
     departureAirportId: '',
     departureAirportName: '',
     arrivalAirportId: '',
@@ -35,25 +34,12 @@ const FlightManagement = () => {
     originPrice: 0,
     listFlight_Airport: [],
     listFlight_Seat: []
-  })
+  }
+  const [detailFlight, setDetailFlight] = useState<IFlightTable>(initialSetup)
   const [isDetailOpen, setIsDetailOpen] = useState(false)
   //update
   const [isUpdateOpen, setIsUpdateOpen] = useState(false)
-  const [updatedFlight, setUpdatedFlight] = useState<IFlightTable>({
-    id: '',
-    flightCode: '',
-    planeId: '',
-    planeName: '',
-    departureAirportId: '',
-    departureAirportName: '',
-    arrivalAirportId: '',
-    arrivalAirportName: '',
-    departureTime: '',
-    arrivalTime: '',
-    originPrice: 0,
-    listFlight_Airport: [],
-    listFlight_Seat: []
-  })
+  const [updatedFlight, setUpdatedFlight] = useState<IFlightTable>(initialSetup)
   //New
   const [isNewOpen, setIsNewOpen] = useState(false)
   //Table
@@ -81,28 +67,20 @@ const FlightManagement = () => {
       }
     })
   }
-  const airportData = useQuery({
-    queryKey: ['airports'],
-    queryFn: () => airportApi.getAirports({}),
-    enabled: isNewOpen
-  })
+  const airportData = useGetAllAirports({})
   const airportOptions = useMemo(
     () =>
       airportData.data?.data.result.map((value, index) => {
         return {
           key: index,
-          value: value.id,
+          value: value.airportName,
           label: value.airportName
         }
       }),
     [airportData]
   )
   const ALL_PERMISSIONS = useContext(AppContext).PERMISSIONS.permissions
-  const permissions = {
-    method: '',
-    apiPath: '',
-    model: ''
-  }
+
   const columns: ProColumns<IFlightTable>[] = [
     {
       dataIndex: 'index',
@@ -111,6 +89,7 @@ const FlightManagement = () => {
     },
     {
       title: 'Code',
+      dataIndex: 'flightCode',
       render: (_, record) => (
         <a
           style={{ color: '#3498db' }}
@@ -124,7 +103,7 @@ const FlightManagement = () => {
       )
     },
     {
-      title: 'Departure Airport',
+      title: 'Departure City',
       search: false,
       render: (_, record) => {
         return <div>{record.departureAirportName}</div>
@@ -132,15 +111,16 @@ const FlightManagement = () => {
     },
     {
       title: 'Departure Airport',
+      dataIndex: 'departureAirportName',
       hidden: true,
       valueType: 'select',
       fieldProps: {
         showSearch: true,
-        options: airportOptions // Dữ liệu dropdown
+        options: airportOptions
       }
     },
     {
-      title: 'Arrival Airport',
+      title: 'Arrival City',
       search: false,
       render: (_, record) => {
         return <div>{record.arrivalAirportName}</div>
@@ -148,15 +128,17 @@ const FlightManagement = () => {
     },
     {
       title: 'Arrival Airport',
+      dataIndex: 'arrivalAirportName',
       hidden: true,
       valueType: 'select',
       fieldProps: {
         showSearch: true,
-        options: airportOptions // Dữ liệu dropdown
+        options: airportOptions
       }
     },
     {
       title: 'Departure Time ',
+      search: false,
       valueType: 'date',
       render: (_, record) => {
         return dayjs(record.departureTime, 'HH:mm DD/MM/YYYY').format('HH:mm DD/MM/YYYY')
@@ -164,6 +146,7 @@ const FlightManagement = () => {
     },
     {
       title: 'Arrival Time ',
+      search: false,
       valueType: 'date',
       render: (_, record) => {
         console.log(record)
@@ -179,6 +162,15 @@ const FlightManagement = () => {
             {record.listFlight_Seat ? record.listFlight_Seat.reduce((total, value) => total + value.quantity, 0) : 0}
           </div>
         )
+      }
+    },
+    {
+      title: 'Ticket status',
+      dataIndex: 'flightStatus',
+      valueType: 'select',
+      fieldProps: {
+        showSearch: true,
+        options: ['SOLD_OUT', 'AVAILABLE', 'FLOWN']
       }
     },
     {
@@ -220,7 +212,21 @@ const FlightManagement = () => {
           <Button
             type='dashed'
             onClick={() => {
-              dispatch(setBookingFlight(record))
+              const bookingState: BookingState = {
+                departureFlightDetails: {
+                  ...record,
+                  selectedSeat: {
+                    price: 0,
+                    quantity: 0,
+                    quantityAvailable: 0
+                  }
+                },
+                returnFlightDetails: null,
+                queryConfig: {},
+                amountPayment: 0
+              }
+
+              dispatch(setBookingFlight(bookingState))
               navigate(`/booking/passenger`)
             }}
           >
@@ -249,9 +255,29 @@ const FlightManagement = () => {
               setError(null)
 
               try {
+                const filters: string[] = []
+
+                if (params.flightCode) {
+                  filters.push(`flightCode~'${params.flightCode.trim()}'`)
+                }
+
+                if (params.departureAirportName) {
+                  filters.push(`departureAirport.airportName ~'${params.departureAirportName}'`)
+                }
+
+                if (params.arrivalAirportName) {
+                  filters.push(`arrivalAirport.airportName ~'${params.arrivalAirportName}'`)
+                }
+
+                if (params.flightStatus) {
+                  filters.push(`flightStatus:'${params.flightStatus}'`)
+                }
+
+                const filterString = filters.length > 0 ? filters.join(' and ') : undefined
                 const response = await flightApi.getFlights({
                   page: params.current,
-                  size: params.pageSize
+                  size: params.pageSize,
+                  filter: filterString
                 })
 
                 return {

@@ -1,7 +1,7 @@
 import { QueryConfig } from '@/hooks/useQueryConfig'
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
-interface BookingState {
+export interface BookingState {
   departureFlightDetails: (IFlightTable & { selectedSeat: ISeat }) | null
   returnFlightDetails: (IFlightTable & { selectedSeat: ISeat }) | null
   queryConfig: QueryConfig
@@ -12,8 +12,7 @@ const initialState: BookingState = {
   departureFlightDetails: null,
   returnFlightDetails: null,
   queryConfig: {
-    page: '1',
-    size: '5'
+    page: '1'
   },
   amountPayment: 0
 }
@@ -26,7 +25,6 @@ const bookingFlightSlice = createSlice({
       return action.payload
     },
     setAmountPayment: (state, action: PayloadAction<number>) => {
-      console.log(2222)
       state.amountPayment = action.payload
     }
   }

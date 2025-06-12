@@ -18,21 +18,21 @@ const NewRole = (props: IProp) => {
 
   const onFinish = async (value: any) => {
     const checkedPermissions = []
-    if (value.permissions) {
-      for (const key in value.permissions) {
-        if (value.permissions[key] === true) {
+    if (value.permissionIds) {
+      for (const key in value.permissionIds) {
+        if (value.permissionIds[key] === true) {
           checkedPermissions.push(key)
         }
       }
     }
-    console.log(value.permissions)
+    console.log(value.permissionIds)
     console.log(checkedPermissions)
     const body = {
       roleName: value.roleName,
-      permissions: checkedPermissions,
+      permissionId: checkedPermissions,
       description: value.description
     }
-    newRoleMutation.mutate(body, {
+    newRoleMutation.mutate(body as any, {
       onSuccess(data) {
         messageApi.open({
           type: 'success',
@@ -83,7 +83,7 @@ const NewRole = (props: IProp) => {
           submitButtonProps: {
             icon: <PlusOutlined />
           },
-          render: (_: any, dom: any) => dom // render mặc định
+          render: (_: any, dom: any) => dom
         }}
       >
         <Row gutter={16}>

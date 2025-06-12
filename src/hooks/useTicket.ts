@@ -1,8 +1,9 @@
 import ticketApi from '@/apis/apis/ticket.api'
-import { TicketListConfig } from '@/globalType/ticket.type'
+import { ListConfig } from '@/globalType/listConfig.type'
+
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
-export const useGetAllTickets = (queryConfig: TicketListConfig) => {
+export const useGetAllTickets = (queryConfig: ListConfig) => {
   return useQuery({
     queryKey: ['tickets', queryConfig],
     queryFn: () => ticketApi.getTickets(queryConfig)

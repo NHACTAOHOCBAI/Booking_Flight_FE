@@ -23,6 +23,7 @@ const ModuleApi = (props: IProps) => {
 
   const { PERMISSIONS } = useContext(AppContext)
   const listPermissions = PERMISSIONS.permissions
+  console.log(listPermissions)
   useEffect(() => {
     if (listPermissions && singleRole?.id && openModal === true) {
       //current permissions of role
@@ -69,62 +70,57 @@ const ModuleApi = (props: IProps) => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [openModal])
-
   const handleSwitchAll = (value: boolean, model: string) => {
     const perms = listPermissions[model]
     if (!perms) return
-    const current = form.getFieldValue('permissions') || {}
 
-    const updates: Record<string, boolean> = {}
+    const currentPermissionModel = form.getFieldValue('permissionModel') || {}
+    const currentPermissionIds = form.getFieldValue('permissionIds') || {}
 
-    if (value) {
-      // Gán true cho tất cả quyền con và model
-      Object.values(perms).forEach((perm) => {
-        updates[perm.id as string] = true
-      })
-      updates[model] = true
-    } else {
-      // Gỡ tất cả quyền con và model khỏi object
-      Object.values(perms).forEach((perm) => {
-        updates[perm.id as string] = false
-        delete current[perm.id as string]
-      })
-      delete current[model]
+    const newPermissionIds = { ...currentPermissionIds }
+
+    Object.values(perms).forEach((perm) => {
+      if (value) {
+        newPermissionIds[perm.id!] = true
+      } else {
+        delete newPermissionIds[perm.id!]
+      }
+    })
+
+    const newPermissionModel = {
+      ...currentPermissionModel,
+      [model]: value
     }
 
-    console.log(current, value, updates)
     form.setFieldsValue({
-      permissions: {
-        ...current,
-        [model]: value,
-        ...updates
-      }
+      permissionModel: newPermissionModel,
+      permissionIds: newPermissionIds
     })
   }
   const handleSingleCheck = (value: boolean, permId: string, model: string) => {
-    const currentPermissions = form.getFieldValue('permissions') || {}
+    const currentPermissionIds = form.getFieldValue('permissionIds') || {}
+    const currentPermissionModel = form.getFieldValue('permissionModel') || {}
 
-    // Cập nhật hoặc xóa quyền con
+    const newPermissionIds = { ...currentPermissionIds }
+
     if (value) {
-      currentPermissions[permId] = true
+      newPermissionIds[permId] = true
     } else {
-      delete currentPermissions[permId]
+      delete newPermissionIds[permId]
     }
 
-    // Kiểm tra các quyền còn lại trong model để cập nhật giá trị model
+    // Kiểm tra xem tất cả quyền con của model có đang bật không
     const perms = listPermissions[model]
-    const allChecked = Object.values(perms).every((perm) => currentPermissions[perm.id as string])
+    const allChecked = Object.values(perms).every((perm) => newPermissionIds[perm.id!])
 
-    if (allChecked) {
-      currentPermissions[model] = true
-    } else {
-      delete currentPermissions[model]
+    const newPermissionModel = {
+      ...currentPermissionModel,
+      [model]: allChecked
     }
 
     form.setFieldsValue({
-      permissions: {
-        ...currentPermissions
-      }
+      permissionModel: newPermissionModel,
+      permissionIds: newPermissionIds
     })
   }
 
@@ -136,7 +132,7 @@ const ModuleApi = (props: IProps) => {
     extra: (
       <div className='customize-form-item'>
         <ProFormSwitch
-          name={['permissions', model]} // dùng model làm key ở cấp cha
+          name={['permissionModel', model]} // dùng model làm key ở cấp cha
           valuePropName='checked'
           fieldProps={{
             onClick: (_u, e) => e.stopPropagation(),
@@ -155,7 +151,7 @@ const ModuleApi = (props: IProps) => {
             <Card size='small' className='flex flex-row'>
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                 <ProFormSwitch
-                  name={['permissions', perm.id]} // dùng perm.id làm key cho switch con
+                  name={['permissionIds', perm.id]} // dùng perm.id làm key cho switch con
                   valuePropName='checked'
                   fieldProps={{
                     onChange: (v) => handleSingleCheck(v, perm.id as string, model)
@@ -164,7 +160,7 @@ const ModuleApi = (props: IProps) => {
               </div>
               <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
                 <Tooltip title={perm.name}>
-                  <p style={{ paddingLeft: 10, marginBottom: 3 }}>{perm.name}</p>
+                  <p style={{ paddingLeft: 10, marginBottom: 3 }}>{_permKey}</p>
                   <div style={{ display: 'flex' }}>
                     <p
                       style={{

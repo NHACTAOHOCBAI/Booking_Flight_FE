@@ -56,11 +56,7 @@ const PlaneManagement = () => {
   //Table
   const actionRef = useRef<ActionType>(null)
   const ALL_PERMISSIONS = useContext(AppContext).PERMISSIONS.permissions
-  const permissions = {
-    method: '',
-    apiPath: '',
-    model: ''
-  }
+
   const columns: ProColumns<IPlaneTable>[] = [
     {
       dataIndex: 'index',
@@ -69,7 +65,8 @@ const PlaneManagement = () => {
     },
     {
       title: 'Code',
-      search: false,
+
+      dataIndex: 'planeCode',
       render: (_, record) => (
         <a
           style={{ color: '#3498db' }}
@@ -84,6 +81,7 @@ const PlaneManagement = () => {
     },
     {
       title: 'Airline',
+      search: false,
       render: (_, record) => <div>{record.airlineName}</div>
     },
     {
@@ -150,9 +148,21 @@ const PlaneManagement = () => {
                 setError(null)
 
                 try {
+                  const filters: string[] = []
+
+                  if (params.planeCode) {
+                    filters.push(`planeCode:'${params.planeCode.trim()}'`)
+                  }
+
+                  if (params.planeName) {
+                    filters.push(`planeName~'${params.planeName.trim()}'`)
+                  }
+
+                  const filterString = filters.length > 0 ? filters.join(' and ') : undefined
                   const response = await planeApi.getPlanes({
                     page: params.current,
-                    size: params.pageSize
+                    size: params.pageSize,
+                    filter: filterString
                   })
 
                   return {

@@ -1,4 +1,4 @@
-import { DownOutlined, SearchOutlined, UpOutlined, UserOutlined } from '@ant-design/icons'
+import { DownOutlined, SearchOutlined, UpOutlined } from '@ant-design/icons'
 import { Button, DatePicker, Radio, Space, Typography, message } from 'antd'
 import type { RadioChangeEvent } from 'antd'
 import dayjs from 'dayjs'

@@ -1,8 +1,9 @@
 import planeApi from '@/apis/apis/plane.api'
-import { PlaneListConfig } from '@/globalType/plane.type'
+import { ListConfig } from '@/globalType/listConfig.type'
+
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
-export const useGetAllPlanes = (queryConfig: PlaneListConfig) => {
+export const useGetAllPlanes = (queryConfig: ListConfig) => {
   return useQuery({
     queryKey: ['planes', queryConfig],
     queryFn: () => planeApi.getPlanes(queryConfig)
