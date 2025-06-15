@@ -59,7 +59,14 @@ export interface ICity {
   cityName: string
 }
 
-export interface UPdatePassword {
+export interface UpdatePassword {
   oldPassword: string
   newPassword: string
+}
+
+export interface UpdateProfile {
+  email?: string
+  fullName?: string
+  phone?: string
+  avatar?: string
 }

@@ -249,14 +249,14 @@ const AdminLayout = () => {
               height: 64
             }}
           />
-          <div style={{ justifySelf: 'start' }}>Cities</div>
+
           <div style={{ marginRight: 40, display: 'flex', alignItems: 'center', gap: '8px' }}>
             <Avatar size={35} icon={<UserOutlined />} />
             <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', lineHeight: '1.2' }}>
-              <span style={{ fontWeight: 'bold', fontSize: '14px' }}>John Doe</span>
+              <span style={{ fontWeight: 'bold', fontSize: '14px' }}>{profile?.fullName}</span>
               <span style={{ color: 'gray', fontSize: '12px' }}>
                 <Badge status='processing' />
-                <span> Admin </span>
+                <span> {profile?.role?.roleName}</span>
               </span>
             </div>
           </div>

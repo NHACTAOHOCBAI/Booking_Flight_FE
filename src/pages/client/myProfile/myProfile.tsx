@@ -1,5 +1,4 @@
-import { useUpdateAccount } from '@/hooks/useAccount'
-import { useGetMyProfile } from '@/hooks/useMyProfile'
+import { useGetMyProfile, useUpdateProfile } from '@/hooks/useMyProfile'
 import { MailOutlined, PhoneOutlined, UserOutlined } from '@ant-design/icons' // For icons
 import { Avatar, Button, Card, Form, Input, message, Tabs } from 'antd'
 import { useEffect, useState } from 'react'
@@ -12,8 +11,8 @@ function MyProfile() {
   const [isEditingInfo, setIsEditingInfo] = useState(false)
   const [personalInfoForm] = Form.useForm()
 
-  const personalInfo = useGetMyProfile().data?.data
-
+  const { data, refetch } = useGetMyProfile()
+  const personalInfo = data?.data
   useEffect(() => {
     personalInfoForm.setFieldsValue(personalInfo)
   }, [personalInfo, personalInfoForm])
@@ -21,18 +20,16 @@ function MyProfile() {
   const handleEditInfo = () => {
     setIsEditingInfo(true)
   }
-  const updateAccountMutation = useUpdateAccount()
+  const updateAccountMutation = useUpdateProfile()
   const handleSaveInfo = async () => {
     try {
       const value = await personalInfoForm.validateFields()
 
       const body = {
-        id: personalInfo?.id || '',
         email: value.email,
         fullName: value.fullName,
-        password: value.password, // This seems to be included in your original code, typically password updates are separate.
-        username: value.username,
-        roleId: value.role,
+        avatar: value.avatar,
+
         phone: value.phone
       }
       updateAccountMutation.mutate(body, {
@@ -76,12 +73,7 @@ function MyProfile() {
                   className='border-4 border-blue-200 shadow-md'
                 />
 
-                <Form.Item
-                  label='Avatar URL'
-                  name='avatar'
-                  className='flex-grow'
-                  rules={[{ required: true, message: 'Please enter avatar URL!' }]}
-                >
+                <Form.Item label='Avatar URL' name='avatar' className='flex-grow'>
                   <Input
                     prefix={<UserOutlined />}
                     placeholder='Enter avatar URL'
@@ -91,11 +83,7 @@ function MyProfile() {
                 </Form.Item>
               </div>
 
-              <Form.Item
-                label='Full Name'
-                name='fullName'
-                rules={[{ required: true, message: 'Please enter your full name!' }]}
-              >
+              <Form.Item label='Full Name' name='fullName'>
                 <Input
                   prefix={<UserOutlined />}
                   placeholder='Your full name'
@@ -103,11 +91,7 @@ function MyProfile() {
                   className={!isEditingInfo ? 'bg-gray-50 text-gray-600' : ''}
                 />
               </Form.Item>
-              <Form.Item
-                label='Email'
-                name='email'
-                rules={[{ required: true, message: 'Please enter your email!', type: 'email' }]}
-              >
+              <Form.Item label='Email' name='email'>
                 <Input
                   prefix={<MailOutlined />}
                   placeholder='Your email'
@@ -115,11 +99,7 @@ function MyProfile() {
                   className={!isEditingInfo ? 'bg-gray-50 text-gray-600' : ''}
                 />
               </Form.Item>
-              <Form.Item
-                label='Phone Number'
-                name='phone'
-                rules={[{ required: true, message: 'Please enter your phone number!' }]}
-              >
+              <Form.Item label='Phone Number' name='phone'>
                 <Input
                   prefix={<PhoneOutlined />}
                   placeholder='Your phone number'

@@ -1,20 +1,31 @@
+import { AppContext } from '@/context/app.context'
 import { useGetAllTickets } from '@/hooks/useTicket'
 import { useAppSelector } from '@/redux/hooks'
-import dayjs from 'dayjs'
+
+import html2canvas from 'html2canvas'
+import { useContext, useEffect, useRef } from 'react'
 
 import { BsFillTicketPerforatedFill } from 'react-icons/bs'
 
 interface Props {
   FlightDetails: IFlightTable & { selectedSeat: ISeat }
-  captureRef: React.RefObject<HTMLDivElement | null>
 }
 
-const Ticket = ({ FlightDetails, captureRef }: Props) => {
+const Ticket = ({ FlightDetails }: Props) => {
   const bookingTicketsList = useAppSelector((state) => state.bookingTicketsList)
   const bookingFlight = useAppSelector((state) => state.bookingFlight)
+  const { setUrlTicket } = useContext(AppContext)
 
-  const departureCityName = bookingFlight.queryConfig['departureAirport.city.cityName']
-  const arrivalCityName = bookingFlight.queryConfig['arrivalAirport.city.cityName']
+  let departureCityName
+  let arrivalCityName
+
+  if (bookingFlight.departureFlightDetails?.id === FlightDetails.id) {
+    departureCityName = bookingFlight.queryConfig['departureAirport.city.cityName']
+    arrivalCityName = bookingFlight.queryConfig['arrivalAirport.city.cityName']
+  } else {
+    arrivalCityName = bookingFlight.queryConfig['departureAirport.city.cityName']
+    departureCityName = bookingFlight.queryConfig['arrivalAirport.city.cityName']
+  }
 
   const stringFilter = `flight.id:'${FlightDetails.id}' and seat.id:'${FlightDetails.selectedSeat.seatId}'`
   const seatNumbers = useGetAllTickets({
@@ -23,13 +34,46 @@ const Ticket = ({ FlightDetails, captureRef }: Props) => {
     filter: stringFilter
   }).data?.data.result
 
+  const captureRefs = useRef<HTMLDivElement[]>([])
+
+  useEffect(() => {
+    console.log(captureRefs.current.length)
+    const generateImageUrls = async () => {
+      const urls: { ticketId: string; imageUrl: string }[] = []
+      for (let i = 0; i < captureRefs.current.length; i++) {
+        const el = captureRefs.current[i]
+        if (el) {
+          const canvas = await html2canvas(el)
+          const dataUrl = canvas.toDataURL('image/png')
+          const ticketId = seatNumbers ? (seatNumbers[i].id as string) : ''
+          urls.push({ ticketId: ticketId, imageUrl: dataUrl })
+        }
+      }
+      setUrlTicket((prev) => {
+        const prevIds = new Set(prev.map((item) => item.ticketId))
+
+        const uniqueNew = urls.filter((url) => !prevIds.has(url.ticketId))
+
+        return [...prev, ...uniqueNew]
+      })
+
+      console.log('ticketImageUrls:', urls)
+    }
+
+    if (bookingTicketsList.length > 0 && seatNumbers?.length === bookingTicketsList.length) {
+      generateImageUrls()
+    }
+  }, [bookingTicketsList, seatNumbers])
+
   if (!FlightDetails) return null
   if (seatNumbers)
     return (
       <div className='flex flex-col gap-2'>
         {bookingTicketsList.map((value, index) => (
           <div
-            ref={captureRef}
+            ref={(el) => {
+              if (el) captureRefs.current[index] = el
+            }}
             key={index}
             className='w-[950px] rounded-xl overflow-hidden shadow hover:shadow-md border'
           >
@@ -65,7 +109,7 @@ const Ticket = ({ FlightDetails, captureRef }: Props) => {
                   </div>
                   <div className='w-[30%] text-left'>
                     <div className='font-bold text-base mb-1'>Boarding Time :</div>
-                    <div className='text-base'>{dayjs(FlightDetails.departureTime).format('HH:mm DD/MM/YYYY')}</div>
+                    <div className='text-base'>{FlightDetails.departureTime}</div>
                   </div>
                   <div className='w-[30%] text-left'>
                     <div className='font-bold text-base mb-1'>Flight Code :</div>
@@ -91,8 +135,7 @@ const Ticket = ({ FlightDetails, captureRef }: Props) => {
                   <span className='font-bold'>Seat Class:</span> {FlightDetails.selectedSeat.seatName}
                 </div>
                 <div>
-                  <span className='font-bold'>Boarding Time:</span>{' '}
-                  {dayjs(FlightDetails.departureTime).format('HH:mm DD/MM/YYYY')}
+                  <span className='font-bold'>Boarding Time:</span> {FlightDetails.departureTime}
                 </div>
               </div>
             </div>

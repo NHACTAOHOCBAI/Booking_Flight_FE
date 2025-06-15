@@ -83,7 +83,7 @@ const AirportManagement = () => {
       dataIndex: 'airportName'
     },
     {
-      title: 'Airport',
+      title: 'City Name',
       search: false,
       dataIndex: 'cityName'
     },

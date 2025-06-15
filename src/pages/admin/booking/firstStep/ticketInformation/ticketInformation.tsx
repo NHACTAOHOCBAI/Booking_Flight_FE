@@ -86,7 +86,7 @@ const TicketInformation = ({ openNotification }: IProp) => {
   }, [isAddReady])
   useEffect(() => {
     if (!addRef.current || !isAddReady) return
-    console.log(1111)
+
     const currentTickets = form.getFieldValue('tickets') || []
     const missing = passengerNumber - currentTickets.length
 
@@ -99,7 +99,6 @@ const TicketInformation = ({ openNotification }: IProp) => {
       }
     }
   }, [passengerNumber, bookingFlight.departureFlightDetails?.selectedSeat.seatId, form, isAddReady])
-  console.log(form.getFieldValue('tickets'))
   return (
     <Form
       form={form}
@@ -112,7 +111,6 @@ const TicketInformation = ({ openNotification }: IProp) => {
     >
       <Form.List name='tickets'>
         {(fields, { add, remove }) => {
-          console.log('Form.List init')
           if (!addRef.current) {
             addRef.current = add
             setIsAddReady(true)

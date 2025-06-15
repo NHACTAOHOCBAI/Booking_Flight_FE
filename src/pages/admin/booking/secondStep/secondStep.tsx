@@ -2,10 +2,7 @@ import { useAppSelector } from '@/redux/hooks'
 import { SendOutlined, SwapOutlined } from '@ant-design/icons'
 import Ticket from './ticket'
 
-interface Props {
-  captureRef: React.RefObject<HTMLDivElement | null>
-}
-const SecondStep = ({ captureRef }: Props) => {
+const SecondStep = () => {
   const bookingFlight = useAppSelector((state) => state.bookingFlight)
 
   return (
@@ -17,7 +14,7 @@ const SecondStep = ({ captureRef }: Props) => {
           <SendOutlined className='mr-2 text-blue-500' /> Departure Flight:{' '}
           {bookingFlight.departureFlightDetails!.flightCode}
         </h3>
-        <Ticket captureRef={captureRef} FlightDetails={bookingFlight.departureFlightDetails!} />
+        <Ticket FlightDetails={bookingFlight.departureFlightDetails!} />
       </div>
 
       {bookingFlight?.departureFlightDetails && bookingFlight?.returnFlightDetails && (
@@ -33,7 +30,7 @@ const SecondStep = ({ captureRef }: Props) => {
             <SwapOutlined className='mr-2 text-blue-500' /> Return Flight:
             {bookingFlight.returnFlightDetails.flightCode}
           </h3>
-          <Ticket captureRef={captureRef} FlightDetails={bookingFlight.returnFlightDetails} />
+          <Ticket FlightDetails={bookingFlight.returnFlightDetails} />
         </div>
       )}
 

@@ -18,6 +18,16 @@ export const useUpdatePassword = () => {
   })
 }
 
+export const useUpdateProfile = () => {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: myProfileApi.updateMyProfile,
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['my-profile'] })
+    }
+  })
+}
+
 export const useGetMyPurchaseTicket = (queryConfig: ListConfig) => {
   return useQuery({
     queryKey: ['my-profile-ticket-purchased', queryConfig],

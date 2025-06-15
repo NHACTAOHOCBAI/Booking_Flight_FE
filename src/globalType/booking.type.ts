@@ -15,7 +15,7 @@ declare global {
 
 export interface PaymentReq {
   amount: number
-  orderInfo: string
+  orderInfo: string[]
 }
 
 export interface PaymentRes {

@@ -1,7 +1,9 @@
 import { MyProfileTicketRes } from '@/globalType/myProfile.type'
+import { onErrorUtil } from '@/globalType/util.type'
+import { useCancelTicket } from '@/hooks/useBooking'
 import { useGetMyPurchaseTicket } from '@/hooks/useMyProfile'
 import { getTimeDifference } from '@/utils/utils'
-import { Button, Card, Descriptions, Empty, Modal, Spin } from 'antd'
+import { Button, Card, Descriptions, Empty, message, Modal, Spin } from 'antd'
 import React, { useState } from 'react'
 interface TicketCardProps {
   ticket: MyProfileTicketRes
@@ -26,29 +28,30 @@ const TicketCard: React.FC<TicketCardProps> = ({ ticket, showCancelButton, onTic
 
   const flightDetails = ticket.flight
   const duration = getTimeDifference(flightDetails.departureTime, flightDetails.arrivalTime)
-
+  const cancelTicketMutation = useCancelTicket()
   const handleCancelTicket = async () => {
-    // Modal.confirm({
-    //   title: 'Confirm Cancellation',
-    //   content: 'Are you sure you want to cancel this ticket? This action cannot be undone.',
-    //   okText: 'Yes, Cancel',
-    //   okType: 'danger',
-    //   cancelText: 'No',
-    //   onOk: async () => {
-    //     try {
-    //       await cancelTicketMutation.mutateAsync(ticket.id); // Assuming cancelTicketMutation takes ticket ID
-    //       message.success('Ticket cancelled successfully!');
-    //       setIsModalVisible(false); // Close modal after successful cancellation
-    //       if (onTicketCancelled) {
-    //         onTicketCancelled(); // Notify parent to re-fetch tickets
-    //       }
-    //     } catch (error: any) {
-    //       console.error('Failed to cancel ticket:', error);
-    //       const errorMessage = onErrorUtil(error);
-    //       message.error(errorMessage.content || 'Failed to cancel ticket.');
-    //     }
-    //   },
-    // });
+    Modal.confirm({
+      title: 'Confirm Cancellation',
+      content: 'Are you sure you want to cancel this ticket? This action cannot be undone.',
+      okText: 'Yes, Cancel',
+      okType: 'danger',
+      cancelText: 'No',
+      onOk: async () => {
+        try {
+          await cancelTicketMutation.mutateAsync([ticket.id])
+          message.success('Ticket cancelled successfully!')
+          setIsModalVisible(false)
+          if (onTicketCancelled) {
+            onTicketCancelled()
+          }
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } catch (error: any) {
+          console.error('Failed to cancel ticket:', error)
+          const errorMessage = onErrorUtil(error)
+          message.error(errorMessage.content || 'Failed to cancel ticket.')
+        }
+      }
+    })
     console.log('cancel ticket')
   }
 

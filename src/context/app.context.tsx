@@ -15,6 +15,8 @@ interface AppContextInterface {
     refetch: () => void
   }
   isPermissionsReady: boolean
+  urlTicket: { ticketId: string; imageUrl: string }[]
+  setUrlTicket: React.Dispatch<React.SetStateAction<{ ticketId: string; imageUrl: string }[]>>
 }
 const initialAppContext: AppContextInterface = {
   isAuthenticated: Boolean(getAccessTokenFromLS()),
@@ -27,7 +29,9 @@ const initialAppContext: AppContextInterface = {
     error: null,
     refetch: () => {}
   },
-  isPermissionsReady: false
+  isPermissionsReady: false,
+  urlTicket: [],
+  setUrlTicket: () => null
 }
 // eslint-disable-next-line react-refresh/only-export-components
 export const AppContext = createContext<AppContextInterface>(initialAppContext)
@@ -35,6 +39,7 @@ export const AppContext = createContext<AppContextInterface>(initialAppContext)
 export function AppProvider({ children }: { children: React.ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState(initialAppContext.isAuthenticated)
   const [profile, setProfile] = useState(initialAppContext.profile)
+  const [urlTicket, setUrlTicket] = useState(initialAppContext.urlTicket)
 
   const [PERMISSIONS, setPermissions] = useState(initialAppContext.PERMISSIONS)
   const [isPermissionsReady, setIsPermissionsReady] = useState(false)
@@ -58,9 +63,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       profile,
       setProfile,
       PERMISSIONS,
-      isPermissionsReady
+      isPermissionsReady,
+      urlTicket,
+      setUrlTicket
     }
-  }, [isAuthenticated, profile, PERMISSIONS, isPermissionsReady])
+  }, [isAuthenticated, profile, PERMISSIONS, isPermissionsReady, urlTicket])
 
   return <AppContext.Provider value={contextValue}> {children} </AppContext.Provider>
 }

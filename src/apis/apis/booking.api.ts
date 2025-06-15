@@ -18,6 +18,10 @@ const bookingApi = {
   checkPaymentStatus: async (id: string) => {
     const res = await http.get<SuccessResponse<CheckPaymentStatusRes>>(`${URLPAYMENT}/status/${id}`)
     return res.data
+  },
+  cancelTickets: async (ids: string[]) => {
+    const res = await http.post<SuccessResponse<string>>(URLBOOKING + '/cancel', ids)
+    return res.data
   }
 }
 export default bookingApi

@@ -1,30 +1,30 @@
 import { useBookingFlight, useCreatePayment } from '@/hooks/useBooking'
 import { setBookingTicketsList } from '@/redux/features/bookingTicket/bookingTicketsList'
 import { useAppDispatch, useAppSelector } from '@/redux/hooks'
-import { message } from 'antd'
-import React, { useContext, useEffect, useRef, useState } from 'react'
+import { message, Modal } from 'antd' // Import Modal
+import React, { useContext, useEffect, useState } from 'react'
 
 import FirstStep from './firstStep/firstStep'
 import SecondStep from './secondStep/secondStep'
 
 import { AppContext } from '@/context/app.context'
 import Loading from '@/components/ErrorPage/Loading'
-import html2canvas from 'html2canvas'
 
 const AdminBooking: React.FC = () => {
   const bookingTicketsList = useAppSelector((state) => state.bookingTicketsList)
   const dispatch = useAppDispatch()
   const [current, setCurrent] = useState(0)
   const [isRedirecting, setIsRedirecting] = useState(false)
-
+  const { urlTicket, setUrlTicket } = useContext(AppContext)
   const [showNotification, setShowNotification] = useState(false)
   const [nextDisabled, setNextDisabled] = useState(false)
+  const [isConfirmModalVisible, setIsConfirmModalVisible] = useState(false) // New state for modal
 
   const bookingFlight = useAppSelector((state) => state.bookingFlight)
 
   useEffect(() => {
-    // dispatch(setBookingFlight(bookingFlight as IFlightTable))
     dispatch(setBookingTicketsList([]))
+    setUrlTicket([])
   }, [bookingFlight, dispatch])
 
   useEffect(() => {
@@ -32,12 +32,11 @@ const AdminBooking: React.FC = () => {
   }, [bookingTicketsList])
 
   const openNotification = (check?: boolean) => {
-    console.log(check)
     if (check === undefined) {
       setNextDisabled(true)
       setShowNotification(true)
     } else {
-      // setNextDisabled(false)
+      // setNextDisabled(false) // This line is commented out in original code, keeping it that way
       setShowNotification(false)
     }
   }
@@ -45,10 +44,11 @@ const AdminBooking: React.FC = () => {
   const { profile } = useContext(AppContext)
   const bookingFlightMutation = useBookingFlight()
   const { mutate: paymentMutation } = useCreatePayment()
+
   const handlePayment = async () => {
     const body = {
       amount: bookingFlight.amountPayment,
-      orderInfo: 'Flight ticket checkout'
+      orderInfo: urlTicket.map((ticket) => ticket.ticketId)
     }
     paymentMutation(body, {
       onSuccess(data) {
@@ -60,7 +60,7 @@ const AdminBooking: React.FC = () => {
             window.location.href = paymentUrl
           }, 500)
         } else {
-          message.error('Không nhận được URL thanh toán từ máy chủ.')
+          message.error('Did not receive payment URL from the server.')
         }
       },
       onError(error: Error) {
@@ -70,41 +70,47 @@ const AdminBooking: React.FC = () => {
     })
   }
 
-  const captureRef = useRef<HTMLDivElement>(null)
+  // const handleBooking = (flightId: string, seatId: string) => {
+  //   return new Promise<void>((resolve, reject) => {
+  //     const body = {
+  //       flightId,
+  //       seatId,
+  //       ...(profile ? { accountId: profile.id } : {}),
+  //       passengers: [...bookingTicketsList],
+  //       urlImage: [...urlTicket]
+  //     }
 
-  const handleDownloadImage = async () => {
-    if (captureRef.current) {
-      const canvas = await html2canvas(captureRef.current)
-      const dataUrl = canvas.toDataURL('image/png')
-
-      const link = document.createElement('a')
-      link.href = dataUrl
-      link.download = 'flightTicket.png'
-      return link
+  //     bookingFlightMutation.mutate(body, {
+  //       onSuccess: () => {
+  //         return resolve()
+  //       },
+  //       // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  //       onError: (error: any) => {
+  //         console.log(error)
+  //         const errorMessage = error?.response?.data?.message + ' please choose another seat'
+  //         message.error(errorMessage)
+  //         reject(error)
+  //       }
+  //     })
+  //   })
+  // }
+  const handleBooking = async (flightId: string, seatId: string) => {
+    const body = {
+      flightId,
+      seatId,
+      ...(profile ? { accountId: profile.id } : {}),
+      passengers: [...bookingTicketsList],
+      urlImage: [...urlTicket]
     }
-  }
-  const handleBooking = (flightId: string, seatId: string) => {
-    return new Promise<void>((resolve, reject) => {
-      const body = {
-        flightId,
-        seatId,
-        ...(profile ? { accountId: profile.id } : {}),
-        passengers: [...bookingTicketsList]
-      }
 
-      bookingFlightMutation.mutate(body, {
-        onSuccess: () => {
-          return resolve()
-        },
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        onError: (error: any) => {
-          console.log(error)
-          const errorMessage = error?.response?.data?.message + ' please choose another seat'
-          message.error(errorMessage)
-          reject(error)
-        }
-      })
-    })
+    try {
+      await bookingFlightMutation.mutateAsync(body)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      const errorMessage = error?.response?.data?.message + ' please choose another seat'
+      message.error(errorMessage || 'An error occurred while booking. Please try again.')
+      throw error // Rất quan trọng để báo cho nơi gọi biết là có lỗi
+    }
   }
 
   const steps = [
@@ -114,9 +120,35 @@ const AdminBooking: React.FC = () => {
     },
     {
       title: 'Review',
-      content: <SecondStep captureRef={captureRef} />
+      content: <SecondStep />
     }
   ]
+
+  // Function to handle opening the confirmation modal
+  const handleNextStep = () => {
+    if (bookingTicketsList.length === 0) {
+      openNotification()
+      return
+    }
+
+    if (current === 0) {
+      setIsConfirmModalVisible(true) // Show confirmation modal if on the first step
+    } else {
+      setCurrent(current + 1) // Otherwise, proceed to the next step
+      setShowNotification(false)
+    }
+  }
+
+  // Function to handle confirmation from the modal
+  const handleConfirmNext = () => {
+    setCurrent(current + 1)
+    setShowNotification(false)
+    setIsConfirmModalVisible(false) // Close the modal
+  }
+
+  const handleCancelModal = () => {
+    setIsConfirmModalVisible(false) // Close the modal if user cancels
+  }
 
   return (
     <>
@@ -130,7 +162,9 @@ const AdminBooking: React.FC = () => {
               {steps.map((step, index) => (
                 <div
                   key={step.title}
-                  className={`flex-1 text-center ${current === index ? 'text-blue-600 font-semibold' : 'text-gray-400'}`}
+                  className={`flex-1 text-center ${
+                    current === index ? 'text-blue-600 font-semibold' : 'text-gray-400'
+                  }`}
                 >
                   {step.title}
                 </div>
@@ -152,15 +186,7 @@ const AdminBooking: React.FC = () => {
             {current < steps.length - 1 && (
               <button
                 disabled={nextDisabled}
-                onClick={() => {
-                  if (bookingTicketsList.length === 0) {
-                    openNotification()
-                    return
-                  }
-
-                  setCurrent(current + 1)
-                  setShowNotification(false)
-                }}
+                onClick={handleNextStep} // Call the new handler
                 className={`px-4 py-2 rounded text-white ${
                   nextDisabled ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'
                 }`}
@@ -191,14 +217,21 @@ const AdminBooking: React.FC = () => {
               </button>
             )}
 
-            {current > 0 && current !== steps.length && (
-              <button
-                onClick={() => setCurrent(current - 1)}
-                className='px-4 py-2 rounded bg-gray-200 text-gray-800 hover:bg-gray-300'
-              >
-                Previous
-              </button>
-            )}
+            {/* Ant Design Modal for confirmation */}
+            <Modal
+              title='Confirm Information'
+              open={isConfirmModalVisible} // Use 'open' prop for Ant Design v5+
+              onOk={handleConfirmNext}
+              onCancel={handleCancelModal}
+              okText='Confirm and Continue'
+              cancelText='Go Back'
+              maskClosable={false} // Prevents closing by clicking outside
+            >
+              <p>
+                Please carefully check the information you have entered. After confirming, you will not be able to
+                return to this step to make edits.
+              </p>
+            </Modal>
           </div>
         </div>
       )}

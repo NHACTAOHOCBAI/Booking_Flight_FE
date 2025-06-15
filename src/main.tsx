@@ -1,7 +1,6 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
-import UserLayout from 'pages/client/userLayout/userLayout'
 
 import AboutUsPage from 'pages/client/aboutUsPage/aboutUsPage'
 import BookingPage from 'pages/client/bookingPage/bookingPage'
@@ -38,6 +37,7 @@ import { PersistGate } from 'redux-persist/integration/react'
 import ThirdStep from './pages/admin/booking/thirdStep/thirdStep'
 import BookingFailed from './components/ErrorPage/BookingFailed'
 import LoginCallbackPage from './pages/auth/LoginCallbackPage '
+import UserLayout from './layouts/userLayout/userLayout'
 
 // function ProtectedRoute() {
 //   const { isAuthenticated } = useContext(AppContext)
