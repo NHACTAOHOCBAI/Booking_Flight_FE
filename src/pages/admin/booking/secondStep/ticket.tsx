@@ -27,11 +27,10 @@ const Ticket = ({ FlightDetails }: Props) => {
     departureCityName = bookingFlight.queryConfig['arrivalAirport.city.cityName']
   }
 
-  const stringFilter = `flight.id:'${FlightDetails.id}' and seat.id:'${FlightDetails.selectedSeat.seatId}'`
+  const stringFilter = `flight.id:'${FlightDetails.id}' and seat.id:'${FlightDetails.selectedSeat.seatId}' `
   const seatNumbers = useGetAllTickets({
     page: 1,
-    size: bookingFlight.queryConfig.passengerNumber,
-    filter: stringFilter
+    size: bookingFlight.queryConfig.passengerNumber
   }).data?.data.result
 
   const captureRefs = useRef<HTMLDivElement[]>([])
@@ -66,6 +65,7 @@ const Ticket = ({ FlightDetails }: Props) => {
   }, [bookingTicketsList, seatNumbers])
 
   if (!FlightDetails) return null
+  console.log(seatNumbers)
   if (seatNumbers)
     return (
       <div className='flex flex-col gap-2'>

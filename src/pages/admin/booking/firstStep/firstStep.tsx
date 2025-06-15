@@ -3,7 +3,7 @@ import DetailPrice from './detailPrice/detailPrice'
 import DetailFlight from './detailFlight/detailFlight'
 
 interface IProp {
-  openNotification: (check?: boolean) => void
+  openNotification: (check?: number) => void
 }
 
 const FirstStep = ({ openNotification }: IProp) => {

@@ -25,6 +25,10 @@ const ticketApi = {
   updateTicket: async (param: ITicketTable) => {
     const res = await http.put<SuccessResponse<string>>(`${URL}/${param.id}`, param)
     return res.data
+  },
+  pickupAtTicket: async (params: string[]) => {
+    const res = await http.post<SuccessResponse<string>>(URL + '/pickup', params)
+    return res.data
   }
 }
 export default ticketApi

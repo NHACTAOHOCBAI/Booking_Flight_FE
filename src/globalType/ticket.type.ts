@@ -14,6 +14,8 @@ declare global {
     passengerEmail?: string
     haveBaggage?: boolean
     imageUrl?: string
+    ticketStatus?: string
+    canBook?: boolean
   }
 }
 

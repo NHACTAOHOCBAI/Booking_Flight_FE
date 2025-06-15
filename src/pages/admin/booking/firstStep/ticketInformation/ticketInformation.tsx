@@ -23,7 +23,7 @@ interface FormValues {
 }
 
 interface IProp {
-  openNotification: (check?: boolean) => void
+  openNotification: (check?: number) => void
 }
 
 const TicketInformation = ({ openNotification }: IProp) => {
@@ -31,15 +31,18 @@ const TicketInformation = ({ openNotification }: IProp) => {
   const bookingFlight = useAppSelector((state) => state.bookingFlight)
   const bookingTicketsList = useAppSelector((state) => state.bookingTicketsList)
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const addFnRef = useRef<((defaultValue?: any) => void) | null>(null)
+
   const [form] = Form.useForm()
 
   const onFinish: FormProps<FormValues>['onFinish'] = (values) => {
     if (!values.tickets || values.tickets.length === 0) {
-      openNotification()
+      openNotification(1)
       dispatch(setBookingTicketsList([]))
       return
     }
-    openNotification(true)
+    openNotification()
     const data = values.tickets.map((value) => ({
       passengerName: value.passengerName,
       passengerPhone: value.passengerPhone,
@@ -85,20 +88,21 @@ const TicketInformation = ({ openNotification }: IProp) => {
     }
   }, [isAddReady])
   useEffect(() => {
-    if (!addRef.current || !isAddReady) return
+    if (!addFnRef.current) return
 
     const currentTickets = form.getFieldValue('tickets') || []
     const missing = passengerNumber - currentTickets.length
 
     if (passengerNumber > 0 && missing > 0) {
       for (let i = 0; i < missing; ++i) {
-        addRef.current({
-          seatId: bookingFlight.departureFlightDetails?.selectedSeat.seatId || '',
+        addFnRef.current({
+          seatId: bookingFlight.departureFlightDetails?.selectedSeat?.seatId || '',
           haveBaggage: false
         })
       }
     }
-  }, [passengerNumber, bookingFlight.departureFlightDetails?.selectedSeat.seatId, form, isAddReady])
+  }, [passengerNumber, bookingFlight.departureFlightDetails?.selectedSeat?.seatId])
+
   return (
     <Form
       form={form}
@@ -111,10 +115,8 @@ const TicketInformation = ({ openNotification }: IProp) => {
     >
       <Form.List name='tickets'>
         {(fields, { add, remove }) => {
-          if (!addRef.current) {
-            addRef.current = add
-            setIsAddReady(true)
-          }
+          addFnRef.current = add
+
           return (
             <div className='flex flex-col gap-4'>
               {fields.map((field) => (

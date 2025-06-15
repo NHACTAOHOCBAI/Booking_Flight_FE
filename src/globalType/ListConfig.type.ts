@@ -8,4 +8,5 @@ export interface ListConfig {
   'arrivalAirport.city.cityName'?: string
   departureTime?: string
   filter?: string
+  sort?: string
 }

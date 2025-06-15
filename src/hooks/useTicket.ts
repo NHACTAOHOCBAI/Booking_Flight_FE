@@ -45,3 +45,9 @@ export const useDeleteTicket = () => {
     }
   })
 }
+
+export const usePickUpTicket = () => {
+  return useMutation({
+    mutationFn: ticketApi.pickupAtTicket
+  })
+}
