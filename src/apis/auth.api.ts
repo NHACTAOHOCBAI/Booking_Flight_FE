@@ -64,8 +64,8 @@ export const authApi = {
       }
     })
   },
-  forgetPassword: async (email: string) => {
-    const res = await http.post<SuccessResponse<string>>(URL + 'forgot-password', email)
+  forgetPassword: async (params: { email: string }) => {
+    const res = await http.post<SuccessResponse<string>>(URL + 'forgot-password', params)
     return res.data
   },
   resetPassword: async (params: { newPassword: string; token: string }) => {

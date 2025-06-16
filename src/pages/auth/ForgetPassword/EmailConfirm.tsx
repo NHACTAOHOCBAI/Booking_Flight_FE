@@ -7,8 +7,10 @@ const EmailConfirm = () => {
   const { mutate: forgetPasswordMutation, isPending } = useForgetPassword()
   const onFinish = (values: { email: string }) => {
     message.destroy()
-
-    forgetPasswordMutation(values.email, {
+    const body = {
+      email: values.email
+    }
+    forgetPasswordMutation(body, {
       onSuccess() {
         message.success('A password reset link has been sent to your email. Please check your inbox.')
         form.resetFields()

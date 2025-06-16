@@ -38,8 +38,8 @@ import ThirdStep from './pages/admin/booking/thirdStep/thirdStep'
 import BookingFailed from './components/ErrorPage/BookingFailed'
 import LoginCallbackPage from './pages/auth/LoginCallbackPage '
 import UserLayout from './layouts/userLayout/userLayout'
-import EmailConfirm from './pages/auth/EmailConfirm'
-import ResetPassword from './pages/auth/ResetPassword'
+import EmailConfirm from './pages/auth/ForgetPassword/EmailConfirm'
+import ResetPassword from './pages/auth/ForgetPassword/ResetPassword'
 
 // function ProtectedRoute() {
 //   const { isAuthenticated } = useContext(AppContext)
