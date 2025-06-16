@@ -35,10 +35,10 @@ const TicketInformation = ({ openNotification }: IProp) => {
   const addFnRef = useRef<((defaultValue?: any) => void) | null>(null)
 
   const [form] = Form.useForm()
-
   const onFinish: FormProps<FormValues>['onFinish'] = (values) => {
     if (!values.tickets || values.tickets.length === 0) {
-      openNotification(1)
+      console.log('fail')
+      openNotification(2)
       dispatch(setBookingTicketsList([]))
       return
     }
@@ -107,6 +107,11 @@ const TicketInformation = ({ openNotification }: IProp) => {
     <Form
       form={form}
       onFinish={onFinish}
+      onFinishFailed={() => {
+        console.log('fail')
+        openNotification(1)
+        dispatch(setBookingTicketsList([]))
+      }}
       name='dynamic_form_complex'
       autoComplete='off'
       initialValues={{ tickets: [{ haveBaggage: false }] }}

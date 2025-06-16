@@ -36,7 +36,7 @@ const URL = '/api/auth/'
 
 export const authApi = {
   login: async (params: { username: string; password: string }) => {
-    const res = await http.post<SuccessResponse<ILogin>>(URL + 'login', params)
+    const res = await http.post<ILogin>(URL + 'login', params)
     return res.data
   },
   register: async (params: IAccountTable) => {

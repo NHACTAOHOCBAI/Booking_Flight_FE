@@ -1,5 +1,5 @@
 import { MenuFoldOutlined, MenuUnfoldOutlined, UserOutlined } from '@ant-design/icons'
-import { Avatar, Badge, Button, Layout, Menu, MenuProps, theme } from 'antd'
+import { Avatar, Badge, Button, Dropdown, Layout, Menu, MenuProps, message, Modal, theme } from 'antd'
 import { useContext, useEffect, useState } from 'react'
 import { RxDashboard } from 'react-icons/rx'
 import { VscAccount } from 'react-icons/vsc'
@@ -10,7 +10,15 @@ import { GoLocation } from 'react-icons/go'
 import { IoAirplaneOutline, IoTicketOutline, IoSettingsOutline } from 'react-icons/io5'
 import { MdOutlineAirlines } from 'react-icons/md'
 import { PiCityLight, PiAirplaneInFlight, PiSeat } from 'react-icons/pi'
+import React from 'react'
+import { clearLocalStorage } from '@/apis/auth.api'
+import { TbExclamationCircleFilled } from 'react-icons/tb'
+import { useLogout } from '@/hooks/useAuth'
 
+const menuStyle: React.CSSProperties = {
+  padding: '8px 15px',
+  cursor: 'pointer'
+}
 const { Header, Sider, Content } = Layout
 
 const AdminLayout = () => {
@@ -194,6 +202,42 @@ const AdminLayout = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [permissions, isPermissionsReady])
 
+  const logoutMutation = useLogout()
+  const { setIsAuthenticated, setProfile } = useContext(AppContext)
+  const { confirm } = Modal
+  const showConfirm = () => {
+    confirm({
+      title: 'Confirm logout',
+      icon: <TbExclamationCircleFilled />,
+      content: 'Do you want to logout?',
+      onOk() {
+        let body: void
+        logoutMutation.mutate(body, {
+          onSuccess() {
+            clearLocalStorage()
+            setIsAuthenticated(false)
+            setProfile(null)
+            message.success('logout success')
+          }
+        })
+      },
+      onCancel() {}
+    })
+  }
+  const items: MenuProps['items'] = [
+    {
+      key: '1',
+      label: <Link to='/myProfile'> My profile</Link>
+    },
+    {
+      key: '2',
+      label: (
+        <Link to='/' onClick={showConfirm}>
+          Logout
+        </Link>
+      )
+    }
+  ]
   return (
     <Layout
       style={{
@@ -253,9 +297,28 @@ const AdminLayout = () => {
           <div style={{ marginRight: 40, display: 'flex', alignItems: 'center', gap: '8px' }}>
             <Avatar size={35} icon={<UserOutlined />} />
             <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', lineHeight: '1.2' }}>
-              <span style={{ fontWeight: 'bold', fontSize: '14px' }}>{profile?.fullName}</span>
+              <Dropdown
+                menu={{ items }}
+                popupRender={(menu) => (
+                  <div className='bg-transparent'>
+                    {React.cloneElement(
+                      menu as React.ReactElement<{
+                        style: React.CSSProperties
+                      }>,
+                      { style: menuStyle }
+                    )}
+                  </div>
+                )}
+              >
+                {/* <span className='cursor-pointer'>
+                      <Space>{profile.fullName}</Space>
+                    </span> */}
+                <span style={{ fontWeight: 'bold', fontSize: '14px' }}>{profile?.fullName}</span>
+              </Dropdown>
+
               <span style={{ color: 'gray', fontSize: '12px' }}>
                 <Badge status='processing' />
+
                 <span> {profile?.role?.roleName}</span>
               </span>
             </div>

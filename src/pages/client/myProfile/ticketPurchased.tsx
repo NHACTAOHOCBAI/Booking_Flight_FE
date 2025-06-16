@@ -118,6 +118,11 @@ const TicketCard: React.FC<TicketCardProps> = ({ ticket, showCancelButton, onTic
           <Descriptions.Item label='Seat Number'>{ticket.seatNumber}</Descriptions.Item>
           <Descriptions.Item label='Baggage'>{ticket.haveBaggage ? 'Yes' : 'No'}</Descriptions.Item>
           <Descriptions.Item label='Ticket Status'>{flightDetails.flightStatus}</Descriptions.Item>
+          <Descriptions.Item label='Ticket Image'>
+            <a href={ticket.urlImage} download='ticket-image.jpg' target='_blank' rel='noopener noreferrer'>
+              Tải ảnh
+            </a>
+          </Descriptions.Item>
         </Descriptions>
       </Modal>
     </Card>
@@ -137,29 +142,29 @@ const TicketPurchasedPage: React.FC<TicketPurchasedPageProps> = ({ type }) => {
     case 'incoming':
       pageTitle = 'Incoming Flight Tickets'
       pageDescription = 'View details of your upcoming flight tickets.'
-      filterTicket = ''
-      // filterTicket = `flightStatus:'incoming'}`
+
+      filterTicket = `ticketStatus:'BOOKED'`
       break
     case 'flown':
       pageTitle = 'Flown Tickets'
       pageDescription = 'View details of your flights that have already taken off.'
-      filterTicket = ''
-      // filterTicket = `flightStatus:'flown'}`
+
+      filterTicket = `ticketStatus:'USED'`
       break
     case 'cancelled':
       pageTitle = 'Cancelled Tickets'
       pageDescription = 'View details of your cancelled flight tickets.'
-      filterTicket = ''
-      // filterTicket = `flightStatus:'cancelled'`
+
+      filterTicket = `ticketStatus:'CANCELLED'`
       break
     default:
       pageTitle = 'Purchased Tickets'
       pageDescription = 'View details of all your purchased flight tickets.'
-      filterTicket = ''
+      filterTicket = `ticketStatus:'CANCELLED'`
       break
   }
 
-  const { data, isLoading, error, refetch } = useGetMyPurchaseTicket({})
+  const { data, isLoading, error, refetch } = useGetMyPurchaseTicket({ filter: filterTicket })
   const purchasedTickets = data?.data.result
   console.log(purchasedTickets)
   return (

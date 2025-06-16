@@ -1,5 +1,4 @@
 import { useBookingFlight, useCreatePayment } from '@/hooks/useBooking'
-import { setBookingTicketsList } from '@/redux/features/bookingTicket/bookingTicketsList'
 import { useAppDispatch, useAppSelector } from '@/redux/hooks'
 import { message, Modal } from 'antd' // Import Modal
 import React, { useContext, useEffect, useRef, useState } from 'react'
@@ -7,22 +6,22 @@ import React, { useContext, useEffect, useRef, useState } from 'react'
 import FirstStep from './firstStep/firstStep'
 import SecondStep from './secondStep/secondStep'
 
-import { AppContext } from '@/context/app.context'
 import Loading from '@/components/ErrorPage/Loading'
+import { AppContext } from '@/context/app.context'
 import { useNavigate } from 'react-router-dom'
 
-import { usePickUpTicket } from '@/hooks/useTicket'
-import { onErrorUtil } from '@/globalType/util.type'
 import { CountdownTimer } from '@/components/CountdownTimer'
-import SeatChoosing from './seatChoosing/seatChoosing'
+import { onErrorUtil } from '@/globalType/util.type'
+import { usePickUpTicket } from '@/hooks/useTicket'
 import { setBookingFlight } from '@/redux/features/bookingFlight/bookingFlightSlice'
+import SeatChoosing from './seatChoosing/seatChoosing'
 
 const AdminBooking: React.FC = () => {
   const bookingTicketsList = useAppSelector((state) => state.bookingTicketsList)
   const dispatch = useAppDispatch()
   const [current, setCurrent] = useState(0)
   const [isRedirecting, setIsRedirecting] = useState(false)
-  const { urlTicket, setUrlTicket } = useContext(AppContext)
+  const { urlTicket } = useContext(AppContext)
   const [showNotification, setShowNotification] = useState(0)
   const [nextDisabled, setNextDisabled] = useState(false)
   const [isConfirmModalVisible, setIsConfirmModalVisible] = useState(false)
@@ -42,7 +41,7 @@ const AdminBooking: React.FC = () => {
   useEffect(() => {
     // console.log('bookingTicketsList:', bookingTicketsList)
     if (current > 0) setNextDisabled(bookingTicketsList.length === 0)
-  }, [bookingTicketsList])
+  }, [bookingTicketsList, current])
 
   const openNotification = (check?: number) => {
     if (check === undefined) {
@@ -61,12 +60,12 @@ const AdminBooking: React.FC = () => {
   const handlePayment = async () => {
     const body = {
       amount: bookingFlight.amountPayment,
-      orderInfo: urlTicket
+      orderInfo: bookingFlight.ticketNumbers.map((item) => item.ticketId)
     }
     paymentMutation(body, {
       onSuccess(data) {
         const paymentUrl = data?.data.paymentUrl
-        console.log(paymentUrl)
+
         if (paymentUrl) {
           setIsRedirecting(true)
           setTimeout(() => {
@@ -166,11 +165,16 @@ const AdminBooking: React.FC = () => {
     }
   ]
 
+  useEffect(() => {
+    setNextDisabled(true)
+  }, [])
+
   const handleNextStep = () => {
     if (bookingTicketsList.length === 0 && current > 0) {
-      openNotification(1)
+      openNotification(2)
       return
     }
+
     if (current === 0) {
       setIsConfirmModalVisible(true)
       return
@@ -184,6 +188,7 @@ const AdminBooking: React.FC = () => {
           return { ticketId: seat.ticketId, seatNumber: seat.seatNumber }
         })
       ]
+      console.log('bookingTicketsList', bookingTicketsList)
       console.log(ticketNumbers)
       dispatch(
         setBookingFlight({

@@ -148,7 +148,7 @@ interface BookingState {
   returnFlightDetails: (IFlightTable & { selectedSeat: ISeat }) | null
   queryConfig: QueryConfig
   amountPayment: number
-  ticketNumbers: string[]
+  ticketNumbers: { ticketId: string; seatNumber: number }[]
 }
 
 const BookingPage = () => {
@@ -166,6 +166,7 @@ const BookingPage = () => {
       tripType: queryConfigFromUrl.tripType || 'round-trip',
       returnTime: queryConfigFromUrl.returnTime || '2025-12-15T14:00:00Z',
       passengerNumber: queryConfigFromUrl.passengerNumber || '1',
+
       ...queryConfigFromUrl
     },
     amountPayment: 0,
@@ -280,6 +281,7 @@ const BookingPage = () => {
           returnFlightDetails: flightWithSeat
         }))
       }
+      message.destroy()
       message.success(`Selected seat ${seat.seatName} for ${bookingState.currentStep} `)
     }
   }
@@ -442,8 +444,12 @@ const BookingPage = () => {
           <Title level={2} className='!text-2xl !font-bold !text-green-600 !mt-2'>
             Total:{' '}
             {(
-              (bookingState.departureFlightDetails?.selectedSeat?.price || 0) +
-              (bookingState.returnFlightDetails?.selectedSeat?.price || 0)
+              (bookingState.departureFlightDetails?.selectedSeat?.price ?? 0) *
+                (bookingState.departureFlightDetails?.originPrice ?? 0) *
+                Number(bookingState.queryConfig.passengerNumber) +
+              (bookingState.returnFlightDetails?.selectedSeat?.price ?? 0) *
+                (bookingState.returnFlightDetails?.originPrice ?? 0) *
+                Number(bookingState.queryConfig.passengerNumber)
             ).toLocaleString('vi-VN')}{' '}
             VND
           </Title>

@@ -1,14 +1,14 @@
+import { saveAccessTokenToLS, saveProfileToLS } from '@/apis/auth.api'
+import { AppContext } from '@/context/app.context'
+import { ErrorResponse } from '@/globalType/util.type'
+import { useLogin } from '@/hooks/useAuth'
+import { isAxiosUnprocessableEntityError } from '@/utils/utils'
+import { ArrowLeftOutlined, GoogleOutlined } from '@ant-design/icons'
 import type { FormProps } from 'antd'
 import { Button, Checkbox, Divider, Form, Input } from 'antd'
-import { ArrowLeftOutlined, GoogleOutlined } from '@ant-design/icons'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { useContext, useEffect, useState } from 'react'
 import classNames from 'classnames'
-import { isAxiosUnprocessableEntityError } from '@/utils/utils'
-import { ErrorResponse } from '@/globalType/util.type'
-import { AppContext } from '@/context/app.context'
-import { saveAccessTokenToLS, saveProfileToLS } from '@/apis/auth.api'
-import { useLogin } from '@/hooks/useAuth'
+import { useContext, useEffect, useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 
 type FieldType = {
   username?: string
@@ -30,12 +30,12 @@ const LoginPage = () => {
       navigate('/')
       // window.location.href = '/'
     }
-  }, [])
+  }, [isAuthenticated, navigate])
 
   const onFinish: FormProps<FieldType>['onFinish'] = (values) => {
     const body = { username: values.username as string, password: values.password as string }
     loginMutation.mutate(body, {
-      onSuccess: (data) => {
+      onSuccess: (data: ILogin) => {
         setIsAuthenticated(true)
         setProfile(data.data.account)
         saveProfileToLS(data.data.account)
@@ -95,9 +95,9 @@ const LoginPage = () => {
                 <Form.Item name='remember' valuePropName='checked' noStyle>
                   <Checkbox>Remember me</Checkbox>
                 </Form.Item>
-                <a href='#' className='text-blue-600 hover:underline text-sm'>
+                <Link to='/resetPassword/emailConfirm' className='text-blue-600 hover:underline text-sm'>
                   Forgot password?
-                </a>
+                </Link>
               </div>
             </Form.Item>
 

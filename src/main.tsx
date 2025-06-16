@@ -38,6 +38,8 @@ import ThirdStep from './pages/admin/booking/thirdStep/thirdStep'
 import BookingFailed from './components/ErrorPage/BookingFailed'
 import LoginCallbackPage from './pages/auth/LoginCallbackPage '
 import UserLayout from './layouts/userLayout/userLayout'
+import EmailConfirm from './pages/auth/EmailConfirm'
+import ResetPassword from './pages/auth/ResetPassword'
 
 // function ProtectedRoute() {
 //   const { isAuthenticated } = useContext(AppContext)
@@ -53,6 +55,14 @@ const router = createBrowserRouter([
       {
         index: true,
         element: <HomePage />
+      },
+      {
+        path: '/resetPassword/emailConfirm',
+        element: <EmailConfirm />
+      },
+      {
+        path: '/resetPassword/changePassword',
+        element: <ResetPassword />
       },
       {
         path: '/about',

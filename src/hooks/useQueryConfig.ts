@@ -18,10 +18,7 @@ export default function useQueryConfig() {
       departureTime: queryParams.departureTime,
       tripType: queryParams.tripType,
       returnTime: queryParams.returnTime,
-      passengerNumber: queryParams.passengerNumber,
-      sort_by: queryParams.sort_by,
-      name: queryParams.name,
-      order: queryParams.order
+      passengerNumber: queryParams.passengerNumber
     },
     isUndefined
   )

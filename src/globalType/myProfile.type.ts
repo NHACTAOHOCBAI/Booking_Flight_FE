@@ -19,6 +19,7 @@ export interface MyProfileTicketRes {
   haveBaggage: boolean
   flight: IFlight
   seatNumber: number
+  urlImage: string
 }
 
 export interface IFlight {

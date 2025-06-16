@@ -2,7 +2,6 @@ import permissionApi from '@/apis/apis/permission.api'
 import { IPermission } from '@/globalType/permission.type'
 import { useQuery } from '@tanstack/react-query'
 
-// permissions.cache.ts
 let cachedPermissions: AllPermissions | null = null
 
 export const getCachedPermissions = () => cachedPermissions

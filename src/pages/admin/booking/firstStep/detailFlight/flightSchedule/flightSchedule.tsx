@@ -7,7 +7,7 @@ const FlightSchedule = () => {
   const bookingFlight = useAppSelector((state) => state.bookingFlight)
 
   const flights = [bookingFlight.departureFlightDetails, bookingFlight.returnFlightDetails]
-  console.log(bookingFlight)
+
   return (
     <>
       {flights.map((flight, index) => {

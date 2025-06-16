@@ -61,6 +61,7 @@ const CustomTag: React.FC<CustomTagProps> = ({ children }) => {
 
 const SeatChoosingComponent = ({ openNotification, flightDetails, selectedSeats, setSelectedSeats }: IProp) => {
   const [seats, setSeats] = useState<Array<Array<Seat | null>>>([])
+  const [tempSelectedSeats, setTempSelectedSeats] = useState<Array<{ ticketId: string; seatNumber: number }>>([])
 
   const [message, setMessage] = useState<string>('')
 
@@ -134,19 +135,19 @@ const SeatChoosingComponent = ({ openNotification, flightDetails, selectedSeats,
     setMessage('')
   }, [ticketNumbers, flightDetails?.id])
 
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      if (openNotification) {
-        if (selectedSeats.length !== Number(passengerNumber)) {
-          openNotification(2)
-        } else {
-          openNotification()
-        }
-      }
-    }, 0)
+  // useEffect(() => {
+  //   const timeout = setTimeout(() => {
+  //     if (openNotification) {
+  //       if (selectedSeats.length !== Number(passengerNumber)) {
+  //         openNotification(2)
+  //       } else {
+  //         openNotification()
+  //       }
+  //     }
+  //   }, 0)
 
-    return () => clearTimeout(timeout)
-  }, [selectedSeats.length, passengerNumber, openNotification])
+  //   return () => clearTimeout(timeout)
+  // }, [selectedSeats.length, passengerNumber, openNotification])
 
   const handleSeatClick = (seat: Seat) => {
     if (seat.status === 'occupied') {
@@ -160,7 +161,7 @@ const SeatChoosingComponent = ({ openNotification, flightDetails, selectedSeats,
           if (s && s.id === seat.id) {
             const newStatus = s.status === 'selected' ? 'available' : 'selected'
 
-            setSelectedSeats((prev) => {
+            setTempSelectedSeats((prev) => {
               const isAlreadySelected = prev.some((item) => item.ticketId === s.id) // Kiểm tra bằng id
               let newSelected = [...prev]
 
@@ -185,6 +186,57 @@ const SeatChoosingComponent = ({ openNotification, flightDetails, selectedSeats,
       )
     )
   }
+  // const handleSeatClick = (seat: Seat) => {
+  //   if (seat.status === 'occupied') {
+  //     setMessage(`Ghế số ${seat.seatNumber} đã có người. Vui lòng chọn ghế khác.`)
+  //     return
+  //   }
+
+  //   setSeats((prevSeats) =>
+  //     prevSeats.map((row) =>
+  //       row.map((s) => {
+  //         if (s && s.id === seat.id) {
+  //           const newStatus = s.status === 'selected' ? 'available' : 'selected'
+
+  //           setSelectedSeats((prev) => {
+  //             const isAlreadySelected = prev.some((item) => item.ticketId === s.id)
+  //             let newSelected = [...prev]
+
+  //             if (newStatus === 'selected') {
+  //               if (!isAlreadySelected && newSelected.length < Number(passengerNumber)) {
+  //                 newSelected.push({ ticketId: s.id, seatNumber: s.seatNumber })
+  //               } else if (newSelected.length >= Number(passengerNumber)) {
+  //                 setMessage(`Bạn chỉ có thể chọn tối đa ${passengerNumber} ghế.`)
+  //                 return prev
+  //               }
+  //             } else {
+  //               newSelected = newSelected.filter((item) => item.ticketId !== s.id)
+  //             }
+
+  //             setMessage('')
+
+  //             const sorted = newSelected.sort((a, b) => Number(a.seatNumber) - Number(b.seatNumber))
+
+  //             // 🔔 Gọi thông báo sau khi chọn/xoá
+  //             if (openNotification) {
+  //               if (sorted.length !== Number(passengerNumber)) {
+  //                 openNotification(2) // Ví dụ: chưa đủ số lượng
+  //               } else {
+  //                 openNotification() // Đã đủ
+  //               }
+  //             }
+
+  //             return sorted
+  //           })
+
+  //           return { ...s, status: newStatus }
+  //         }
+
+  //         return s
+  //       })
+  //     )
+  //   )
+  // }
 
   const renderSeat = (seat: Seat | null) => {
     if (!seat) {
@@ -201,7 +253,7 @@ const SeatChoosingComponent = ({ openNotification, flightDetails, selectedSeats,
     let tooltipText = `Ghế số ${seat.seatNumber}`
     let content: React.ReactNode = null
 
-    const isSeatSelected = selectedSeats.some((item) => item.ticketId === seat.id)
+    const isSeatSelected = tempSelectedSeats.some((item) => item.ticketId === seat.id)
 
     if (seat.status === 'occupied') {
       seatClass += ' bg-gray-200 text-gray-600 cursor-not-allowed'
@@ -240,19 +292,18 @@ const SeatChoosingComponent = ({ openNotification, flightDetails, selectedSeats,
       </div>
     )
   }
-
   const handleConfirm = () => {
-    if (selectedSeats.length === 0) {
+    if (tempSelectedSeats.length === 0) {
       setMessage('Vui lòng chọn ít nhất một ghế.')
-      openNotification(2)
-    } else if (selectedSeats.length !== Number(passengerNumber)) {
+      openNotification?.(2)
+    } else if (tempSelectedSeats.length !== Number(passengerNumber)) {
       setMessage(`Vui lòng chọn chính xác ${passengerNumber} ghế.`)
-      openNotification(2)
+      openNotification?.(2)
     } else {
-      console.log('Ghế đã chọn:', selectedSeats)
-
-      setMessage(`Bạn đã chọn các ghế: ${selectedSeats.map((s) => s.seatNumber).join(', ')}. Cảm ơn!`)
-      openNotification(1)
+      console.log('Ghế đã chọn:', tempSelectedSeats)
+      setSelectedSeats(tempSelectedSeats)
+      setMessage(`Bạn đã chọn các ghế: ${tempSelectedSeats.map((s) => s.seatNumber).join(', ')}. Cảm ơn!`)
+      openNotification?.()
     }
   }
 
@@ -343,9 +394,9 @@ const SeatChoosingComponent = ({ openNotification, flightDetails, selectedSeats,
 
           <div className='mb-6'>
             <h2 className='text-xl font-bold text-gray-800 mb-3'>Ghế đã chọn:</h2>
-            {selectedSeats.length > 0 ? (
+            {tempSelectedSeats.length > 0 ? (
               <div className='flex flex-wrap justify-center gap-3'>
-                {selectedSeats.map((item) => (
+                {tempSelectedSeats.map((item) => (
                   <CustomTag key={item.ticketId}>{item.seatNumber}</CustomTag>
                 ))}
               </div>

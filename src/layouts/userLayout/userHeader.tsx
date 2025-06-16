@@ -113,7 +113,7 @@ const UserHeader = () => {
                 {profile ? (
                   <Dropdown
                     menu={{ items }}
-                    dropdownRender={(menu) => (
+                    popupRender={(menu) => (
                       <div className='bg-transparent'>
                         {React.cloneElement(
                           menu as React.ReactElement<{
