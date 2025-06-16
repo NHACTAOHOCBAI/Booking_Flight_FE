@@ -63,6 +63,14 @@ export const authApi = {
         return null
       }
     })
+  },
+  forgetPassword: async (email: string) => {
+    const res = await http.post<SuccessResponse<string>>(URL + 'forgot-password', email)
+    return res.data
+  },
+  resetPassword: async (params: { newPassword: string; token: string }) => {
+    const res = await http.post<SuccessResponse<string>>(URL + 'reset-password', params)
+    return res.data
   }
 }
 export default authApi

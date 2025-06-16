@@ -1,6 +1,8 @@
 import { useAppSelector } from '@/redux/hooks'
 import { SendOutlined, SwapOutlined } from '@ant-design/icons'
 import Ticket from './ticket'
+import { AppContext } from '@/context/app.context'
+import { useContext } from 'react'
 
 const SecondStep = () => {
   const bookingFlight = useAppSelector((state) => state.bookingFlight)
@@ -14,7 +16,10 @@ const SecondStep = () => {
           <SendOutlined className='mr-2 text-blue-500' /> Departure Flight:{' '}
           {bookingFlight.departureFlightDetails!.flightCode}
         </h3>
-        <Ticket FlightDetails={bookingFlight.departureFlightDetails!} />
+        <Ticket
+          selectedSeats={bookingFlight.ticketNumbers.slice(0, Number(bookingFlight.queryConfig.passengerNumber))}
+          FlightDetails={bookingFlight.departureFlightDetails!}
+        />
       </div>
 
       {bookingFlight?.departureFlightDetails && bookingFlight?.returnFlightDetails && (
@@ -30,7 +35,13 @@ const SecondStep = () => {
             <SwapOutlined className='mr-2 text-blue-500' /> Return Flight:
             {bookingFlight.returnFlightDetails.flightCode}
           </h3>
-          <Ticket FlightDetails={bookingFlight.returnFlightDetails} />
+          <Ticket
+            selectedSeats={bookingFlight.ticketNumbers.slice(
+              Number(bookingFlight.queryConfig.passengerNumber),
+              Number(bookingFlight.queryConfig.passengerNumber) * 2
+            )}
+            FlightDetails={bookingFlight.returnFlightDetails}
+          />
         </div>
       )}
 

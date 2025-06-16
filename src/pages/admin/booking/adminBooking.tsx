@@ -10,10 +10,12 @@ import SecondStep from './secondStep/secondStep'
 import { AppContext } from '@/context/app.context'
 import Loading from '@/components/ErrorPage/Loading'
 import { useNavigate } from 'react-router-dom'
-import SeatChoosing from './seatChoosing/seatChoosing'
+
 import { usePickUpTicket } from '@/hooks/useTicket'
 import { onErrorUtil } from '@/globalType/util.type'
 import { CountdownTimer } from '@/components/CountdownTimer'
+import SeatChoosing from './seatChoosing/seatChoosing'
+import { setBookingFlight } from '@/redux/features/bookingFlight/bookingFlightSlice'
 
 const AdminBooking: React.FC = () => {
   const bookingTicketsList = useAppSelector((state) => state.bookingTicketsList)
@@ -24,20 +26,21 @@ const AdminBooking: React.FC = () => {
   const [showNotification, setShowNotification] = useState(0)
   const [nextDisabled, setNextDisabled] = useState(false)
   const [isConfirmModalVisible, setIsConfirmModalVisible] = useState(false)
-  const [selectedSeats, setSelectedSeats] = useState<Array<{ id: string; seatNumber: number }>>([])
+  const [departureSeat, setDepartureSeat] = useState<Array<{ ticketId: string; seatNumber: number }>>([])
+  const [returnSeats, setReturnSeats] = useState<Array<{ ticketId: string; seatNumber: number }>>([])
 
   const [countdown, setCountdown] = useState<number | null>(null)
   const countdownRef = useRef<NodeJS.Timeout | null>(null)
 
   const bookingFlight = useAppSelector((state) => state.bookingFlight)
   const navigate = useNavigate()
-  useEffect(() => {
-    dispatch(setBookingTicketsList([]))
-    setUrlTicket([])
-  }, [bookingFlight, dispatch])
+  // useEffect(() => {
+  //   dispatch(setBookingTicketsList([]))
+  //   setUrlTicket([])
+  // }, [bookingFlight, dispatch])
 
   useEffect(() => {
-    console.log('bookingTicketsList:', bookingTicketsList)
+    // console.log('bookingTicketsList:', bookingTicketsList)
     if (current > 0) setNextDisabled(bookingTicketsList.length === 0)
   }, [bookingTicketsList])
 
@@ -58,7 +61,7 @@ const AdminBooking: React.FC = () => {
   const handlePayment = async () => {
     const body = {
       amount: bookingFlight.amountPayment,
-      orderInfo: urlTicket.map((ticket) => ticket.ticketId)
+      orderInfo: urlTicket
     }
     paymentMutation(body, {
       onSuccess(data) {
@@ -105,13 +108,31 @@ const AdminBooking: React.FC = () => {
   //   })
   // }
   const handleBooking = async (flightId: string, seatId: string) => {
+    let passengers = bookingTicketsList.map((item, index) => {
+      return {
+        ...item,
+        urlImage: urlTicket[index],
+        ticketId: bookingFlight.ticketNumbers[index].ticketId,
+        seatNumber: bookingFlight.ticketNumbers[index].seatNumber
+      }
+    })
+    if (bookingFlight.returnFlightDetails?.id === flightId)
+      passengers = bookingTicketsList.map((item, index) => {
+        return {
+          ...item,
+          urlImage: urlTicket[index],
+          ticketId: bookingFlight.ticketNumbers[index + Number(bookingFlight.queryConfig.passengerNumber)].ticketId,
+          seatNumber: bookingFlight.ticketNumbers[index + Number(bookingFlight.queryConfig.passengerNumber)].seatNumber
+        }
+      })
     const body = {
       flightId,
       seatId,
       ...(profile ? { accountId: profile.id } : {}),
-      passengers: [...bookingTicketsList]
+      passengers: passengers
     }
-    console.log(bookingTicketsList)
+    console.log(passengers)
+
     try {
       await bookingFlightMutation.mutateAsync(body)
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -127,10 +148,11 @@ const AdminBooking: React.FC = () => {
       title: 'Choose seat',
       content: (
         <SeatChoosing
-          selectedSeats={selectedSeats}
-          setSelectedSeats={setSelectedSeats}
+          departureSeat={departureSeat}
+          setDepartureSeat={setDepartureSeat}
           openNotification={openNotification}
-          flightDetails={bookingFlight.departureFlightDetails!}
+          returnSeats={returnSeats}
+          setReturnSeats={setReturnSeats}
         />
       )
     },
@@ -154,13 +176,21 @@ const AdminBooking: React.FC = () => {
       return
     }
     if (current === 1) {
-      const newBookingTicketsList = bookingTicketsList.map((ticket, index) => ({
-        ...ticket,
-        seatNumber: selectedSeats[index]?.seatNumber,
-        ticketId: selectedSeats[index]?.id
-      }))
-
-      console.log('newBookingTicketsList', newBookingTicketsList)
+      const ticketNumbers = [
+        ...departureSeat.map((seat) => {
+          return { ticketId: seat.ticketId, seatNumber: seat.seatNumber }
+        }),
+        ...returnSeats.map((seat) => {
+          return { ticketId: seat.ticketId, seatNumber: seat.seatNumber }
+        })
+      ]
+      console.log(ticketNumbers)
+      dispatch(
+        setBookingFlight({
+          ...bookingFlight,
+          ticketNumbers: ticketNumbers
+        })
+      )
     }
 
     setCurrent(current + 1)
@@ -168,10 +198,11 @@ const AdminBooking: React.FC = () => {
   }
   const pickUpMutation = usePickUpTicket()
   const handleConfirmNext = async () => {
-    const body = selectedSeats.map((item) => item.id)
+    const body = [...departureSeat.map((item) => item.ticketId), ...returnSeats.map((item) => item.ticketId)]
+
     pickUpMutation.mutate(body, {
       onSuccess: () => {
-        setCountdown(300)
+        setCountdown(1)
 
         countdownRef.current = setInterval(() => {
           setCountdown((prev) => {

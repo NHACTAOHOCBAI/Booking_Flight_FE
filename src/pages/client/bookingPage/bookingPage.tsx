@@ -148,6 +148,7 @@ interface BookingState {
   returnFlightDetails: (IFlightTable & { selectedSeat: ISeat }) | null
   queryConfig: QueryConfig
   amountPayment: number
+  ticketNumbers: string[]
 }
 
 const BookingPage = () => {
@@ -167,7 +168,8 @@ const BookingPage = () => {
       passengerNumber: queryConfigFromUrl.passengerNumber || '1',
       ...queryConfigFromUrl
     },
-    amountPayment: 0
+    amountPayment: 0,
+    ticketNumbers: []
   })
 
   const [currentFlights, setCurrentFlights] = useState<IFlightTable[]>([])

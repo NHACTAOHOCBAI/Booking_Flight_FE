@@ -223,7 +223,8 @@ const FlightManagement = () => {
                 },
                 returnFlightDetails: null,
                 queryConfig: {},
-                amountPayment: 0
+                amountPayment: 0,
+                ticketNumbers: []
               }
 
               dispatch(setBookingFlight(bookingState))

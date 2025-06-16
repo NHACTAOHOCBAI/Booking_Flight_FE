@@ -15,8 +15,8 @@ interface AppContextInterface {
     refetch: () => void
   }
   isPermissionsReady: boolean
-  urlTicket: { ticketId: string; imageUrl: string }[]
-  setUrlTicket: React.Dispatch<React.SetStateAction<{ ticketId: string; imageUrl: string }[]>>
+  urlTicket: string[]
+  setUrlTicket: React.Dispatch<React.SetStateAction<string[]>>
 }
 const initialAppContext: AppContextInterface = {
   isAuthenticated: Boolean(getAccessTokenFromLS()),

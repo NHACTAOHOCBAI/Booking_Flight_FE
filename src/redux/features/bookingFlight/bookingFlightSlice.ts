@@ -6,6 +6,7 @@ export interface BookingState {
   returnFlightDetails: (IFlightTable & { selectedSeat: ISeat }) | null
   queryConfig: QueryConfig
   amountPayment: number
+  ticketNumbers: { ticketId: string; seatNumber: number }[]
 }
 
 const initialState: BookingState = {
@@ -14,7 +15,8 @@ const initialState: BookingState = {
   queryConfig: {
     page: '1'
   },
-  amountPayment: 0
+  amountPayment: 0,
+  ticketNumbers: []
 }
 
 const bookingFlightSlice = createSlice({

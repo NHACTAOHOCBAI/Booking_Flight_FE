@@ -9,12 +9,16 @@ import { BsFillTicketPerforatedFill } from 'react-icons/bs'
 
 interface Props {
   FlightDetails: IFlightTable & { selectedSeat: ISeat }
+  selectedSeats: {
+    ticketId: string
+    seatNumber: number
+  }[]
 }
 
-const Ticket = ({ FlightDetails }: Props) => {
+const Ticket = ({ FlightDetails, selectedSeats }: Props) => {
   const bookingTicketsList = useAppSelector((state) => state.bookingTicketsList)
   const bookingFlight = useAppSelector((state) => state.bookingFlight)
-  const { setUrlTicket } = useContext(AppContext)
+  const { urlTicket, setUrlTicket } = useContext(AppContext)
 
   let departureCityName
   let arrivalCityName
@@ -27,31 +31,29 @@ const Ticket = ({ FlightDetails }: Props) => {
     departureCityName = bookingFlight.queryConfig['arrivalAirport.city.cityName']
   }
 
-  const stringFilter = `flight.id:'${FlightDetails.id}' and seat.id:'${FlightDetails.selectedSeat.seatId}' `
-  const seatNumbers = useGetAllTickets({
-    page: 1,
-    size: bookingFlight.queryConfig.passengerNumber
-  }).data?.data.result
+  // const stringFilter = `flight.id:'${FlightDetails.id}' and seat.id:'${FlightDetails.selectedSeat.seatId}' `
+  // const seatNumbers = useGetAllTickets({
+  //   page: 1,
+  //   size: bookingFlight.queryConfig.passengerNumber
+  // }).data?.data.result
 
   const captureRefs = useRef<HTMLDivElement[]>([])
 
   useEffect(() => {
     console.log(captureRefs.current.length)
     const generateImageUrls = async () => {
-      const urls: { ticketId: string; imageUrl: string }[] = []
+      const urls: string[] = []
       for (let i = 0; i < captureRefs.current.length; i++) {
         const el = captureRefs.current[i]
         if (el) {
           const canvas = await html2canvas(el)
           const dataUrl = canvas.toDataURL('image/png')
-          const ticketId = seatNumbers ? (seatNumbers[i].id as string) : ''
-          urls.push({ ticketId: ticketId, imageUrl: dataUrl })
+
+          urls.push(dataUrl)
         }
       }
       setUrlTicket((prev) => {
-        const prevIds = new Set(prev.map((item) => item.ticketId))
-
-        const uniqueNew = urls.filter((url) => !prevIds.has(url.ticketId))
+        const uniqueNew = urls.filter((url) => !prev.includes(url))
 
         return [...prev, ...uniqueNew]
       })
@@ -59,14 +61,20 @@ const Ticket = ({ FlightDetails }: Props) => {
       console.log('ticketImageUrls:', urls)
     }
 
-    if (bookingTicketsList.length > 0 && seatNumbers?.length === bookingTicketsList.length) {
+    if (
+      bookingTicketsList.length > 0 &&
+      selectedSeats?.length === bookingTicketsList.length &&
+      captureRefs.current.length === bookingTicketsList.length &&
+      urlTicket.length < bookingTicketsList.length
+    ) {
       generateImageUrls()
     }
-  }, [bookingTicketsList, seatNumbers])
+  }, [bookingTicketsList])
 
   if (!FlightDetails) return null
-  console.log(seatNumbers)
-  if (seatNumbers)
+  // console.log('selectedSeats:', selectedSeats)
+  // console.log('bookingTicketsList:', bookingTicketsList)
+  if (selectedSeats)
     return (
       <div className='flex flex-col gap-2'>
         {bookingTicketsList.map((value, index) => (
@@ -105,7 +113,7 @@ const Ticket = ({ FlightDetails }: Props) => {
                 <div className='flex gap-4'>
                   <div className='w-[40%] text-left'>
                     <div className='font-bold text-base mb-1'>Seat :</div>
-                    <div className='text-base'>{seatNumbers![index].seatNumber}</div>
+                    <div className='text-base'>{selectedSeats![index].seatNumber}</div>
                   </div>
                   <div className='w-[30%] text-left'>
                     <div className='font-bold text-base mb-1'>Boarding Time :</div>

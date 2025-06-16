@@ -25,3 +25,15 @@ export const useLogout = () => {
     mutationFn: () => authApi.logout()
   })
 }
+
+export const useForgetPassword = () => {
+  return useMutation({
+    mutationFn: authApi.forgetPassword
+  })
+}
+
+export const useResetPassword = () => {
+  return useMutation({
+    mutationFn: authApi.resetPassword
+  })
+}

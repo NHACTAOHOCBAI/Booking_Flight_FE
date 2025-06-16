@@ -8,7 +8,14 @@ declare global {
     accountId?: string
     passengers: Pick<
       ITicketTable,
-      'passengerName' | 'passengerPhone' | 'passengerIDCard' | 'passengerEmail' | 'haveBaggage'
+      | 'id'
+      | 'seatNumber'
+      | 'imageUrl'
+      | 'passengerName'
+      | 'passengerPhone'
+      | 'passengerIDCard'
+      | 'passengerEmail'
+      | 'haveBaggage'
     >[]
   }
 }
