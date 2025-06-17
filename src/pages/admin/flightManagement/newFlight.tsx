@@ -113,7 +113,7 @@ const NewFlight = (props: IProp) => {
   const intermediateAirports = Form.useWatch('listFlight_Airport', form) || []
 
   const selectedIntermediateAirportIds = intermediateAirports
-    .map((item: { airportId: { value: string } }) => item?.airportId.value)
+    .map((item: { airportId?: { value: string } }) => item?.airportId?.value)
     .filter(Boolean)
 
   const interAirportOptionCheck = airportOptions
@@ -125,13 +125,22 @@ const NewFlight = (props: IProp) => {
     )
     .map((item) => item.value)
 
-  const departureOptions = airportOptions.filter(
-    (airport) => airport.value !== arrivalAirportId && interAirportOptionCheck.includes(airport.value)
-  )
-
-  const arrivalOptions = airportOptions.filter(
-    (airport) => airport.value !== departureAirportId && interAirportOptionCheck.includes(airport.value)
-  )
+  const selectedDeparture = airportOptions.find((opt) => opt.value === departureAirportId)
+  const selectedArrival = airportOptions.find((opt) => opt.value === arrivalAirportId)
+  const departureOptions = [
+    ...airportOptions.filter(
+      (airport) => airport.value !== arrivalAirportId && interAirportOptionCheck.includes(airport.value)
+    ),
+    ...(selectedDeparture ? [selectedDeparture] : [])
+  ]
+  console.log(interAirportOptionCheck)
+  console.log(departureOptions)
+  const arrivalOptions = [
+    ...airportOptions.filter(
+      (airport) => airport.value !== departureAirportId && interAirportOptionCheck.includes(airport.value)
+    ),
+    ...(selectedArrival ? [selectedArrival] : [])
+  ]
 
   const interAirportOptions = airportOptions.filter(
     (airport) =>
@@ -139,9 +148,6 @@ const NewFlight = (props: IProp) => {
       airport.value !== arrivalAirportId &&
       !selectedIntermediateAirportIds.includes(airport.value)
   )
-  // useEffect(() => {
-  //   setInterAirportOptionCheck(interAirportOptions.map((item) => item.value))
-  // }, [interAirportOptions])
 
   const planeData = useQuery({
     queryKey: ['planes'],
@@ -376,6 +382,7 @@ const NewFlight = (props: IProp) => {
                                 <Select
                                   style={{ width: '100%' }}
                                   showSearch
+                                  labelInValue
                                   placeholder='Airport'
                                   optionFilterProp='label'
                                   options={interAirportOptions}

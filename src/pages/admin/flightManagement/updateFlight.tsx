@@ -16,6 +16,7 @@ import seatApi from '@/apis/apis/seat.api'
 import { useQuery } from '@tanstack/react-query'
 import _ from 'lodash'
 import { validateIntermediateTime } from '@/utils/utils'
+
 interface IProp {
   isUpdateOpen: boolean
   setIsUpdateOpen: (value: boolean) => void
@@ -182,13 +183,22 @@ const UpdateFlight = (props: IProp) => {
     )
     .map((item) => item.value)
 
-  const departureOptions = airportOptions.filter(
-    (airport) => airport.value !== arrivalAirportId && interAirportOptionCheck.includes(airport.value)
-  )
-
-  const arrivalOptions = airportOptions.filter(
-    (airport) => airport.value !== departureAirportId && interAirportOptionCheck.includes(airport.value)
-  )
+  const selectedDeparture = airportOptions.find((opt) => opt.value === departureAirportId)
+  const selectedArrival = airportOptions.find((opt) => opt.value === arrivalAirportId)
+  const departureOptions = [
+    ...airportOptions.filter(
+      (airport) => airport.value !== arrivalAirportId && interAirportOptionCheck.includes(airport.value)
+    ),
+    ...(selectedDeparture ? [selectedDeparture] : [])
+  ]
+  console.log(interAirportOptionCheck)
+  console.log(departureOptions)
+  const arrivalOptions = [
+    ...airportOptions.filter(
+      (airport) => airport.value !== departureAirportId && interAirportOptionCheck.includes(airport.value)
+    ),
+    ...(selectedArrival ? [selectedArrival] : [])
+  ]
 
   const interAirportOptions = airportOptions.filter(
     (airport) =>
@@ -196,9 +206,6 @@ const UpdateFlight = (props: IProp) => {
       airport.value !== arrivalAirportId &&
       !selectedIntermediateAirportIds.includes(airport.value)
   )
-  // useEffect(() => {
-  //   setInterAirportOptionCheck(interAirportOptions.map((item) => item.value))
-  // }, [interAirportOptions])
 
   const planeData = useQuery({
     queryKey: ['planes'],
