@@ -10,10 +10,11 @@ import { PiCity } from 'react-icons/pi'
 interface IProp {
   isNewOpen: boolean
   setIsNewOpen: (value: boolean) => void
+  refetchData: () => Promise<void> | undefined
 }
 
 const NewAirport = (props: IProp) => {
-  const { isNewOpen, setIsNewOpen } = props
+  const { isNewOpen, setIsNewOpen, refetchData } = props
   const [form] = Form.useForm()
 
   const [messageApi, contextHolder] = message.useMessage()
@@ -26,11 +27,9 @@ const NewAirport = (props: IProp) => {
       cityId: value.cityId
     }
     newAirportMutation.mutate(body, {
-      onSuccess(data) {
-        messageApi.open({
-          type: 'success',
-          content: data.message
-        })
+      onSuccess: async () => {
+        await refetchData();
+        messageApi.success("Create airline successfully");
       },
       onError(error: Error) {
         console.log(error)

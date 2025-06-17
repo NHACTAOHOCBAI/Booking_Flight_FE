@@ -30,11 +30,9 @@ const AirportManagement = () => {
   const handleDeleteMutation = useDeleteAirport()
   const handleDelete = (id: string) => {
     handleDeleteMutation.mutate(id, {
-      onSuccess(data) {
-        messageApi.open({
-          type: 'success',
-          content: data.message
-        })
+      onSuccess: async () => {
+        await actionRef.current?.reload()
+        messageApi.success("Delete airline successfully");
       },
       onError(error) {
         console.log(error)
@@ -209,8 +207,11 @@ const AirportManagement = () => {
             }}
           />
 
-          <NewAirport isNewOpen={isNewOpen} setIsNewOpen={setIsNewOpen} />
+          <NewAirport
+            refetchData={() => actionRef.current?.reload()}
+            isNewOpen={isNewOpen} setIsNewOpen={setIsNewOpen} />
           <UpdateAirport
+            refetchData={() => actionRef.current?.reload()}
             updatedAirport={updatedAirport!}
             setUpdatedAirport={setUpdatedAirport}
             isUpdateOpen={isUpdateOpen}
