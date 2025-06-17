@@ -110,6 +110,11 @@ const UserHeader = () => {
                   <div className='text-sm '>Contact</div>
                   <div className='text-sm font-bold'>0857311444</div>
                 </div>
+                <div className='flex flex-col items-start hover:text-gray-300 cursor-pointer mx-2'>
+                  <Link to='/ticketSearchPage' className='text-[0.9rem] '>
+                    Search tickets
+                  </Link>
+                </div>
                 {profile ? (
                   <Dropdown
                     menu={{ items }}
@@ -129,7 +134,9 @@ const UserHeader = () => {
                     </span>
                   </Dropdown>
                 ) : (
-                  <Link to='/login'>login</Link>
+                  <Link to='/login' className='hover:text-gray-300 cursor-pointer'>
+                    login
+                  </Link>
                 )}
               </div>
             </div>

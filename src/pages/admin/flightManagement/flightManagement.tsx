@@ -165,7 +165,7 @@ const FlightManagement = () => {
       }
     },
     {
-      title: 'Ticket status',
+      title: 'Flight status',
       dataIndex: 'flightStatus',
       valueType: 'select',
       fieldProps: {

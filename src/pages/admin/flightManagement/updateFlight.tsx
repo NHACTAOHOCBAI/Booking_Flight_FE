@@ -151,17 +151,45 @@ const UpdateFlight = (props: IProp) => {
     queryFn: () => airportApi.getAirports({}),
     enabled: isUpdateOpen
   })
-  const airportOptions = useMemo(
-    () =>
-      airportData.data?.data.result.map((value, index) => {
-        return {
-          key: index,
-          value: value.id,
-          label: value.airportName
-        }
-      }),
-    [airportData]
+
+  const airportOptions = useMemo(() => {
+    return (
+      airportData.data?.data.result.map((value, index) => ({
+        key: index,
+        value: value.id,
+        label: value.airportName
+      })) ?? []
+    )
+  }, [airportData])
+
+  const departureAirportId = Form.useWatch('departureAirportId', form)
+  const arrivalAirportId = Form.useWatch('arrivalAirportId', form)
+
+  const [interAirportOptionCheck, setInterAirportOptionCheck] = useState<(string | undefined)[]>([])
+
+  const departureOptions = airportOptions.filter(
+    (airport) => airport.value !== arrivalAirportId && interAirportOptionCheck.includes(airport.value)
   )
+
+  const arrivalOptions = airportOptions.filter(
+    (airport) => airport.value !== departureAirportId && !interAirportOptionCheck.includes(airport.value)
+  )
+
+  const intermediateAirports = Form.useWatch('listFlight_Airport', form) || []
+
+  const selectedIntermediateAirportIds = intermediateAirports
+    .map((item: { airportId: { value: string } }) => item?.airportId.value)
+    .filter(Boolean)
+
+  const interAirportOptions = airportOptions.filter(
+    (airport) =>
+      airport.value !== departureAirportId &&
+      airport.value !== arrivalAirportId &&
+      !selectedIntermediateAirportIds.includes(airport.value)
+  )
+  useEffect(() => {
+    setInterAirportOptionCheck(interAirportOptions.map((item) => item.value))
+  }, [interAirportOptions])
 
   const planeData = useQuery({
     queryKey: ['planes'],
@@ -265,7 +293,7 @@ const UpdateFlight = (props: IProp) => {
                   showSearch
                   placeholder='Select a departure airport'
                   optionFilterProp='label'
-                  options={airportOptions}
+                  options={departureOptions}
                 />
               </Form.Item>
 
@@ -287,7 +315,7 @@ const UpdateFlight = (props: IProp) => {
                   showSearch
                   placeholder='Select a arrival airport'
                   optionFilterProp='label'
-                  options={airportOptions}
+                  options={arrivalOptions}
                 />
               </Form.Item>
 
@@ -395,9 +423,10 @@ const UpdateFlight = (props: IProp) => {
                                 <Select
                                   style={{ width: '100%' }}
                                   showSearch
+                                  labelInValue
                                   placeholder='Airport'
                                   optionFilterProp='label'
-                                  options={airportOptions}
+                                  options={interAirportOptions}
                                 />
                               </Form.Item>
                             </Col>
