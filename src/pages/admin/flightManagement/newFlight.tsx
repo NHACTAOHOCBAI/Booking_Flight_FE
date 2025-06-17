@@ -105,19 +105,10 @@ const NewFlight = (props: IProp) => {
       })) ?? []
     )
   }, [airportData])
-
   const departureAirportId = Form.useWatch('departureAirportId', form)
   const arrivalAirportId = Form.useWatch('arrivalAirportId', form)
 
-  const [interAirportOptionCheck, setInterAirportOptionCheck] = useState<(string | undefined)[]>([])
-
-  const departureOptions = airportOptions.filter(
-    (airport) => airport.value !== arrivalAirportId && interAirportOptionCheck.includes(airport.value)
-  )
-
-  const arrivalOptions = airportOptions.filter(
-    (airport) => airport.value !== departureAirportId && !interAirportOptionCheck.includes(airport.value)
-  )
+  // const [interAirportOptionCheck, setInterAirportOptionCheck] = useState<(string | undefined)[]>([])
 
   const intermediateAirports = Form.useWatch('listFlight_Airport', form) || []
 
@@ -125,15 +116,32 @@ const NewFlight = (props: IProp) => {
     .map((item: { airportId: { value: string } }) => item?.airportId.value)
     .filter(Boolean)
 
+  const interAirportOptionCheck = airportOptions
+    .filter(
+      (airport) =>
+        airport.value !== departureAirportId &&
+        airport.value !== arrivalAirportId &&
+        !selectedIntermediateAirportIds.includes(airport.value)
+    )
+    .map((item) => item.value)
+
+  const departureOptions = airportOptions.filter(
+    (airport) => airport.value !== arrivalAirportId && interAirportOptionCheck.includes(airport.value)
+  )
+
+  const arrivalOptions = airportOptions.filter(
+    (airport) => airport.value !== departureAirportId && interAirportOptionCheck.includes(airport.value)
+  )
+
   const interAirportOptions = airportOptions.filter(
     (airport) =>
       airport.value !== departureAirportId &&
       airport.value !== arrivalAirportId &&
       !selectedIntermediateAirportIds.includes(airport.value)
   )
-  useEffect(() => {
-    setInterAirportOptionCheck(interAirportOptions.map((item) => item.value))
-  }, [interAirportOptions])
+  // useEffect(() => {
+  //   setInterAirportOptionCheck(interAirportOptions.map((item) => item.value))
+  // }, [interAirportOptions])
 
   const planeData = useQuery({
     queryKey: ['planes'],
