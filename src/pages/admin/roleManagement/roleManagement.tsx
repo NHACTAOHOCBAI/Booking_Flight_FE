@@ -104,19 +104,24 @@ const RoleManagement = () => {
             />
           </Access>
           <Access permission={ALL_PERMISSIONS['ROLES']['DELETE_ROLES']} hideChildren>
-            <Popconfirm
-              title='Delete the role'
-              description='Are you sure to delete this role?'
-              okText='Delete'
-              onConfirm={() => handleDelete(record.id as string)}
-              cancelText='Cancel'
-            >
-              <DeleteOutlined
-                style={{
-                  color: '#ee5253'
-                }}
-              />
-            </Popconfirm>
+            {
+              record.canDelete ?
+                <Popconfirm
+                  title='Delete the role'
+                  description='Are you sure to delete this role?'
+                  okText='Delete'
+                  onConfirm={() => handleDelete(record.id as string)}
+                  cancelText='Cancel'
+                >
+                  <DeleteOutlined
+                    style={{
+                      color: '#ee5253'
+                    }}
+                  />
+                </Popconfirm>
+                :
+                <div className="text-gray-400 cursor-not-allowed"><DeleteOutlined /></div>
+            }
           </Access>
         </div>
       )
