@@ -2,7 +2,7 @@
 import { onErrorUtil } from '@/globalType/util.type'
 import { useUpdateRole } from '@/hooks/useRole'
 import { PlusOutlined } from '@ant-design/icons'
-import { FooterToolbar, ModalForm, ProCard, ProFormSwitch, ProFormText } from '@ant-design/pro-components'
+import { ModalForm, ProCard, ProFormSwitch, ProFormText } from '@ant-design/pro-components'
 import { Col, Form, message, Row } from 'antd'
 import ModuleApi from './moduleApi'
 
@@ -11,9 +11,10 @@ interface IProp {
   setIsUpdateOpen: (value: boolean) => void
   updatedRole: IRoleTable
   setUpdatedRole: (value: IRoleTable) => void
+  refetchData: () => Promise<void> | undefined
 }
 const UpdateRole = (props: IProp) => {
-  const { isUpdateOpen, setIsUpdateOpen, updatedRole, setUpdatedRole } = props
+  const { isUpdateOpen, setIsUpdateOpen, updatedRole, setUpdatedRole, refetchData } = props
   const [form] = Form.useForm()
 
   const [messageApi, contextHolder] = message.useMessage()
@@ -37,12 +38,9 @@ const UpdateRole = (props: IProp) => {
       description: value.description
     }
     updateRoleMutation.mutate(body as any, {
-      onSuccess(data) {
-        messageApi.open({
-          type: 'success',
-          content: data.message
-        })
-        handleCancel()
+      onSuccess: async () => {
+        await refetchData();
+        messageApi.success("Update account successfully");
       },
       onError(error: Error) {
         console.log(error)
@@ -51,6 +49,8 @@ const UpdateRole = (props: IProp) => {
           type: messageError.type,
           content: messageError.content
         })
+      }, onSettled() {
+        handleCancel()
       }
     })
   }

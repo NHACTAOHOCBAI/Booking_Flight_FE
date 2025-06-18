@@ -13,9 +13,10 @@ interface IProp {
   setUpdatedPlane: (value: IPlaneTable) => void
   isUpdateOpen: boolean
   setIsUpdateOpen: (value: boolean) => void
+  refetchData: () => Promise<void> | undefined
 }
 const UpdatePlane = (props: IProp) => {
-  const { updatedPlane, setUpdatedPlane, isUpdateOpen, setIsUpdateOpen } = props
+  const { updatedPlane, setUpdatedPlane, isUpdateOpen, setIsUpdateOpen, refetchData } = props
   const [form] = Form.useForm()
   const [messageApi, contextHolder] = message.useMessage()
   const updatePlaneMutation = useUpdatePlane()
@@ -38,11 +39,9 @@ const UpdatePlane = (props: IProp) => {
     }
     console.log(body.id)
     updatePlaneMutation.mutate(body, {
-      onSuccess(data) {
-        messageApi.open({
-          type: 'success',
-          content: data.message
-        })
+      onSuccess: async () => {
+        await refetchData();
+        messageApi.success("Update plane successfully");
       },
       onError(error: Error) {
         console.log(error)

@@ -52,11 +52,9 @@ const FlightManagement = () => {
   const handleDeleteMutation = useDeleteFlight()
   const handleDelete = (id: string) => {
     handleDeleteMutation.mutate(id, {
-      onSuccess(data) {
-        messageApi.open({
-          type: 'success',
-          content: data.message
-        })
+      onSuccess: async () => {
+        await actionRef.current?.reload()
+        messageApi.success("Delete flight successfully");
       },
       onError(error) {
         console.log(error)
@@ -325,8 +323,9 @@ const FlightManagement = () => {
             }}
           />
           {/* </Access> */}
-          <NewFlight isNewOpen={isNewOpen} setIsNewOpen={setIsNewOpen} />
+          <NewFlight refetchData={() => actionRef.current?.reload()} isNewOpen={isNewOpen} setIsNewOpen={setIsNewOpen} />
           <UpdateFlight
+            refetchData={() => actionRef.current?.reload()}
             setUpdatedFlight={setUpdatedFlight}
             isUpdateOpen={isUpdateOpen}
             setIsUpdateOpen={setIsUpdateOpen}

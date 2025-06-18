@@ -47,11 +47,9 @@ const TicketManagement = () => {
   const handleDeleteMutation = useDeleteTicket()
   const handleDelete = (id: string) => {
     handleDeleteMutation.mutate(id, {
-      onSuccess(data) {
-        messageApi.open({
-          type: 'success',
-          content: data.message
-        })
+      onSuccess: async () => {
+        await actionRef.current?.reload()
+        messageApi.success("Delete ticket successfully");
       },
       onError(error) {
         console.log(error)
@@ -243,8 +241,9 @@ const TicketManagement = () => {
               }}
             />
           </Access>
-          <NewTicket isNewOpen={isNewOpen} setIsNewOpen={setIsNewOpen} />
+          <NewTicket refetchData={() => actionRef.current?.reload()} isNewOpen={isNewOpen} setIsNewOpen={setIsNewOpen} />
           <UpdateTicket
+            refetchData={() => actionRef.current?.reload()}
             setUpdatedTicket={setUpdatedTicket}
             isUpdateOpen={isUpdateOpen}
             setIsUpdateOpen={setIsUpdateOpen}

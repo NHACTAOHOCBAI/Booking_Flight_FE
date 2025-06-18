@@ -2,12 +2,11 @@
 import { onErrorUtil } from '@/globalType/util.type'
 import { useUpdateAccount } from '@/hooks/useAccount'
 import { useGetAllRoles } from '@/hooks/useRole'
-import { Col, Form, FormProps, Input, message, Modal, Row, Select } from 'antd'
+import { Form, FormProps, Input, message, Modal, Select } from 'antd'
 import _ from 'lodash'
 import { useEffect, useMemo } from 'react'
 import { GrUserAdmin } from 'react-icons/gr'
 import { MdOutlineDriveFileRenameOutline, MdOutlinePhone } from 'react-icons/md'
-import { RiLockPasswordLine } from 'react-icons/ri'
 import { TfiEmail } from 'react-icons/tfi'
 
 interface IProp {
@@ -15,9 +14,10 @@ interface IProp {
   setUpdatedAccount: (value: IAccountTable) => void
   isUpdateOpen: boolean
   setIsUpdateOpen: (value: boolean) => void
+  refetchData: () => Promise<void> | undefined
 }
 const UpdateAccount = (props: IProp) => {
-  const { updatedAccount, setUpdatedAccount, isUpdateOpen, setIsUpdateOpen } = props
+  const { updatedAccount, setUpdatedAccount, isUpdateOpen, setIsUpdateOpen, refetchData } = props
   const [form] = Form.useForm()
   const [messageApi, contextHolder] = message.useMessage()
   const updateAccountMutation = useUpdateAccount()
@@ -43,12 +43,9 @@ const UpdateAccount = (props: IProp) => {
     }
     console.log(body)
     updateAccountMutation.mutate(body, {
-      onSuccess(data) {
-        messageApi.open({
-          type: 'success',
-          content: data.message
-        })
-        handleCancel()
+      onSuccess: async () => {
+        await refetchData();
+        messageApi.success("Update account successfully");
       },
       onError(error: Error) {
         console.log(error)
@@ -57,6 +54,8 @@ const UpdateAccount = (props: IProp) => {
           type: messageError.type,
           content: messageError.content
         })
+      }, onSettled() {
+        handleCancel()
       }
     })
   }

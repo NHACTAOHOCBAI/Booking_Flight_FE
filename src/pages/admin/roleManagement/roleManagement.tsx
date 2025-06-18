@@ -34,11 +34,9 @@ const RoleManagement = () => {
   const handleDeleteMutation = useDeleteRole()
   const handleDelete = (id: string) => {
     handleDeleteMutation.mutate(id, {
-      onSuccess(data) {
-        messageApi.open({
-          type: 'success',
-          content: data.message
-        })
+      onSuccess: async () => {
+        await actionRef.current?.reload()
+        messageApi.success("Delete role successfully");
       },
       onError(error) {
         console.log(error)
@@ -199,8 +197,9 @@ const RoleManagement = () => {
               }}
             />
           </Access>
-          <NewRole isNewOpen={isNewOpen} setIsNewOpen={setIsNewOpen} />
+          <NewRole refetchData={() => actionRef.current?.reload()} isNewOpen={isNewOpen} setIsNewOpen={setIsNewOpen} />
           <UpdateRole
+            refetchData={() => actionRef.current?.reload()}
             setUpdatedRole={setUpdateRole}
             isUpdateOpen={isUpdateOpen}
             setIsUpdateOpen={setIsUpdateOpen}

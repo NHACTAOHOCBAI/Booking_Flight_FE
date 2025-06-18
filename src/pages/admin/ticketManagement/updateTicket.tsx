@@ -15,9 +15,10 @@ interface IProp {
   setUpdatedTicket: (value: ITicketTable) => void
   isUpdateOpen: boolean
   setIsUpdateOpen: (value: boolean) => void
+  refetchData: () => Promise<void> | undefined
 }
 const UpdateTicket = (props: IProp) => {
-  const { updatedTicket, setUpdatedTicket, isUpdateOpen, setIsUpdateOpen } = props
+  const { updatedTicket, setUpdatedTicket, isUpdateOpen, setIsUpdateOpen, refetchData } = props
   const [form] = Form.useForm()
 
   const [isFlightId, setIsFlightId] = useState(updatedTicket.flightId)
@@ -50,11 +51,9 @@ const UpdateTicket = (props: IProp) => {
     }
 
     updateTicketMutation.mutate(body, {
-      onSuccess(data) {
-        messageApi.open({
-          type: 'success',
-          content: data.message
-        })
+      onSuccess: async () => {
+        await refetchData();
+        messageApi.success("Update account successfully");
       },
       onError(error: Error) {
         console.log(error)

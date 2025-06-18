@@ -7,10 +7,11 @@ import { MdOutlineDriveFileRenameOutline } from 'react-icons/md'
 interface Props {
   isNewOpen: boolean
   setIsNewOpen: (value: boolean) => void
+  refetchData: () => Promise<void> | undefined
 }
 
 export default function NewAirline(props: Props) {
-  const { isNewOpen, setIsNewOpen } = props
+  const { isNewOpen, setIsNewOpen, refetchData } = props
   const [form] = Form.useForm()
 
   const [messageApi, contextHolder] = message.useMessage()
@@ -23,11 +24,9 @@ export default function NewAirline(props: Props) {
       airlineName: value.airlineName
     }
     newAirlineMutation.mutate(body, {
-      onSuccess(data) {
-        messageApi.open({
-          type: 'success',
-          content: data.message
-        })
+      onSuccess: async () => {
+        await refetchData();
+        messageApi.success("Create Airline successfully");
       },
       onError(error: Error) {
         console.log(error)

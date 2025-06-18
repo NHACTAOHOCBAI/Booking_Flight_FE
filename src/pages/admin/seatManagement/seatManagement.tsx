@@ -40,11 +40,9 @@ const SeatManagement = () => {
   const handleDeleteMutation = useDeleteSeat()
   const handleDelete = (id: string) => {
     handleDeleteMutation.mutate(id, {
-      onSuccess(data) {
-        messageApi.open({
-          type: 'success',
-          content: data.message
-        })
+      onSuccess: async () => {
+        await actionRef.current?.reload()
+        messageApi.success("Delete seat successfully");
       },
       onError(error) {
         console.log(error)
@@ -215,8 +213,9 @@ const SeatManagement = () => {
               }}
             />
           </Access>
-          <NewSeat isNewOpen={isNewOpen} setIsNewOpen={setIsNewOpen} />
+          <NewSeat refetchData={() => actionRef.current?.reload()} isNewOpen={isNewOpen} setIsNewOpen={setIsNewOpen} />
           <UpdateSeat
+            refetchData={() => actionRef.current?.reload()}
             setUpdatedSeat={setUpdatedSeat}
             isUpdateOpen={isUpdateOpen}
             setIsUpdateOpen={setIsUpdateOpen}

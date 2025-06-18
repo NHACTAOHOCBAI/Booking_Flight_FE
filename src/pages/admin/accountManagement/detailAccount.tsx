@@ -16,7 +16,12 @@ const DetailAccount = (props: IProps) => {
       fullName: '',
       password: '',
       phone: '',
-      role: 3,
+      role: {
+        id: "",
+        roleName: "",
+        description: "",
+        permissions: []
+      },
       username: ''
     })
   }

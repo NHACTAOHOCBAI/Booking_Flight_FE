@@ -35,10 +35,9 @@ const AirportManagement = () => {
         messageApi.success("Delete airline successfully");
       },
       onError(error) {
-        console.log(error)
         messageApi.open({
           type: 'error',
-          content: 'Cant delete this airport, this airport have been used in somewhere'
+          content: error.message
         })
       }
     })

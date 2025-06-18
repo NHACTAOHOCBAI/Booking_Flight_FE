@@ -10,10 +10,11 @@ import { SlPlane } from 'react-icons/sl'
 interface IProp {
   isNewOpen: boolean
   setIsNewOpen: (value: boolean) => void
+  refetchData: () => Promise<void> | undefined
 }
 
 const NewPlane = (props: IProp) => {
-  const { isNewOpen, setIsNewOpen } = props
+  const { isNewOpen, setIsNewOpen, refetchData } = props
   const [form] = Form.useForm()
 
   const [messageApi, contextHolder] = message.useMessage()
@@ -26,11 +27,9 @@ const NewPlane = (props: IProp) => {
       airlineId: value.airlineId
     }
     newCitiesMutation.mutate(body, {
-      onSuccess(data) {
-        messageApi.open({
-          type: 'success',
-          content: data.message
-        })
+      onSuccess: async () => {
+        await refetchData();
+        messageApi.success("Create plane successfully");
       },
       onError(error: Error) {
         console.log(error)

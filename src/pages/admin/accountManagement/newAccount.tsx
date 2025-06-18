@@ -11,9 +11,10 @@ import { TfiEmail } from 'react-icons/tfi'
 interface IProp {
   isNewOpen: boolean
   setIsNewOpen: (value: boolean) => void
+  refetchData: () => Promise<void> | undefined
 }
 const NewAccount = (props: IProp) => {
-  const { isNewOpen, setIsNewOpen } = props
+  const { isNewOpen, setIsNewOpen, refetchData } = props
   const [form] = Form.useForm()
 
   const [messageApi, contextHolder] = message.useMessage()
@@ -29,12 +30,9 @@ const NewAccount = (props: IProp) => {
       phone: value.phone
     }
     newAccountMutation.mutate(body, {
-      onSuccess(data) {
-        messageApi.open({
-          type: 'success',
-          content: data.message
-        })
-        handleCancel()
+      onSuccess: async () => {
+        await refetchData();
+        messageApi.success("Create account successfully");
       },
       onError(error: Error) {
         console.log(error)
@@ -43,6 +41,9 @@ const NewAccount = (props: IProp) => {
           type: messageError.type,
           content: messageError.content
         })
+      },
+      onSettled() {
+        handleCancel()
       }
     })
   }

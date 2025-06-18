@@ -15,9 +15,10 @@ interface IProp {
   setUpdatedSeat: (value: ISeatTable) => void
   isUpdateOpen: boolean
   setIsUpdateOpen: (value: boolean) => void
+  refetchData: () => Promise<void> | undefined
 }
 const UpdateSeat = (props: IProp) => {
-  const { updatedSeat, setUpdatedSeat, isUpdateOpen, setIsUpdateOpen } = props
+  const { updatedSeat, setUpdatedSeat, isUpdateOpen, setIsUpdateOpen, refetchData } = props
   const [form] = Form.useForm()
 
   const [messageApi, contextHolder] = message.useMessage()
@@ -42,11 +43,9 @@ const UpdateSeat = (props: IProp) => {
       description: value.description
     }
     updateSeatMutation.mutate(body, {
-      onSuccess(data) {
-        messageApi.open({
-          type: 'success',
-          content: data.message
-        })
+      onSuccess: async () => {
+        await refetchData();
+        messageApi.success("Update seat successfully");
       },
       onError(error: Error) {
         console.log(error)

@@ -37,17 +37,15 @@ const PlaneManagement = () => {
   const handleDeleteMutation = useDeletePlane()
   const handleDelete = (id: string) => {
     handleDeleteMutation.mutate(id, {
-      onSuccess(data) {
-        messageApi.open({
-          type: 'success',
-          content: data.message
-        })
+      onSuccess: async () => {
+        await actionRef.current?.reload()
+        messageApi.success("Delete plane successfully");
       },
       onError(error) {
         console.log(error)
         messageApi.open({
           type: 'error',
-          content: 'Cant delete this plane, this plane have been used in somewhere'
+          content: error.message
         })
       }
     })
@@ -208,8 +206,9 @@ const PlaneManagement = () => {
               }}
             />
           </Access>
-          <NewPlane isNewOpen={isNewOpen} setIsNewOpen={setIsNewOpen} />
+          <NewPlane refetchData={() => actionRef.current?.reload()} isNewOpen={isNewOpen} setIsNewOpen={setIsNewOpen} />
           <UpdatePlane
+            refetchData={() => actionRef.current?.reload()}
             setUpdatedPlane={setUpdatedPlane}
             isUpdateOpen={isUpdateOpen}
             setIsUpdateOpen={setIsUpdateOpen}

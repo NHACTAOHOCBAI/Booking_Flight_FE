@@ -34,17 +34,15 @@ const CityManagement = () => {
   const handleDeleteMutation = useDeleteCity()
   const handleDelete = (id: string) => {
     handleDeleteMutation.mutate(id, {
-      onSuccess(data) {
-        messageApi.open({
-          type: 'success',
-          content: data.message
-        })
+      onSuccess: async () => {
+        await actionRef.current?.reload()
+        messageApi.success("Delete city successfully");
       },
       onError(error) {
         console.log(error)
         messageApi.open({
           type: 'error',
-          content: 'Cant delete this city, this city have been used in somewhere'
+          content: error.message
         })
       }
     })
@@ -204,8 +202,9 @@ const CityManagement = () => {
               defaultPageSize: 5
             }}
           />
-          <NewCity isNewOpen={isNewOpen} setIsNewOpen={setIsNewOpen} />
+          <NewCity refetchData={() => actionRef.current?.reload()} isNewOpen={isNewOpen} setIsNewOpen={setIsNewOpen} />
           <UpdateCity
+            refetchData={() => actionRef.current?.reload()}
             setUpdatedCity={setUpdatedCity}
             isUpdateOpen={isUpdateOpen}
             setIsUpdateOpen={setIsUpdateOpen}

@@ -60,11 +60,9 @@ const AccountManagement = () => {
   const handleDeleteMutation = useDeleteAccount()
   const handleDelete = (id: string) => {
     handleDeleteMutation.mutate(id, {
-      onSuccess(data) {
-        messageApi.open({
-          type: 'success',
-          content: data.message
-        })
+      onSuccess: async () => {
+        await actionRef.current?.reload()
+        messageApi.success("Delete account successfully");
       },
       onError(error) {
         console.log(error)
@@ -247,8 +245,8 @@ const AccountManagement = () => {
               }}
             />
           </Access>
-          <NewAccount isNewOpen={isNewOpen} setIsNewOpen={setIsNewOpen} />
-          <UpdateAccount
+          <NewAccount refetchData={() => actionRef.current?.reload()} isNewOpen={isNewOpen} setIsNewOpen={setIsNewOpen} />
+          <UpdateAccount refetchData={() => actionRef.current?.reload()}
             setUpdatedAccount={setUpdateAccount}
             isUpdateOpen={isUpdateOpen}
             setIsUpdateOpen={setIsUpdateOpen}
