@@ -154,7 +154,7 @@ const UpdateTicket = (props: IProp) => {
               }
             ]}
           >
-            <Select onBlur={handleClick} options={flightOptions} />
+            <Select disabled onBlur={handleClick} options={flightOptions} />
           </Form.Item>
 
           <Form.Item<ITicketTable>
@@ -172,7 +172,7 @@ const UpdateTicket = (props: IProp) => {
               }
             ]}
           >
-            <Select disabled={isFlightId === '' ? true : false} options={seatOptions} />
+            <Select disabled options={seatOptions} />
           </Form.Item>
 
           <Form.Item<ITicketTable>

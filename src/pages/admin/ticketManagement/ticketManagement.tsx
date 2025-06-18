@@ -139,21 +139,6 @@ const TicketManagement = () => {
               }}
             />
           </Access>
-          <Access permission={ALL_PERMISSIONS['TICKETS']['DELETE_TICKETS']} hideChildren>
-            <Popconfirm
-              title='Delete the ticket'
-              description='Are you sure to delete this ticket?'
-              okText='Delete'
-              onConfirm={() => handleDelete(record.id as string)}
-              cancelText='Cancel'
-            >
-              <DeleteOutlined
-                style={{
-                  color: '#ee5253'
-                }}
-              />
-            </Popconfirm>
-          </Access>
         </div>
       )
     }
@@ -219,20 +204,6 @@ const TicketManagement = () => {
               bordered
               cardBordered
               headerTitle='Tickets List'
-              toolBarRender={() => [
-                <Access permission={ALL_PERMISSIONS['TICKETS']['POST_TICKETS']} hideChildren>
-                  <Button
-                    key='button'
-                    icon={<PlusOutlined />}
-                    type='primary'
-                    onClick={() => {
-                      setIsNewOpen(true)
-                    }}
-                  >
-                    New Ticket
-                  </Button>
-                </Access>
-              ]}
               pagination={{
                 pageSizeOptions: [5, 10, 20],
                 showSizeChanger: true,
