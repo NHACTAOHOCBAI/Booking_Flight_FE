@@ -1,10 +1,12 @@
-export {}
+export { }
 
 declare global {
   interface ICityTable {
     id?: string
     cityCode: string
     cityName: string
+    canUpdate?: boolean
+    canDelete?: boolean
   }
 }
 

@@ -103,30 +103,40 @@ const SeatManagement = () => {
           }}
         >
           <Access permission={ALL_PERMISSIONS['SEATS']['PUT_SEATS']} hideChildren>
-            <EditOutlined
-              style={{
-                color: '#54a0ff'
-              }}
-              onClick={() => {
-                setUpdatedSeat(record)
-                setIsUpdateOpen(true)
-              }}
-            />
+            {
+              record.canUpdate ?
+                <EditOutlined
+                  style={{
+                    color: '#54a0ff'
+                  }}
+                  onClick={() => {
+                    setUpdatedSeat(record)
+                    setIsUpdateOpen(true)
+                  }}
+                />
+                :
+                <div className="text-gray-400 cursor-not-allowed"><EditOutlined /></div>
+            }
           </Access>
           <Access permission={ALL_PERMISSIONS['SEATS']['DELETE_SEATS']} hideChildren>
-            <Popconfirm
-              title='Delete the seat'
-              description='Are you sure to delete this seat?'
-              okText='Delete'
-              onConfirm={() => handleDelete(record.id as string)}
-              cancelText='Cancel'
-            >
-              <DeleteOutlined
-                style={{
-                  color: '#ee5253'
-                }}
-              />
-            </Popconfirm>
+            {
+              record.canDelete ?
+                <Popconfirm
+                  title='Delete the seat'
+                  description='Are you sure to delete this seat?'
+                  okText='Delete'
+                  onConfirm={() => handleDelete(record.id as string)}
+                  cancelText='Cancel'
+                >
+                  <DeleteOutlined
+                    style={{
+                      color: '#ee5253'
+                    }}
+                  />
+                </Popconfirm>
+                :
+                <div className="text-gray-400 cursor-not-allowed"><DeleteOutlined /></div>
+            }
           </Access>
         </div>
       )

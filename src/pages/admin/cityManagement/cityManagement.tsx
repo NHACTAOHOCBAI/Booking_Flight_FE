@@ -92,30 +92,40 @@ const CityManagement = () => {
           }}
         >
           <Access permission={ALL_PERMISSIONS['CITIES']['PUT_CITIES']} hideChildren>
-            <EditOutlined
-              style={{
-                color: '#54a0ff'
-              }}
-              onClick={() => {
-                setUpdatedCity(record)
-                setIsUpdateOpen(true)
-              }}
-            />
+            {
+              record.canUpdate ?
+                <EditOutlined
+                  style={{
+                    color: '#54a0ff'
+                  }}
+                  onClick={() => {
+                    setUpdatedCity(record)
+                    setIsUpdateOpen(true)
+                  }}
+                />
+                :
+                <div className="text-gray-400 cursor-not-allowed"><EditOutlined /></div>
+            }
           </Access>
           <Access permission={ALL_PERMISSIONS['CITIES']['DELETE_CITIES']} hideChildren>
-            <Popconfirm
-              title='Delete the account'
-              description='Are you sure to delete this account?'
-              okText='Delete'
-              onConfirm={() => handleDelete(record.id as string)}
-              cancelText='Cancel'
-            >
-              <DeleteOutlined
-                style={{
-                  color: '#ee5253'
-                }}
-              />
-            </Popconfirm>
+            {
+              record.canDelete ?
+                <Popconfirm
+                  title='Delete the account'
+                  description='Are you sure to delete this account?'
+                  okText='Delete'
+                  onConfirm={() => handleDelete(record.id as string)}
+                  cancelText='Cancel'
+                >
+                  <DeleteOutlined
+                    style={{
+                      color: '#ee5253'
+                    }}
+                  />
+                </Popconfirm>
+                :
+                <div className="text-gray-400 cursor-not-allowed"><DeleteOutlined /></div>
+            }
           </Access>
         </div>
       )

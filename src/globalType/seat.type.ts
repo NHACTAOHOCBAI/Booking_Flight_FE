@@ -1,4 +1,4 @@
-export {}
+export { }
 
 declare global {
   interface ISeatTable {
@@ -7,6 +7,8 @@ declare global {
     seatCode: string
     price: number
     description: string
+    canUpdate?: boolean
+    canDelete?: boolean
   }
 }
 

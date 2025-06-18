@@ -96,30 +96,40 @@ const AirportManagement = () => {
         >
           <Access permission={ALL_PERMISSIONS['AIRPORTS']['PUT_AIRPORTS']} hideChildren>
             {/* <Access permission={permissions} hideChildren> */}
-            <EditOutlined
-              style={{
-                color: '#54a0ff'
-              }}
-              onClick={() => {
-                setUpdatedAirport(record)
-                setIsUpdateOpen(true)
-              }}
-            />
+            {
+              record.canUpdate ?
+                <EditOutlined
+                  style={{
+                    color: '#54a0ff'
+                  }}
+                  onClick={() => {
+                    setUpdatedAirport(record)
+                    setIsUpdateOpen(true)
+                  }}
+                />
+                :
+                <div className="text-gray-400 cursor-not-allowed"><EditOutlined /></div>
+            }
           </Access>
           <Access permission={ALL_PERMISSIONS['AIRPORTS']['DELETE_AIRPORTS']} hideChildren>
-            <Popconfirm
-              title='Delete the airport'
-              description='Are you sure to delete this airport?'
-              okText='Delete'
-              onConfirm={() => handleDelete(record.id as string)}
-              cancelText='Cancel'
-            >
-              <DeleteOutlined
-                style={{
-                  color: '#ee5253'
-                }}
-              />
-            </Popconfirm>
+            {
+              record.canDelete ?
+                <Popconfirm
+                  title='Delete the airport'
+                  description='Are you sure to delete this airport?'
+                  okText='Delete'
+                  onConfirm={() => handleDelete(record.id as string)}
+                  cancelText='Cancel'
+                >
+                  <DeleteOutlined
+                    style={{
+                      color: '#ee5253'
+                    }}
+                  />
+                </Popconfirm>
+                :
+                <div className="text-gray-400 cursor-not-allowed"><DeleteOutlined /></div>
+            }
           </Access>
         </div>
       )

@@ -1,6 +1,6 @@
 import { IPermission } from './permission.type'
 
-export {}
+export { }
 
 declare global {
   interface IRoleTable {
@@ -8,6 +8,7 @@ declare global {
     roleName: string
     description: string
     permissions: string[] | IPermission[]
+    canDelete?: boolean
   }
 }
 

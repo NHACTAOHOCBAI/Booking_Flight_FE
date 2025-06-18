@@ -1,4 +1,4 @@
-export {}
+export { }
 
 declare global {
   interface IPlaneTable {
@@ -7,6 +7,8 @@ declare global {
     planeName: string
     airlineId?: string
     airlineName?: string
+    canUpdate?: boolean
+    canDelete?: boolean
   }
 }
 
