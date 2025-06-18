@@ -40,11 +40,9 @@ const SeatManagement = () => {
   const handleDeleteMutation = useDeleteSeat()
   const handleDelete = (id: string) => {
     handleDeleteMutation.mutate(id, {
-      onSuccess(data) {
-        messageApi.open({
-          type: 'success',
-          content: data.message
-        })
+      onSuccess: async () => {
+        await actionRef.current?.reload()
+        messageApi.success("Delete seat successfully");
       },
       onError(error) {
         console.log(error)
@@ -105,30 +103,40 @@ const SeatManagement = () => {
           }}
         >
           <Access permission={ALL_PERMISSIONS['SEATS']['PUT_SEATS']} hideChildren>
-            <EditOutlined
-              style={{
-                color: '#54a0ff'
-              }}
-              onClick={() => {
-                setUpdatedSeat(record)
-                setIsUpdateOpen(true)
-              }}
-            />
+            {
+              record.canUpdate ?
+                <EditOutlined
+                  style={{
+                    color: '#54a0ff'
+                  }}
+                  onClick={() => {
+                    setUpdatedSeat(record)
+                    setIsUpdateOpen(true)
+                  }}
+                />
+                :
+                <div className="text-gray-400 cursor-not-allowed"><EditOutlined /></div>
+            }
           </Access>
           <Access permission={ALL_PERMISSIONS['SEATS']['DELETE_SEATS']} hideChildren>
-            <Popconfirm
-              title='Delete the seat'
-              description='Are you sure to delete this seat?'
-              okText='Delete'
-              onConfirm={() => handleDelete(record.id as string)}
-              cancelText='Cancel'
-            >
-              <DeleteOutlined
-                style={{
-                  color: '#ee5253'
-                }}
-              />
-            </Popconfirm>
+            {
+              record.canDelete ?
+                <Popconfirm
+                  title='Delete the seat'
+                  description='Are you sure to delete this seat?'
+                  okText='Delete'
+                  onConfirm={() => handleDelete(record.id as string)}
+                  cancelText='Cancel'
+                >
+                  <DeleteOutlined
+                    style={{
+                      color: '#ee5253'
+                    }}
+                  />
+                </Popconfirm>
+                :
+                <div className="text-gray-400 cursor-not-allowed"><DeleteOutlined /></div>
+            }
           </Access>
         </div>
       )
@@ -215,8 +223,9 @@ const SeatManagement = () => {
               }}
             />
           </Access>
-          <NewSeat isNewOpen={isNewOpen} setIsNewOpen={setIsNewOpen} />
+          <NewSeat refetchData={() => actionRef.current?.reload()} isNewOpen={isNewOpen} setIsNewOpen={setIsNewOpen} />
           <UpdateSeat
+            refetchData={() => actionRef.current?.reload()}
             setUpdatedSeat={setUpdatedSeat}
             isUpdateOpen={isUpdateOpen}
             setIsUpdateOpen={setIsUpdateOpen}

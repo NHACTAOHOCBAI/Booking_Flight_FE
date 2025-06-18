@@ -22,9 +22,10 @@ interface IProp {
   setIsUpdateOpen: (value: boolean) => void
   updatedFlight: IFlightTable
   setUpdatedFlight: (value: IFlightTable) => void
+  refetchData: () => Promise<void> | undefined
 }
 const UpdateFlight = (props: IProp) => {
-  const { isUpdateOpen, setIsUpdateOpen, setUpdatedFlight, updatedFlight } = props
+  const { isUpdateOpen, setIsUpdateOpen, setUpdatedFlight, updatedFlight, refetchData } = props
   const [form] = Form.useForm()
 
   const [messageApi, contextHolder] = message.useMessage()
@@ -78,11 +79,9 @@ const UpdateFlight = (props: IProp) => {
       listFlight_Seat: value.listFlight_Seat
     }
     updataFlightMutation.mutate(body, {
-      onSuccess(data) {
-        messageApi.open({
-          type: 'success',
-          content: data.message
-        })
+      onSuccess: async () => {
+        await refetchData()
+        messageApi.success('Update account successfully')
         handleCancel()
       },
       onError(error: Error) {

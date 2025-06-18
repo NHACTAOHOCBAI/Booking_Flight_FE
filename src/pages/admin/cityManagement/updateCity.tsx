@@ -11,9 +11,10 @@ interface IProp {
   setUpdatedCity: (value: ICityTable) => void
   isUpdateOpen: boolean
   setIsUpdateOpen: (value: boolean) => void
+  refetchData: () => Promise<void> | undefined
 }
 const UpdateCity = (props: IProp) => {
-  const { updatedCity, setUpdatedCity, isUpdateOpen, setIsUpdateOpen } = props
+  const { updatedCity, setUpdatedCity, isUpdateOpen, setIsUpdateOpen, refetchData } = props
   const [form] = Form.useForm()
   const [messageApi, contextHolder] = message.useMessage()
   const updateCitiesMutation = useUpdateCity()
@@ -30,11 +31,9 @@ const UpdateCity = (props: IProp) => {
 
     const body = { id: updatedCity.id, cityCode: value.cityCode, cityName: value.cityName }
     updateCitiesMutation.mutate(body, {
-      onSuccess(data) {
-        messageApi.open({
-          type: 'success',
-          content: data.message
-        })
+      onSuccess: async () => {
+        await refetchData()
+        messageApi.success('Update city successfully')
         handleCancel()
       },
       onError(error: Error) {

@@ -3,13 +3,12 @@ import UploadImage from '@/components/UploadFile'
 import { onErrorUtil } from '@/globalType/util.type'
 import { useUpdateAccount } from '@/hooks/useAccount'
 import { useGetAllRoles } from '@/hooks/useRole'
-import { isPending } from '@reduxjs/toolkit'
+
 import { Col, Form, FormProps, Input, message, Modal, Row, Select, UploadFile } from 'antd'
 import _ from 'lodash'
 import { useEffect, useMemo, useState } from 'react'
 import { GrUserAdmin } from 'react-icons/gr'
 import { MdOutlineDriveFileRenameOutline, MdOutlinePhone } from 'react-icons/md'
-import { RiLockPasswordLine } from 'react-icons/ri'
 import { TfiEmail } from 'react-icons/tfi'
 
 interface IProp {
@@ -17,10 +16,11 @@ interface IProp {
   setUpdatedAccount: (value: IAccountTable) => void
   isUpdateOpen: boolean
   setIsUpdateOpen: (value: boolean) => void
+  refetchData: () => Promise<void> | undefined
 }
 const UpdateAccount = (props: IProp) => {
   const [fileList, setFileList] = useState<UploadFile[]>([])
-  const { updatedAccount, setUpdatedAccount, isUpdateOpen, setIsUpdateOpen } = props
+  const { updatedAccount, setUpdatedAccount, isUpdateOpen, setIsUpdateOpen, refetchData } = props
   const [form] = Form.useForm()
   const [messageApi, contextHolder] = message.useMessage()
   const { mutate: updateAccountMutation, isPending } = useUpdateAccount()
@@ -47,11 +47,9 @@ const UpdateAccount = (props: IProp) => {
     }
     console.log(body)
     updateAccountMutation(body, {
-      onSuccess(data) {
-        messageApi.open({
-          type: 'success',
-          content: data.message
-        })
+      onSuccess: async () => {
+        await refetchData()
+        messageApi.success('Update account successfully')
         handleCancel()
       },
       onError(error: Error) {

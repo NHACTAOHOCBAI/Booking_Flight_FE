@@ -30,17 +30,14 @@ const AirportManagement = () => {
   const handleDeleteMutation = useDeleteAirport()
   const handleDelete = (id: string) => {
     handleDeleteMutation.mutate(id, {
-      onSuccess(data) {
-        messageApi.open({
-          type: 'success',
-          content: data.message
-        })
+      onSuccess: async () => {
+        await actionRef.current?.reload()
+        messageApi.success("Delete airline successfully");
       },
       onError(error) {
-        console.log(error)
         messageApi.open({
           type: 'error',
-          content: 'Cant delete this airport, this airport have been used in somewhere'
+          content: error.message
         })
       }
     })
@@ -99,30 +96,40 @@ const AirportManagement = () => {
         >
           <Access permission={ALL_PERMISSIONS['AIRPORTS']['PUT_AIRPORTS']} hideChildren>
             {/* <Access permission={permissions} hideChildren> */}
-            <EditOutlined
-              style={{
-                color: '#54a0ff'
-              }}
-              onClick={() => {
-                setUpdatedAirport(record)
-                setIsUpdateOpen(true)
-              }}
-            />
+            {
+              record.canUpdate ?
+                <EditOutlined
+                  style={{
+                    color: '#54a0ff'
+                  }}
+                  onClick={() => {
+                    setUpdatedAirport(record)
+                    setIsUpdateOpen(true)
+                  }}
+                />
+                :
+                <div className="text-gray-400 cursor-not-allowed"><EditOutlined /></div>
+            }
           </Access>
           <Access permission={ALL_PERMISSIONS['AIRPORTS']['DELETE_AIRPORTS']} hideChildren>
-            <Popconfirm
-              title='Delete the airport'
-              description='Are you sure to delete this airport?'
-              okText='Delete'
-              onConfirm={() => handleDelete(record.id as string)}
-              cancelText='Cancel'
-            >
-              <DeleteOutlined
-                style={{
-                  color: '#ee5253'
-                }}
-              />
-            </Popconfirm>
+            {
+              record.canDelete ?
+                <Popconfirm
+                  title='Delete the airport'
+                  description='Are you sure to delete this airport?'
+                  okText='Delete'
+                  onConfirm={() => handleDelete(record.id as string)}
+                  cancelText='Cancel'
+                >
+                  <DeleteOutlined
+                    style={{
+                      color: '#ee5253'
+                    }}
+                  />
+                </Popconfirm>
+                :
+                <div className="text-gray-400 cursor-not-allowed"><DeleteOutlined /></div>
+            }
           </Access>
         </div>
       )
@@ -209,8 +216,11 @@ const AirportManagement = () => {
             }}
           />
 
-          <NewAirport isNewOpen={isNewOpen} setIsNewOpen={setIsNewOpen} />
+          <NewAirport
+            refetchData={() => actionRef.current?.reload()}
+            isNewOpen={isNewOpen} setIsNewOpen={setIsNewOpen} />
           <UpdateAirport
+            refetchData={() => actionRef.current?.reload()}
             updatedAirport={updatedAirport!}
             setUpdatedAirport={setUpdatedAirport}
             isUpdateOpen={isUpdateOpen}

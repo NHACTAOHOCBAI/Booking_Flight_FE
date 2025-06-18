@@ -13,10 +13,12 @@ import UploadImage from '@/components/UploadFile'
 interface IProp {
   isNewOpen: boolean
   setIsNewOpen: (value: boolean) => void
+  refetchData: () => Promise<void> | undefined
 }
 const NewAccount = (props: IProp) => {
   const [fileList, setFileList] = useState<UploadFile[]>([])
-  const { isNewOpen, setIsNewOpen } = props
+
+  const { isNewOpen, setIsNewOpen, refetchData } = props
   const [form] = Form.useForm()
 
   const [messageApi, contextHolder] = message.useMessage()
@@ -47,6 +49,9 @@ const NewAccount = (props: IProp) => {
           type: messageError.type,
           content: messageError.content
         })
+      },
+      onSettled() {
+        handleCancel()
       }
     })
   }

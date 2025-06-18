@@ -18,6 +18,7 @@ declare global {
     imageUrl?: string
     ticketStatus?: string
     canBook?: boolean
+    hasBooked?: boolean
   }
 }
 

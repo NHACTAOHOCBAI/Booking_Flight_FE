@@ -12,9 +12,10 @@ import { PiSeat } from 'react-icons/pi'
 interface IProp {
   isNewOpen: boolean
   setIsNewOpen: (value: boolean) => void
+  refetchData: () => Promise<void> | undefined
 }
 const NewSeat = (props: IProp) => {
-  const { isNewOpen, setIsNewOpen } = props
+  const { isNewOpen, setIsNewOpen, refetchData } = props
   const [form] = Form.useForm()
 
   const [isFlightId, setIsFlightId] = useState('')
@@ -34,12 +35,9 @@ const NewSeat = (props: IProp) => {
       haveBaggage: value.haveBaggage
     }
     newTicketMutation.mutate(body, {
-      onSuccess(data) {
-        messageApi.open({
-          type: 'success',
-          content: data.message
-        })
-        handleCancel()
+      onSuccess: async () => {
+        await refetchData();
+        messageApi.success("Create ticket successfully");
       },
       onError(error: Error) {
         console.log(error)
@@ -48,6 +46,8 @@ const NewSeat = (props: IProp) => {
           type: messageError.type,
           content: messageError.content
         })
+      }, onSettled() {
+        handleCancel()
       }
     })
   }

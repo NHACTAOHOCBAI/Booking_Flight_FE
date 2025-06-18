@@ -52,11 +52,9 @@ const FlightManagement = () => {
   const handleDeleteMutation = useDeleteFlight()
   const handleDelete = (id: string) => {
     handleDeleteMutation.mutate(id, {
-      onSuccess(data) {
-        messageApi.open({
-          type: 'success',
-          content: data.message
-        })
+      onSuccess: async () => {
+        await actionRef.current?.reload()
+        messageApi.success("Delete flight successfully");
       },
       onError(error) {
         console.log(error)
@@ -184,20 +182,49 @@ const FlightManagement = () => {
           }}
         >
           <Access permission={ALL_PERMISSIONS['FLIGHTS']['PUT_FLIGHTS']} hideChildren>
-            <EditOutlined
-              style={{
-                color: '#54a0ff'
-              }}
-              onClick={() => {
-                setUpdatedFlight(record)
-                setIsUpdateOpen(true)
-              }}
-            />
+            {record.hasBooked ?
+              <Popconfirm
+                title="Update the flight"
+                description={
+                  <div className="w-[400px]">
+                    This flight has already been booked. If you update the flight,
+                    we will send a notification to all customers. Are you sure you want to edit it?
+                  </div>
+                }
+                onConfirm={() => {
+                  setUpdatedFlight(record)
+                  setIsUpdateOpen(true)
+                }}
+                okText="Yes"
+                cancelText="No"
+              >
+                <EditOutlined
+                  style={{
+                    color: '#54a0ff'
+                  }}
+                />
+              </Popconfirm>
+              :
+              <EditOutlined
+                style={{
+                  color: '#54a0ff'
+                }}
+                onClick={() => {
+                  setUpdatedFlight(record)
+                  setIsUpdateOpen(true)
+                }}
+              />}
           </Access>
           <Access permission={ALL_PERMISSIONS['FLIGHTS']['DELETE_FLIGHTS']} hideChildren>
             <Popconfirm
               title='Delete the flight'
-              description='Are you sure to delete this flight?'
+              description={
+                <div className="w-[400px]">
+                  {record.hasBooked
+                    ? "This flight has already been booked. If you cancel the flight, we will send a notification to all customers. Do you still want to delete it?"
+                    : "Are you sure you want to delete this flight?"}
+                </div>
+              }
               okText='Delete'
               onConfirm={() => handleDelete(record.id as string)}
               cancelText='Cancel'
@@ -325,8 +352,9 @@ const FlightManagement = () => {
             }}
           />
           {/* </Access> */}
-          <NewFlight isNewOpen={isNewOpen} setIsNewOpen={setIsNewOpen} />
+          <NewFlight refetchData={() => actionRef.current?.reload()} isNewOpen={isNewOpen} setIsNewOpen={setIsNewOpen} />
           <UpdateFlight
+            refetchData={() => actionRef.current?.reload()}
             setUpdatedFlight={setUpdatedFlight}
             isUpdateOpen={isUpdateOpen}
             setIsUpdateOpen={setIsUpdateOpen}

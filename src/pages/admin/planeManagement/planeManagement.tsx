@@ -37,17 +37,15 @@ const PlaneManagement = () => {
   const handleDeleteMutation = useDeletePlane()
   const handleDelete = (id: string) => {
     handleDeleteMutation.mutate(id, {
-      onSuccess(data) {
-        messageApi.open({
-          type: 'success',
-          content: data.message
-        })
+      onSuccess: async () => {
+        await actionRef.current?.reload()
+        messageApi.success("Delete plane successfully");
       },
       onError(error) {
         console.log(error)
         messageApi.open({
           type: 'error',
-          content: 'Cant delete this plane, this plane have been used in somewhere'
+          content: error.message
         })
       }
     })
@@ -100,30 +98,40 @@ const PlaneManagement = () => {
         >
           <Access permission={ALL_PERMISSIONS['PLANES']['PUT_PLANES']} hideChildren>
             {/* <Access permission={permissions} hideChildren> */}
-            <EditOutlined
-              style={{
-                color: '#54a0ff'
-              }}
-              onClick={() => {
-                setUpdatedPlane(record)
-                setIsUpdateOpen(true)
-              }}
-            />
+            {
+              record.canUpdate ?
+                <EditOutlined
+                  style={{
+                    color: '#54a0ff'
+                  }}
+                  onClick={() => {
+                    setUpdatedPlane(record)
+                    setIsUpdateOpen(true)
+                  }}
+                />
+                :
+                <div className="text-gray-400 cursor-not-allowed"><EditOutlined /></div>
+            }
           </Access>
           <Access permission={ALL_PERMISSIONS['PLANES']['DELETE_PLANES']} hideChildren>
-            <Popconfirm
-              title='Delete the plane'
-              description='Are you sure to delete this plane?'
-              okText='Delete'
-              onConfirm={() => handleDelete(record.id as string)}
-              cancelText='Cancel'
-            >
-              <DeleteOutlined
-                style={{
-                  color: '#ee5253'
-                }}
-              />
-            </Popconfirm>
+            {
+              record.canDelete ?
+                <Popconfirm
+                  title='Delete the plane'
+                  description='Are you sure to delete this plane?'
+                  okText='Delete'
+                  onConfirm={() => handleDelete(record.id as string)}
+                  cancelText='Cancel'
+                >
+                  <DeleteOutlined
+                    style={{
+                      color: '#ee5253'
+                    }}
+                  />
+                </Popconfirm>
+                :
+                <div className="text-gray-400 cursor-not-allowed"><DeleteOutlined /></div>
+            }
           </Access>
         </div>
       )
@@ -208,8 +216,9 @@ const PlaneManagement = () => {
               }}
             />
           </Access>
-          <NewPlane isNewOpen={isNewOpen} setIsNewOpen={setIsNewOpen} />
+          <NewPlane refetchData={() => actionRef.current?.reload()} isNewOpen={isNewOpen} setIsNewOpen={setIsNewOpen} />
           <UpdatePlane
+            refetchData={() => actionRef.current?.reload()}
             setUpdatedPlane={setUpdatedPlane}
             isUpdateOpen={isUpdateOpen}
             setIsUpdateOpen={setIsUpdateOpen}

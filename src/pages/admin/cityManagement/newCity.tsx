@@ -7,10 +7,11 @@ import { PiCityLight } from 'react-icons/pi'
 interface IProp {
   isNewOpen: boolean
   setIsNewOpen: (value: boolean) => void
+  refetchData: () => Promise<void> | undefined
 }
 
 const NewCity = (props: IProp) => {
-  const { isNewOpen, setIsNewOpen } = props
+  const { isNewOpen, setIsNewOpen, refetchData } = props
   const [form] = Form.useForm()
 
   const [messageApi, contextHolder] = message.useMessage()
@@ -19,11 +20,9 @@ const NewCity = (props: IProp) => {
   const onFinish: FormProps<ICityTable>['onFinish'] = async (value) => {
     const body = { cityCode: value.cityCode, cityName: value.cityName }
     newCitiesMutation.mutate(body, {
-      onSuccess(data) {
-        messageApi.open({
-          type: 'success',
-          content: data.message
-        })
+      onSuccess: async () => {
+        await refetchData()
+        messageApi.success('Create City successfully')
         handleCancel()
       },
       onError(error: Error) {

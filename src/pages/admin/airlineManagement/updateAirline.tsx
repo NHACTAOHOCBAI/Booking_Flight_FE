@@ -12,9 +12,10 @@ interface Props {
   setUpdatedAirline: (value: IAirlineTable) => void
   isUpdateOpen: boolean
   setIsUpdateOpen: (value: boolean) => void
+  refetchData: () => Promise<void> | undefined
 }
 export default function UpdatedAirline(props: Props) {
-  const { updatedAirline, setUpdatedAirline, isUpdateOpen, setIsUpdateOpen } = props
+  const { updatedAirline, setUpdatedAirline, isUpdateOpen, setIsUpdateOpen, refetchData } = props
   const [form] = Form.useForm()
 
   const [messageApi, contextHolder] = message.useMessage()
@@ -37,11 +38,9 @@ export default function UpdatedAirline(props: Props) {
       airlineName: value.airlineName
     }
     updateAirlineMutation.mutate(body, {
-      onSuccess(data) {
-        messageApi.open({
-          type: 'success',
-          content: data.message
-        })
+      onSuccess: async () => {
+        await refetchData()
+        messageApi.success('Update airline successfully')
         handleCancel()
       },
       onError(error: Error) {

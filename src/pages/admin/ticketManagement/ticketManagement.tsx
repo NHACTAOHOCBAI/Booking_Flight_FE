@@ -51,11 +51,9 @@ const TicketManagement = () => {
   const handleDeleteMutation = useDeleteTicket()
   const handleDelete = (id: string) => {
     handleDeleteMutation.mutate(id, {
-      onSuccess(data) {
-        messageApi.open({
-          type: 'success',
-          content: data.message
-        })
+      onSuccess: async () => {
+        await actionRef.current?.reload()
+        messageApi.success("Delete ticket successfully");
       },
       onError(error) {
         console.log(error)
@@ -159,21 +157,6 @@ const TicketManagement = () => {
               }}
             />
           </Access>
-          <Access permission={ALL_PERMISSIONS['TICKETS']['DELETE_TICKETS']} hideChildren>
-            <Popconfirm
-              title='Delete the ticket'
-              description='Are you sure to delete this ticket?'
-              okText='Delete'
-              onConfirm={() => handleDelete(record.id as string)}
-              cancelText='Cancel'
-            >
-              <DeleteOutlined
-                style={{
-                  color: '#ee5253'
-                }}
-              />
-            </Popconfirm>
-          </Access>
         </div>
       )
     }
@@ -239,20 +222,6 @@ const TicketManagement = () => {
               bordered
               cardBordered
               headerTitle='Tickets List'
-              toolBarRender={() => [
-                <Access permission={ALL_PERMISSIONS['TICKETS']['POST_TICKETS']} hideChildren>
-                  <Button
-                    key='button'
-                    icon={<PlusOutlined />}
-                    type='primary'
-                    onClick={() => {
-                      setIsNewOpen(true)
-                    }}
-                  >
-                    New Ticket
-                  </Button>
-                </Access>
-              ]}
               pagination={{
                 pageSizeOptions: [5, 10, 20],
                 showSizeChanger: true,
@@ -261,8 +230,9 @@ const TicketManagement = () => {
               }}
             />
           </Access>
-          <NewTicket isNewOpen={isNewOpen} setIsNewOpen={setIsNewOpen} />
+          <NewTicket refetchData={() => actionRef.current?.reload()} isNewOpen={isNewOpen} setIsNewOpen={setIsNewOpen} />
           <UpdateTicket
+            refetchData={() => actionRef.current?.reload()}
             setUpdatedTicket={setUpdatedTicket}
             isUpdateOpen={isUpdateOpen}
             setIsUpdateOpen={setIsUpdateOpen}

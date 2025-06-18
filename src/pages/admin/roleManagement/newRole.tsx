@@ -8,9 +8,10 @@ import ModuleApi from './moduleApi'
 interface IProp {
   isNewOpen: boolean
   setIsNewOpen: (value: boolean) => void
+  refetchData: () => Promise<void> | undefined
 }
 const NewRole = (props: IProp) => {
-  const { isNewOpen, setIsNewOpen } = props
+  const { isNewOpen, setIsNewOpen, refetchData } = props
   const [form] = Form.useForm()
 
   const [messageApi, contextHolder] = message.useMessage()
@@ -25,20 +26,15 @@ const NewRole = (props: IProp) => {
         }
       }
     }
-    console.log(value.permissionIds)
-    console.log(checkedPermissions)
     const body = {
       roleName: value.roleName,
       permissionId: checkedPermissions,
       description: value.description
     }
     newRoleMutation.mutate(body as any, {
-      onSuccess(data) {
-        messageApi.open({
-          type: 'success',
-          content: data.message
-        })
-        handleCancel()
+      onSuccess: async () => {
+        await refetchData();
+        messageApi.success("Create role successfully");
       },
       onError(error: Error) {
         console.log(error)
@@ -47,6 +43,9 @@ const NewRole = (props: IProp) => {
           type: messageError.type,
           content: messageError.content
         })
+      },
+      onSettled() {
+        handleCancel()
       }
     })
   }

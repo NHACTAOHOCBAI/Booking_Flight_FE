@@ -1,4 +1,4 @@
-export {}
+export { }
 
 declare global {
   interface IAirportTable {
@@ -7,6 +7,8 @@ declare global {
     airportName: string
     cityId?: string
     cityName?: string
+    canUpdate?: boolean
+    canDelete?: boolean
   }
 }
 

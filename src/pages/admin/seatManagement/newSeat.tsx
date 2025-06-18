@@ -10,9 +10,10 @@ import { PiSeatLight } from 'react-icons/pi'
 interface IProp {
   isNewOpen: boolean
   setIsNewOpen: (value: boolean) => void
+  refetchData: () => Promise<void> | undefined
 }
 const NewSeat = (props: IProp) => {
-  const { isNewOpen, setIsNewOpen } = props
+  const { isNewOpen, setIsNewOpen, refetchData } = props
   const [form] = Form.useForm()
 
   const [messageApi, contextHolder] = message.useMessage()
@@ -26,11 +27,9 @@ const NewSeat = (props: IProp) => {
       description: value.description
     }
     newSeatMutation.mutate(body, {
-      onSuccess(data) {
-        messageApi.open({
-          type: 'success',
-          content: data.message
-        })
+      onSuccess: async () => {
+        await refetchData()
+        messageApi.success('Create seat successfully')
         handleCancel()
       },
       onError(error: Error) {

@@ -1,4 +1,4 @@
-export {}
+export { }
 
 declare global {
   interface IFlightTable {
@@ -16,6 +16,7 @@ declare global {
     originPrice: number
     listFlight_Airport: IInterAirport[]
     listFlight_Seat: ISeat[]
+    hasBooked?: boolean
   }
   interface IInterAirport {
     id?: string

@@ -18,9 +18,10 @@ import { TbPlaneArrival, TbPlaneDeparture } from 'react-icons/tb'
 interface IProp {
   isNewOpen: boolean
   setIsNewOpen: (value: boolean) => void
+  refetchData: () => Promise<void> | undefined
 }
 const NewFlight = (props: IProp) => {
-  const { isNewOpen, setIsNewOpen } = props
+  const { isNewOpen, setIsNewOpen, refetchData } = props
   const [form] = Form.useForm()
   const [departureDate, setDepartureDate] = useState<Dayjs | null>(null)
   const [returnDate, setReturnDate] = useState<Dayjs | null>(null)
@@ -61,11 +62,9 @@ const NewFlight = (props: IProp) => {
     }
 
     newFlightMutation.mutate(body, {
-      onSuccess(data) {
-        messageApi.open({
-          type: 'success',
-          content: data.message
-        })
+      onSuccess: async () => {
+        await refetchData()
+        messageApi.success('Create flight successfully')
         handleCancel()
       },
       onError(error: Error) {
