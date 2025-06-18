@@ -3,7 +3,7 @@ import { Avatar, Badge, Button, Dropdown, Layout, Menu, MenuProps, message, Moda
 import { useContext, useEffect, useState } from 'react'
 import { RxDashboard } from 'react-icons/rx'
 import { VscAccount } from 'react-icons/vsc'
-import { Link, Outlet, useNavigate } from 'react-router-dom'
+import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom'
 
 import { AppContext } from '@/context/app.context'
 import { GoLocation } from 'react-icons/go'
@@ -22,6 +22,8 @@ const menuStyle: React.CSSProperties = {
 const { Header, Sider, Content } = Layout
 
 const AdminLayout = () => {
+  const { pathname } = useLocation();
+  const endpoints = pathname.split('/').pop() as string;
   const [collapsed, setCollapsed] = useState(false)
   const [menuItems, setMenuItems] = useState<MenuProps['items']>([])
   const navigate = useNavigate()
@@ -113,87 +115,87 @@ const AdminLayout = () => {
         },
         ...(viewAccount || ACL_ENABLE === 'false'
           ? [
-              {
-                key: 'account',
-                icon: <VscAccount style={{ width: 20, height: 20 }} />,
-                label: <Link to={'/admin/manage-account'}>Account</Link>
-              }
-            ]
+            {
+              key: 'manage-account',
+              icon: <VscAccount style={{ width: 20, height: 20 }} />,
+              label: <Link to={'/admin/manage-account'}>Account</Link>
+            }
+          ]
           : []),
         ...(viewCity || ACL_ENABLE === 'false'
           ? [
-              {
-                key: 'city',
-                icon: <PiCityLight style={{ width: 20, height: 20 }} />,
-                label: <Link to={'/admin/manage-city'}>City</Link>
-              }
-            ]
+            {
+              key: 'manage-city',
+              icon: <PiCityLight style={{ width: 20, height: 20 }} />,
+              label: <Link to={'/admin/manage-city'}>City</Link>
+            }
+          ]
           : []),
 
         ...(viewAirport || ACL_ENABLE === 'false'
           ? [
-              {
-                key: 'airport',
-                icon: <GoLocation style={{ width: 20, height: 20 }} />,
-                label: <Link to={'/admin/manage-airport'}>Airport</Link>
-              }
-            ]
+            {
+              key: 'manage-airport',
+              icon: <GoLocation style={{ width: 20, height: 20 }} />,
+              label: <Link to={'/admin/manage-airport'}>Airport</Link>
+            }
+          ]
           : []),
         ...(viewPlane || ACL_ENABLE === 'false'
           ? [
-              {
-                key: 'plane',
-                icon: <IoAirplaneOutline style={{ width: 20, height: 20 }} />,
-                label: <Link to={'/admin/manage-plane'}>Plane</Link>
-              }
-            ]
+            {
+              key: 'manage-plane',
+              icon: <IoAirplaneOutline style={{ width: 20, height: 20 }} />,
+              label: <Link to={'/admin/manage-plane'}>Plane</Link>
+            }
+          ]
           : []),
 
         ...(viewFlight || ACL_ENABLE === 'false'
           ? [
-              {
-                key: 'flight2',
-                icon: <PiAirplaneInFlight style={{ width: 20, height: 20 }} />,
-                label: <Link to={'/admin/manage-flight'}>Flight</Link>
-              }
-            ]
+            {
+              key: 'manage-flight',
+              icon: <PiAirplaneInFlight style={{ width: 20, height: 20 }} />,
+              label: <Link to={'/admin/manage-flight'}>Flight</Link>
+            }
+          ]
           : []),
         ...(viewSeatClass || ACL_ENABLE === 'false'
           ? [
-              {
-                key: 'seatClass',
-                icon: <PiSeat style={{ width: 20, height: 20 }} />,
-                label: <Link to={'/admin/manage-seat'}>Seat Class</Link>
-              }
-            ]
+            {
+              key: 'manage-seat',
+              icon: <PiSeat style={{ width: 20, height: 20 }} />,
+              label: <Link to={'/admin/manage-seat'}>Seat Class</Link>
+            }
+          ]
           : []),
         ...(viewAirline || ACL_ENABLE === 'false'
           ? [
-              {
-                key: 'airline',
-                icon: <MdOutlineAirlines style={{ width: 20, height: 20 }} />,
-                label: <Link to={'/admin/manage-airline'}>Airline</Link>
-              }
-            ]
+            {
+              key: 'manage-airline',
+              icon: <MdOutlineAirlines style={{ width: 20, height: 20 }} />,
+              label: <Link to={'/admin/manage-airline'}>Airline</Link>
+            }
+          ]
           : []),
 
         ...(viewTicket || ACL_ENABLE === 'false'
           ? [
-              {
-                key: 'ticket',
-                icon: <IoTicketOutline style={{ width: 20, height: 20 }} />,
-                label: <Link to={'/admin/manage-ticket'}>Ticket</Link>
-              }
-            ]
+            {
+              key: 'manage-ticket',
+              icon: <IoTicketOutline style={{ width: 20, height: 20 }} />,
+              label: <Link to={'/admin/manage-ticket'}>Ticket</Link>
+            }
+          ]
           : []),
         ...(viewRole || ACL_ENABLE === 'false'
           ? [
-              {
-                key: 'role',
-                icon: <IoSettingsOutline style={{ width: 20, height: 20 }} />,
-                label: <Link to={'/admin/manage-role'}>Role</Link>
-              }
-            ]
+            {
+              key: 'manage-role',
+              icon: <IoSettingsOutline style={{ width: 20, height: 20 }} />,
+              label: <Link to={'/admin/manage-role'}>Role</Link>
+            }
+          ]
           : [])
       ]
 
@@ -221,7 +223,7 @@ const AdminLayout = () => {
           }
         })
       },
-      onCancel() {}
+      onCancel() { }
     })
   }
   const items: MenuProps['items'] = [
@@ -267,6 +269,7 @@ const AdminLayout = () => {
           style={{ border: 'none', marginBottom: 50 }}
           theme='light'
           mode='inline'
+          selectedKeys={[endpoints]}
           defaultOpenKeys={['overview']}
           defaultSelectedKeys={['dashboard']}
           items={menuItems}
