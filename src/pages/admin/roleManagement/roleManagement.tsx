@@ -91,38 +91,43 @@ const RoleManagement = () => {
             gap: 10
           }}
         >
-          <Access permission={ALL_PERMISSIONS['ROLES']['PUT_ROLES']} hideChildren>
-            {/* <Access permission={permissions} hideChildren> */}
-            <EditOutlined
-              style={{
-                color: '#54a0ff'
-              }}
-              onClick={() => {
-                setUpdateRole(record)
-                setIsUpdateOpen(true)
-              }}
-            />
-          </Access>
-          <Access permission={ALL_PERMISSIONS['ROLES']['DELETE_ROLES']} hideChildren>
-            {
-              record.canDelete ?
-                <Popconfirm
-                  title='Delete the role'
-                  description='Are you sure to delete this role?'
-                  okText='Delete'
-                  onConfirm={() => handleDelete(record.id as string)}
-                  cancelText='Cancel'
-                >
-                  <DeleteOutlined
-                    style={{
-                      color: '#ee5253'
-                    }}
-                  />
-                </Popconfirm>
-                :
-                <div className="text-gray-400 cursor-not-allowed"><DeleteOutlined /></div>
-            }
-          </Access>
+          {
+            (record.roleName !== 'ADMIN' && record.roleName !== 'USER') &&
+            <>
+              <Access permission={ALL_PERMISSIONS['ROLES']['PUT_ROLES']} hideChildren>
+                {/* <Access permission={permissions} hideChildren> */}
+                <EditOutlined
+                  style={{
+                    color: '#54a0ff'
+                  }}
+                  onClick={() => {
+                    setUpdateRole(record)
+                    setIsUpdateOpen(true)
+                  }}
+                />
+              </Access>
+              <Access permission={ALL_PERMISSIONS['ROLES']['DELETE_ROLES']} hideChildren>
+                {
+                  record.canDelete ?
+                    <Popconfirm
+                      title='Delete the role'
+                      description='Are you sure to delete this role?'
+                      okText='Delete'
+                      onConfirm={() => handleDelete(record.id as string)}
+                      cancelText='Cancel'
+                    >
+                      <DeleteOutlined
+                        style={{
+                          color: '#ee5253'
+                        }}
+                      />
+                    </Popconfirm>
+                    :
+                    <div className="text-gray-400 cursor-not-allowed"><DeleteOutlined /></div>
+                }
+              </Access>
+            </>
+          }
         </div>
       )
     }
