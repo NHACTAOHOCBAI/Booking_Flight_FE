@@ -27,6 +27,7 @@ const TicketCard: React.FC<TicketCardProps> = ({ ticket, showCancelButton, onTic
   }
 
   const flightDetails = ticket.flight
+  console.log(ticket)
   const duration = getTimeDifference(flightDetails.departureTime, flightDetails.arrivalTime)
   const cancelTicketMutation = useCancelTicket()
   const handleCancelTicket = async () => {
@@ -52,7 +53,6 @@ const TicketCard: React.FC<TicketCardProps> = ({ ticket, showCancelButton, onTic
         }
       }
     })
-    console.log('cancel ticket')
   }
 
   return (
@@ -120,7 +120,7 @@ const TicketCard: React.FC<TicketCardProps> = ({ ticket, showCancelButton, onTic
           <Descriptions.Item label='Ticket Status'>{flightDetails.flightStatus}</Descriptions.Item>
           <Descriptions.Item label='Ticket Image'>
             <a href={ticket.urlImage} download='ticket-image.jpg' target='_blank' rel='noopener noreferrer'>
-              Tải ảnh
+              Download image
             </a>
           </Descriptions.Item>
         </Descriptions>

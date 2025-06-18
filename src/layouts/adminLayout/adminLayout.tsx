@@ -209,7 +209,7 @@ const AdminLayout = () => {
     confirm({
       title: 'Confirm logout',
       icon: <TbExclamationCircleFilled />,
-      content: 'Do you want to logout?',
+      content: 'Do you111  want to logout?',
       onOk() {
         let body: void
         logoutMutation.mutate(body, {
@@ -231,11 +231,7 @@ const AdminLayout = () => {
     },
     {
       key: '2',
-      label: (
-        <Link to='/' onClick={showConfirm}>
-          Logout
-        </Link>
-      )
+      label: <button onClick={showConfirm}>Logout</button>
     }
   ]
   return (

@@ -28,6 +28,7 @@ export default function NewAirline(props: Props) {
           type: 'success',
           content: data.message
         })
+        handleCancel()
       },
       onError(error: Error) {
         console.log(error)
@@ -36,9 +37,6 @@ export default function NewAirline(props: Props) {
           type: messageError.type,
           content: messageError.content
         })
-      },
-      onSettled() {
-        handleCancel()
       }
     })
   }

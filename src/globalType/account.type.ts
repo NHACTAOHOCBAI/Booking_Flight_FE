@@ -10,7 +10,7 @@ declare global {
     phone?: string
     role?: IRoleTable
 
-    avatar?: string
+    avatar?: string | File
   }
 }
 

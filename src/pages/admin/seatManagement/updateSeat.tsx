@@ -47,6 +47,7 @@ const UpdateSeat = (props: IProp) => {
           type: 'success',
           content: data.message
         })
+        handleCancel()
       },
       onError(error: Error) {
         console.log(error)
@@ -55,9 +56,6 @@ const UpdateSeat = (props: IProp) => {
           type: messageError.type,
           content: messageError.content
         })
-      },
-      onSettled() {
-        handleCancel()
       }
     })
   }

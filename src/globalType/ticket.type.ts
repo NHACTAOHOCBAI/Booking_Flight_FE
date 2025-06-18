@@ -1,3 +1,5 @@
+import { MyProfileTicketRes } from './myProfile.type'
+
 export {}
 
 declare global {
@@ -20,11 +22,18 @@ declare global {
 }
 
 export interface TicketList {
-  result: ITicketTable[]
+  result: MyProfileTicketRes[]
   pagination: {
     page: number
     size: number
     page_size: number
     total: number
   }
+}
+export const TICKET_STATUSES_ENUM = {
+  BOOKED: { text: 'BOOKED' },
+  CANCELLED: { text: 'CANCELLED' },
+  USED: { text: 'USED' },
+  BOARDING: { text: 'BOARDING' },
+  AVAILABLE: { text: 'AVAILABLE' }
 }

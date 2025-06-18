@@ -43,6 +43,7 @@ const UpdateAirport = (props: IProp) => {
           type: 'success',
           content: data.message
         })
+        handleCancel()
       },
       onError(error: Error) {
         console.log(error)
@@ -51,9 +52,6 @@ const UpdateAirport = (props: IProp) => {
           type: messageError.type,
           content: messageError.content
         })
-      },
-      onSettled() {
-        handleCancel()
       }
     })
   }

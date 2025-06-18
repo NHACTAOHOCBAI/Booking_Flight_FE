@@ -1,4 +1,4 @@
-import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons'
+import { DeleteOutlined, DownloadOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons'
 import type { ActionType, ProColumns } from '@ant-design/pro-components'
 import { ProTable } from '@ant-design/pro-components'
 import { Button, message, Popconfirm } from 'antd'
@@ -12,6 +12,8 @@ import { AppContext } from '@/context/app.context'
 import { useDeleteTicket } from '@/hooks/useTicket'
 import DetailTicket from './detailTicket'
 import UpdateTicket from './updateTicket'
+import { MyProfileTicketRes } from '@/globalType/myProfile.type'
+import { TICKET_STATUSES_ENUM } from '@/globalType/ticket.type'
 
 const TicketManagement = () => {
   //detail
@@ -24,6 +26,8 @@ const TicketManagement = () => {
     passengerPhone: '',
     passengerIDCard: '',
     passengerEmail: '',
+    seatNumber: 0,
+    ticketStatus: '',
     haveBaggage: false
   })
 
@@ -62,19 +66,21 @@ const TicketManagement = () => {
       }
     })
   }
+
   const ALL_PERMISSIONS = useContext(AppContext).PERMISSIONS.permissions
 
   //Table
   const actionRef = useRef<ActionType>(null)
-  const columns: ProColumns<ITicketTable>[] = [
+  const columns: ProColumns<MyProfileTicketRes>[] = [
     {
       dataIndex: 'index',
       valueType: 'indexBorder',
       width: 48
     },
     {
-      title: 'ID',
+      title: 'Seat Number',
       search: false,
+
       render: (_, record) => (
         <a
           style={{ color: '#3498db' }}
@@ -83,34 +89,26 @@ const TicketManagement = () => {
             setIsDetailOpen(true)
           }}
         >
-          {record.id}
+          {record.seatNumber}
         </a>
       )
     },
     {
       title: 'Flight Code',
 
-      dataIndex: 'flightCode'
+      render: (_, record) => <div>{record.flight.flightCode}</div>
     },
     {
       title: 'Seat Name',
       search: false,
       dataIndex: 'seatName'
     },
+
     {
       title: 'Passenger Name',
       dataIndex: 'passengerName'
     },
-    {
-      title: 'Passenger Id Card',
-      search: false,
-      dataIndex: 'passengerIDCard'
-    },
-    {
-      title: 'Passenger Phone',
-      search: false,
-      dataIndex: 'passengerPhone'
-    },
+
     {
       title: 'Passenger Email',
       dataIndex: 'passengerEmail'
@@ -119,6 +117,15 @@ const TicketManagement = () => {
       title: 'Have Baggage',
       search: false,
       render: (_, record) => <div>{record.haveBaggage ? 'Yes' : 'No'}</div>
+    },
+    {
+      title: 'Ticket Status',
+      dataIndex: 'ticketStatus',
+      valueType: 'select',
+      valueEnum: TICKET_STATUSES_ENUM,
+      render: (_, record) => {
+        return <div>{record.ticketStatus}</div>
+      }
     },
     {
       title: 'Action',
@@ -130,6 +137,17 @@ const TicketManagement = () => {
             gap: 10
           }}
         >
+          <DownloadOutlined
+            style={{ color: '#10ac84' }}
+            onClick={() => {
+              const link = document.createElement('a')
+              link.href = record.urlImage
+              link.download = 'ticket-image.jpg'
+              document.body.appendChild(link)
+              link.click()
+              document.body.removeChild(link)
+            }}
+          />
           <Access permission={ALL_PERMISSIONS['TICKETS']['PUT_TICKETS']} hideChildren>
             <EditOutlined
               style={{
@@ -170,7 +188,7 @@ const TicketManagement = () => {
       ) : (
         <>
           <Access permission={ALL_PERMISSIONS['TICKETS']['GET_TICKETS']}>
-            <ProTable<ITicketTable>
+            <ProTable<MyProfileTicketRes>
               rowKey='id'
               search={{
                 labelWidth: 'auto'
@@ -191,7 +209,7 @@ const TicketManagement = () => {
                   if (params.passengerEmail) {
                     filters.push(`account.email~'${params.passengerEmail.trim()}'`)
                   }
-
+                  if (params.ticketStatus) filters.push(`ticketStatus:'${params.ticketStatus.trim()}'`)
                   const filterString = filters.length > 0 ? filters.join(' and ') : undefined
 
                   const response = await ticketApi.getTickets({

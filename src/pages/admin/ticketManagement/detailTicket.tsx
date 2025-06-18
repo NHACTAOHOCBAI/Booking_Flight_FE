@@ -13,30 +13,25 @@ const DetailTicket = (props: IProps) => {
     setIsDetailOpen(false)
     setDetailTicket({
       id: '',
-      flightId: '',
-      flightName: '',
-      seatId: '',
+      flightCode: '',
       seatName: '',
       passengerName: '',
       passengerPhone: '',
       passengerIDCard: '',
       passengerEmail: '',
+      seatNumber: 0,
+      ticketStatus: '',
       haveBaggage: false
     })
   }
+  console.log(detailTicket)
 
   const SeatItems: DescriptionsProps['items'] = [
     {
-      key: 'FlightID',
-      label: 'Flight ID',
+      key: 'SeatClass',
+      label: 'Seat Class',
       span: 4,
-      children: detailTicket?.flightId
-    },
-    {
-      key: 'SeatID',
-      label: 'Seat ID',
-      span: 4,
-      children: detailTicket?.seatId
+      children: detailTicket?.seatName
     },
     {
       key: 'PassengerName',
@@ -61,6 +56,18 @@ const DetailTicket = (props: IProps) => {
       label: 'Passenger Phone',
       span: 4,
       children: detailTicket?.passengerPhone
+    },
+    {
+      key: 'SeatNumber',
+      label: 'Seat Number',
+      span: 4,
+      children: detailTicket?.seatNumber
+    },
+    {
+      key: 'TicketStatus',
+      label: 'Ticket Status',
+      span: 4,
+      children: detailTicket?.ticketStatus
     }
   ]
 

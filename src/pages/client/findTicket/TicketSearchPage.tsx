@@ -44,29 +44,54 @@ const TicketSearchPage: React.FC = () => {
     }
   }, [filterTicket, shouldFetch, refetch])
 
+  // const handleSearch = (values: ISearchParams) => {
+  //   setIsLoading(true)
+  //   setHasSearched(true)
+  //   message.destroy()
+
+  //   const { email, name, flightCode, idCard } = values
+  //   const conditions: string[] = []
+  //   // `ticketStatus:'BOOKED'`
+
+  //   if (email) {
+  //     conditions.push(`passengerEmail~'${email}'`)
+  //   }
+  //   if (name) {
+  //     conditions.push(`passengerName~'${name}'`)
+  //   }
+  //   if (idCard) {
+  //     conditions.push(`passengerIDCard~'${idCard}'`)
+  //   }
+  //   if (flightCode) {
+  //     conditions.push(`flight.flightCode~'${flightCode}'`)
+  //   }
+
+  //   const filter = conditions.join(' and ')
+
+  //   setFilterTicket(filter)
+  //   setShouldFetch(true)
+  // }
   const handleSearch = (values: ISearchParams) => {
+    const { email, name, flightCode, idCard } = values
+
+    // Nếu tất cả đều rỗng
+    if (!email && !name && !flightCode && !idCard) {
+      message.error('Please enter at least one search field.')
+      return
+    }
+
     setIsLoading(true)
     setHasSearched(true)
     message.destroy()
 
-    const { email, name, flightCode, idCard } = values
-    const conditions: string[] = [`ticketStatus:'BOOKED'`]
+    const conditions: string[] = []
 
-    if (email) {
-      conditions.push(`passengerEmail~'${email}'`)
-    }
-    if (name) {
-      conditions.push(`passengerName~'${name}'`)
-    }
-    if (idCard) {
-      conditions.push(`passengerIDCard~'${idCard}'`)
-    }
-    if (flightCode) {
-      conditions.push(`flight.flightCode~'${flightCode}'`)
-    }
+    if (email) conditions.push(`passengerEmail~'${email}'`)
+    if (name) conditions.push(`passengerName~'${name}'`)
+    if (idCard) conditions.push(`passengerIDCard~'${idCard}'`)
+    if (flightCode) conditions.push(`flight.flightCode~'${flightCode}'`)
 
     const filter = conditions.join(' and ')
-
     setFilterTicket(filter)
     setShouldFetch(true)
   }
@@ -277,14 +302,14 @@ const TicketSearchPage: React.FC = () => {
                             <span className='font-medium'>{ticket.seatNumber}</span>
                           </div>
                           <div className='flex items-center justify-between'>
-                            <span className='text-gray-600'>Gate:</span>
+                            <span className='text-gray-600'>Ticket image:</span>
                             <a
                               href={ticket.urlImage}
                               download='ticket-image.jpg'
                               target='_blank'
                               rel='noopener noreferrer'
                             >
-                              Tải ảnh
+                              Download image
                             </a>
                           </div>
                         </div>

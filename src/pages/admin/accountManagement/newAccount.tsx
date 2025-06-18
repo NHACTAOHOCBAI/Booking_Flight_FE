@@ -1,23 +1,26 @@
-import { Col, Form, FormProps, Input, message, Modal, Row, Select } from 'antd'
+import { Col, Form, FormProps, Input, message, Modal, Row, Select, UploadFile } from 'antd'
 import { MdOutlineDriveFileRenameOutline, MdOutlinePhone } from 'react-icons/md'
 
 import { onErrorUtil } from '@/globalType/util.type'
 import { useCreateAccount } from '@/hooks/useAccount'
 import { useGetAllRoles } from '@/hooks/useRole'
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { GrUserAdmin } from 'react-icons/gr'
 import { RiLockPasswordLine } from 'react-icons/ri'
 import { TfiEmail } from 'react-icons/tfi'
+import UploadImage from '@/components/UploadFile'
+
 interface IProp {
   isNewOpen: boolean
   setIsNewOpen: (value: boolean) => void
 }
 const NewAccount = (props: IProp) => {
+  const [fileList, setFileList] = useState<UploadFile[]>([])
   const { isNewOpen, setIsNewOpen } = props
   const [form] = Form.useForm()
 
   const [messageApi, contextHolder] = message.useMessage()
-  const newAccountMutation = useCreateAccount()
+  const { mutate: newAccountMutation, isPending } = useCreateAccount()
 
   const onFinish: FormProps<IAccountTable>['onFinish'] = async (value) => {
     const body = {
@@ -26,9 +29,10 @@ const NewAccount = (props: IProp) => {
       password: value.password,
       username: value.username,
       roleId: value.role,
-      phone: value.phone
+      phone: value.phone,
+      avatar: fileList[0].originFileObj as File
     }
-    newAccountMutation.mutate(body, {
+    newAccountMutation(body, {
       onSuccess(data) {
         messageApi.open({
           type: 'success',
@@ -52,6 +56,7 @@ const NewAccount = (props: IProp) => {
   }
 
   const handleCancel = () => {
+    setFileList([])
     form.resetFields()
     setIsNewOpen(false)
   }
@@ -118,6 +123,12 @@ const NewAccount = (props: IProp) => {
               >
                 <Input placeholder='Password' />
               </Form.Item>
+              <div className='mb-[10px]'>
+                <h3 className='mb-[10px]'>
+                  Avatar<span className='text-gray-300'>{' (optional)'}</span>
+                </h3>
+                <UploadImage isPending={isPending} fileList={fileList} setFileList={setFileList} />
+              </div>
             </Col>
             <Col span={1}>
               <div style={{ marginLeft: 18, backgroundColor: '#c8d6e5', height: '100%', width: 1.5 }}></div>

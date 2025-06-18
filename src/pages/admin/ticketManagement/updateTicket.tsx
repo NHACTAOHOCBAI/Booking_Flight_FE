@@ -55,6 +55,7 @@ const UpdateTicket = (props: IProp) => {
           type: 'success',
           content: data.message
         })
+        handleCancel()
       },
       onError(error: Error) {
         console.log(error)
@@ -63,9 +64,6 @@ const UpdateTicket = (props: IProp) => {
           type: messageError.type,
           content: messageError.content
         })
-      },
-      onSettled() {
-        handleCancel()
       }
     })
   }
@@ -140,42 +138,6 @@ const UpdateTicket = (props: IProp) => {
       {contextHolder}
       <Modal forceRender title='Update Ticket' open={isUpdateOpen} onOk={handleOk} onCancel={handleCancel}>
         <Form layout='vertical' name='basic' onFinish={onFinish} autoComplete='off' form={form}>
-          <Form.Item<ITicketTable>
-            label={
-              <div>
-                <LuScanBarcode />
-                Flight Code
-              </div>
-            }
-            name='flightId'
-            rules={[
-              {
-                required: true,
-                message: "Please input flight's code"
-              }
-            ]}
-          >
-            <Select onBlur={handleClick} options={flightOptions} />
-          </Form.Item>
-
-          <Form.Item<ITicketTable>
-            label={
-              <div>
-                <PiSeat />
-                Seat Class
-              </div>
-            }
-            name='seatId'
-            rules={[
-              {
-                required: true,
-                message: "Please input seat's class"
-              }
-            ]}
-          >
-            <Select disabled={isFlightId === '' ? true : false} options={seatOptions} />
-          </Form.Item>
-
           <Form.Item<ITicketTable>
             label={
               <div>

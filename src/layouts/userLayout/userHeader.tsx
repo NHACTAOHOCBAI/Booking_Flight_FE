@@ -43,11 +43,7 @@ const UserHeader = () => {
     },
     {
       key: '2',
-      label: (
-        <Link to='/' onClick={showConfirm}>
-          Logout
-        </Link>
-      )
+      label: <button onClick={showConfirm}>Logout</button>
     }
   ]
 
@@ -93,7 +89,7 @@ const UserHeader = () => {
               </div> */}
 
               <div className='flex items-center mx-2'>
-                <svg
+                {/* <svg
                   xmlns='http://www.w3.org/2000/svg'
                   width='30px'
                   height='30px'
@@ -106,15 +102,22 @@ const UserHeader = () => {
                     d='M24 18.911v3.929a1.11 1.11 0 0 1-1.033 1.109c-.486.033-.883.051-1.19.051C11.96 24 4 16.041 4 6.222c0-.306.017-.703.051-1.189A1.111 1.111 0 0 1 5.16 4h3.929a.556.556 0 0 1 .553.5c.026.256.05.459.071.613.221 1.541.674 3.04 1.343 4.446a.506.506 0 0 1-.164.63l-2.398 1.713a14.497 14.497 0 0 0 7.605 7.605l1.71-2.394a.514.514 0 0 1 .638-.165 15.448 15.448 0 0 0 4.444 1.339c.155.022.358.046.611.07a.555.555 0 0 1 .499.554H24Z'
                   ></path>
                 </svg>
-                <div className='flex flex-col items-start hover:text-gray-300 cursor-pointer mx-2'>
+                <div className='flex flex-col items-start hover:text-gray-300 cursor-pointer '>
                   <div className='text-sm '>Contact</div>
                   <div className='text-sm font-bold'>0857311444</div>
-                </div>
-                <div className='flex flex-col items-start hover:text-gray-300 cursor-pointer mx-2'>
-                  <Link to='/ticketSearchPage' className='text-[0.9rem] '>
+                </div> */}
+                <div className='flex flex-col items-start hover:text-gray-300 cursor-pointer '>
+                  <Link to='/ticketSearchPage' className='text-[1rem] '>
                     Search tickets
                   </Link>
                 </div>
+                <div className='flex flex-col items-center mx-2'>|</div>
+                <div className='flex flex-col items-start hover:text-gray-300 cursor-pointer '>
+                  <Link to='/about' className='text-[1rem] '>
+                    About
+                  </Link>
+                </div>
+                <div className='flex flex-col items-center mx-2'>|</div>
                 {profile ? (
                   <Dropdown
                     menu={{ items }}

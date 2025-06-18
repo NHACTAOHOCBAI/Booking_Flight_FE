@@ -1,10 +1,12 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+import UploadImage from '@/components/UploadFile'
 import { onErrorUtil } from '@/globalType/util.type'
 import { useUpdateAccount } from '@/hooks/useAccount'
 import { useGetAllRoles } from '@/hooks/useRole'
-import { Col, Form, FormProps, Input, message, Modal, Row, Select } from 'antd'
+import { isPending } from '@reduxjs/toolkit'
+import { Col, Form, FormProps, Input, message, Modal, Row, Select, UploadFile } from 'antd'
 import _ from 'lodash'
-import { useEffect, useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { GrUserAdmin } from 'react-icons/gr'
 import { MdOutlineDriveFileRenameOutline, MdOutlinePhone } from 'react-icons/md'
 import { RiLockPasswordLine } from 'react-icons/ri'
@@ -17,10 +19,11 @@ interface IProp {
   setIsUpdateOpen: (value: boolean) => void
 }
 const UpdateAccount = (props: IProp) => {
+  const [fileList, setFileList] = useState<UploadFile[]>([])
   const { updatedAccount, setUpdatedAccount, isUpdateOpen, setIsUpdateOpen } = props
   const [form] = Form.useForm()
   const [messageApi, contextHolder] = message.useMessage()
-  const updateAccountMutation = useUpdateAccount()
+  const { mutate: updateAccountMutation, isPending } = useUpdateAccount()
 
   const onFinish: FormProps<IAccountTable>['onFinish'] = async (value) => {
     const initialValue = _.omit(updatedAccount, ['id'])
@@ -39,10 +42,11 @@ const UpdateAccount = (props: IProp) => {
       password: updatedAccount.password || '123',
       username: value.username,
       roleId: value.role,
-      phone: value.phone
+      phone: value.phone,
+      avatar: fileList[0].originFileObj as File
     }
     console.log(body)
-    updateAccountMutation.mutate(body, {
+    updateAccountMutation(body, {
       onSuccess(data) {
         messageApi.open({
           type: 'success',
@@ -64,6 +68,7 @@ const UpdateAccount = (props: IProp) => {
     form.submit()
   }
   const handleCancel = () => {
+    setFileList([])
     form.resetFields()
     setUpdatedAccount({
       id: '',
@@ -79,12 +84,19 @@ const UpdateAccount = (props: IProp) => {
     form.setFieldsValue({
       id: updatedAccount.id,
       username: updatedAccount.username,
-
       email: updatedAccount.email,
       phone: updatedAccount.phone,
       fullName: updatedAccount.fullName,
       roleId: updatedAccount.role
     })
+    setFileList([
+      {
+        uid: '-1',
+        name: 'avatar.jpg',
+        status: 'done',
+        url: updatedAccount.avatar as string
+      }
+    ])
   }, [updatedAccount])
 
   const roleData = useGetAllRoles({}, isUpdateOpen)
@@ -172,6 +184,12 @@ const UpdateAccount = (props: IProp) => {
           >
             <Select placeholder={updatedAccount.role?.roleName} options={roleOptions} />
           </Form.Item>
+          <div className='mb-[10px]'>
+            <h3 className='mb-[10px]'>
+              Avatar<span className='text-gray-300'>{' (optional)'}</span>
+            </h3>
+            <UploadImage isPending={isPending} fileList={fileList} setFileList={setFileList} />
+          </div>
         </Form>
       </Modal>
     </>

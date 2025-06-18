@@ -37,7 +37,7 @@ const NewFlight = (props: IProp) => {
     if (value.listFlight_Airport) {
       value.listFlight_Airport = value.listFlight_Airport.map((values) => {
         return {
-          airportId: values.airportId,
+          airportId: values.airportId.value,
           arrivalTime: dayjs(values.arrivalTime).format('HH:mm DD/MM/YYYY'),
           departureTime: dayjs(values.departureTime).format('HH:mm DD/MM/YYYY'),
           note: values.note ? values.note : 'nothing'
@@ -66,6 +66,7 @@ const NewFlight = (props: IProp) => {
           type: 'success',
           content: data.message
         })
+        handleCancel()
       },
       onError(error: Error) {
         console.log(error)
@@ -74,10 +75,10 @@ const NewFlight = (props: IProp) => {
           type: messageError.type,
           content: messageError.content
         })
-      },
-      onSettled() {
-        handleCancel()
       }
+      // onSettled() {
+      //
+      // }
     })
   }
 
@@ -133,8 +134,7 @@ const NewFlight = (props: IProp) => {
     ),
     ...(selectedDeparture ? [selectedDeparture] : [])
   ]
-  console.log(interAirportOptionCheck)
-  console.log(departureOptions)
+
   const arrivalOptions = [
     ...airportOptions.filter(
       (airport) => airport.value !== departureAirportId && interAirportOptionCheck.includes(airport.value)

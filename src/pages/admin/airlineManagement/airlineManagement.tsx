@@ -192,7 +192,7 @@ const AirlineManagement = () => {
                     setIsNewOpen(true)
                   }}
                 >
-                  New Account
+                  New Airline
                 </Button>
               </Access>
             ]}

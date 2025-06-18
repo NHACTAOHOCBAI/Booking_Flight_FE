@@ -1,7 +1,7 @@
 import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons'
 import type { ActionType, ProColumns } from '@ant-design/pro-components'
 import { ProTable } from '@ant-design/pro-components'
-import { Button, message, Popconfirm } from 'antd'
+import { Avatar, Button, message, Popconfirm } from 'antd'
 
 import { useContext, useMemo, useRef, useState } from 'react'
 import NewAccount from './newAccount'
@@ -101,7 +101,8 @@ const AccountManagement = () => {
     {
       title: 'Email',
       dataIndex: 'email',
-      valueType: 'text'
+      valueType: 'text',
+      width: 300
     },
     {
       title: 'Full name',
@@ -116,11 +117,39 @@ const AccountManagement = () => {
     },
     {
       title: 'Role',
-      dataIndex: 'roleName', // must match the key in params
+      dataIndex: 'roleName',
       valueType: 'select',
       valueEnum: roleEnum,
       render: (_, record) => {
         return <div>{record.role?.roleName}</div>
+      }
+    },
+    {
+      title: 'Avatar',
+      render: (_, record) => {
+        if (record.avatar) {
+          return (
+            <img
+              style={{
+                objectFit: 'cover',
+                width: 30,
+                height: 30,
+                borderWidth: 1,
+                borderRadius: 9999
+              }}
+              src={record.avatar as string}
+              alt='avatar'
+            />
+          )
+        }
+
+        const getInitial = (fullName: string) => {
+          if (!fullName) return '?'
+          const parts = fullName.trim().split(' ')
+          return parts[parts.length - 1]?.charAt(0).toUpperCase() || '?'
+        }
+
+        return <Avatar style={{ backgroundColor: '#87d068' }}>{getInitial(record.fullName as string)}</Avatar>
       }
     },
     {

@@ -103,7 +103,7 @@ const FlightManagement = () => {
       )
     },
     {
-      title: 'Departure City',
+      title: 'Departure Airport',
       search: false,
       render: (_, record) => {
         return <div>{record.departureAirportName}</div>
@@ -120,7 +120,7 @@ const FlightManagement = () => {
       }
     },
     {
-      title: 'Arrival City',
+      title: 'Arrival Airport',
       search: false,
       render: (_, record) => {
         return <div>{record.arrivalAirportName}</div>
