@@ -16,6 +16,7 @@ import seatApi from '@/apis/apis/seat.api'
 import { useQuery } from '@tanstack/react-query'
 import _ from 'lodash'
 import { validateIntermediateTime } from '@/utils/utils'
+
 interface IProp {
   isUpdateOpen: boolean
   setIsUpdateOpen: (value: boolean) => void
@@ -150,16 +151,59 @@ const UpdateFlight = (props: IProp) => {
     queryFn: () => airportApi.getAirports({}),
     enabled: isUpdateOpen
   })
-  const airportOptions = useMemo(
-    () =>
-      airportData.data?.data.result.map((value, index) => {
-        return {
-          key: index,
-          value: value.id,
-          label: value.airportName
-        }
-      }),
-    [airportData]
+
+  const airportOptions = useMemo(() => {
+    return (
+      airportData.data?.data.result.map((value, index) => ({
+        key: index,
+        value: value.id,
+        label: value.airportName
+      })) ?? []
+    )
+  }, [airportData])
+
+  const departureAirportId = Form.useWatch('departureAirportId', form)
+  const arrivalAirportId = Form.useWatch('arrivalAirportId', form)
+
+  // const [interAirportOptionCheck, setInterAirportOptionCheck] = useState<(string | undefined)[]>([])
+
+  const intermediateAirports = Form.useWatch('listFlight_Airport', form) || []
+
+  const selectedIntermediateAirportIds = intermediateAirports
+    .map((item: { airportId: { value: string } }) => item?.airportId.value)
+    .filter(Boolean)
+
+  const interAirportOptionCheck = airportOptions
+    .filter(
+      (airport) =>
+        airport.value !== departureAirportId &&
+        airport.value !== arrivalAirportId &&
+        !selectedIntermediateAirportIds.includes(airport.value)
+    )
+    .map((item) => item.value)
+
+  const selectedDeparture = airportOptions.find((opt) => opt.value === departureAirportId)
+  const selectedArrival = airportOptions.find((opt) => opt.value === arrivalAirportId)
+  const departureOptions = [
+    ...airportOptions.filter(
+      (airport) => airport.value !== arrivalAirportId && interAirportOptionCheck.includes(airport.value)
+    ),
+    ...(selectedDeparture ? [selectedDeparture] : [])
+  ]
+  console.log(interAirportOptionCheck)
+  console.log(departureOptions)
+  const arrivalOptions = [
+    ...airportOptions.filter(
+      (airport) => airport.value !== departureAirportId && interAirportOptionCheck.includes(airport.value)
+    ),
+    ...(selectedArrival ? [selectedArrival] : [])
+  ]
+
+  const interAirportOptions = airportOptions.filter(
+    (airport) =>
+      airport.value !== departureAirportId &&
+      airport.value !== arrivalAirportId &&
+      !selectedIntermediateAirportIds.includes(airport.value)
   )
 
   const planeData = useQuery({
@@ -264,7 +308,7 @@ const UpdateFlight = (props: IProp) => {
                   showSearch
                   placeholder='Select a departure airport'
                   optionFilterProp='label'
-                  options={airportOptions}
+                  options={departureOptions}
                 />
               </Form.Item>
 
@@ -286,7 +330,7 @@ const UpdateFlight = (props: IProp) => {
                   showSearch
                   placeholder='Select a arrival airport'
                   optionFilterProp='label'
-                  options={airportOptions}
+                  options={arrivalOptions}
                 />
               </Form.Item>
 
@@ -394,9 +438,10 @@ const UpdateFlight = (props: IProp) => {
                                 <Select
                                   style={{ width: '100%' }}
                                   showSearch
+                                  labelInValue
                                   placeholder='Airport'
                                   optionFilterProp='label'
-                                  options={airportOptions}
+                                  options={interAirportOptions}
                                 />
                               </Form.Item>
                             </Col>

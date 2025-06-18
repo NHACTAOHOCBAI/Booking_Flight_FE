@@ -3,10 +3,13 @@ import { ListConfig } from '@/globalType/listConfig.type'
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
-export const useGetAllTickets = (queryConfig: ListConfig) => {
+export const useGetAllTickets = (queryConfig: ListConfig, enable?: boolean) => {
+  const isEnabled = enable ?? true
+
   return useQuery({
     queryKey: ['tickets', queryConfig],
-    queryFn: () => ticketApi.getTickets(queryConfig)
+    queryFn: () => ticketApi.getTickets(queryConfig),
+    enabled: isEnabled
   })
 }
 

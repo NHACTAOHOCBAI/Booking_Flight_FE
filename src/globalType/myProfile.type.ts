@@ -20,6 +20,7 @@ export interface MyProfileTicketRes {
   flight: IFlight
   seatNumber: number
   urlImage: string
+  ticketStatus: string
 }
 
 export interface IFlight {

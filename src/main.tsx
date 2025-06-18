@@ -40,6 +40,7 @@ import LoginCallbackPage from './pages/auth/LoginCallbackPage '
 import UserLayout from './layouts/userLayout/userLayout'
 import EmailConfirm from './pages/auth/ForgetPassword/EmailConfirm'
 import ResetPassword from './pages/auth/ForgetPassword/ResetPassword'
+import TicketSearchPage from './pages/client/findTicket/TicketSearchPage'
 
 // function ProtectedRoute() {
 //   const { isAuthenticated } = useContext(AppContext)
@@ -57,12 +58,8 @@ const router = createBrowserRouter([
         element: <HomePage />
       },
       {
-        path: '/resetPassword/emailConfirm',
-        element: <EmailConfirm />
-      },
-      {
-        path: '/resetPassword/changePassword',
-        element: <ResetPassword />
+        path: '/ticketSearchPage',
+        element: <TicketSearchPage />
       },
       {
         path: '/about',
@@ -189,6 +186,21 @@ const router = createBrowserRouter([
       {
         index: true,
         element: <LoginPage />
+      }
+    ]
+  },
+
+  {
+    path: '/resetPassword',
+    element: <RejectedRoute />,
+    children: [
+      {
+        index: true,
+        element: <EmailConfirm />
+      },
+      {
+        path: 'changePassword',
+        element: <ResetPassword />
       }
     ]
   },
