@@ -19,7 +19,7 @@ const myProfileApi = {
     return res.data
   },
   updateMyProfile: async (param: UpdateProfile) => {
-    const res = await http.put<SuccessResponse<string>>(URL + '/update-account', param)
+    const res = await http.put<SuccessResponse<IAccountTable>>(URL + '/update-account', param)
     return res.data
   }
 }

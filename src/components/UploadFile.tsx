@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-
+import { PlusOutlined } from '@ant-design/icons'
 import { Image, Upload } from 'antd'
 import type { GetProp, UploadFile, UploadProps } from 'antd'
 
@@ -45,7 +45,12 @@ const UploadImage: React.FC<UploadImageProps> = ({
   const handleChange: UploadProps['onChange'] = ({ fileList: newFileList }) => {
     setFileList(newFileList)
   }
-
+  const uploadButton = (
+    <button style={{ border: 0, background: 'none' }} type='button'>
+      <PlusOutlined />
+      <div style={{ marginTop: 8 }}>Upload</div>
+    </button>
+  )
   return (
     <>
       <Upload
@@ -57,10 +62,9 @@ const UploadImage: React.FC<UploadImageProps> = ({
         onChange={handleChange}
         accept='image/*'
         maxCount={1}
-        showUploadList={false} // ẩn danh sách ảnh mặc định, mình tự render
+        showUploadList={false}
       >
         {fileList.length > 0 ? (
-          // Hiển thị thumbnail ảnh upload
           <img
             src={
               fileList[0].url ||
@@ -77,11 +81,10 @@ const UploadImage: React.FC<UploadImageProps> = ({
               border: '4px solid #a0c4ff',
               boxShadow: '0 2px 8px rgba(0,0,0,0.15)'
             }}
-            onClick={() => handlePreview(fileList[0])} // cho phép click xem modal preview
+            onClick={() => handlePreview(fileList[0])}
           />
         ) : (
-          // Hiển thị children (ví dụ Avatar) khi chưa có ảnh
-          children
+          (children ?? uploadButton)
         )}
       </Upload>
 

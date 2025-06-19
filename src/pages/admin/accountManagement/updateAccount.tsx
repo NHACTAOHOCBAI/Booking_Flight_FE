@@ -1,12 +1,15 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+import { saveProfileToLS } from '@/apis/auth.api'
 import UploadImage from '@/components/UploadFile'
+import { AppContext } from '@/context/app.context'
 import { onErrorUtil } from '@/globalType/util.type'
 import { useUpdateAccount } from '@/hooks/useAccount'
+import { useGetMyProfile } from '@/hooks/useMyProfile'
 import { useGetAllRoles } from '@/hooks/useRole'
 
 import { Col, Form, FormProps, Input, message, Modal, Row, Select, UploadFile } from 'antd'
 import _ from 'lodash'
-import { useEffect, useMemo, useState } from 'react'
+import { useContext, useEffect, useMemo, useState } from 'react'
 import { GrUserAdmin } from 'react-icons/gr'
 import { MdOutlineDriveFileRenameOutline, MdOutlinePhone } from 'react-icons/md'
 import { TfiEmail } from 'react-icons/tfi'
@@ -24,7 +27,9 @@ const UpdateAccount = (props: IProp) => {
   const [form] = Form.useForm()
   const [messageApi, contextHolder] = message.useMessage()
   const { mutate: updateAccountMutation, isPending } = useUpdateAccount()
+  const { refetch } = useGetMyProfile()
 
+  const { setProfile } = useContext(AppContext)
   const onFinish: FormProps<IAccountTable>['onFinish'] = async (value) => {
     const initialValue = _.omit(updatedAccount, ['id'])
     const isDirty = !_.isEqual(value, initialValue)
@@ -51,7 +56,14 @@ const UpdateAccount = (props: IProp) => {
     console.log(body)
     updateAccountMutation(body, {
       onSuccess: async () => {
+        const { data: userData } = await refetch()
+        console.log(userData)
+        if (userData) {
+          setProfile(userData.data)
+          saveProfileToLS(userData.data)
+        }
         await refetchData()
+
         messageApi.success('Update account successfully')
         handleCancel()
       },

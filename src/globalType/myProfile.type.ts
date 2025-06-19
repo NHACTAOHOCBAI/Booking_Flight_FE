@@ -10,17 +10,22 @@ export interface MyProfileTicketResList {
 
 export interface MyProfileTicketRes {
   id: string
-  seatId: string
-  seatName: string
   passengerName: string
   passengerPhone: string
   passengerIDCard: string
   passengerEmail: string
   haveBaggage: boolean
   flight: IFlight
-  seatNumber: number
   urlImage: string
   ticketStatus: string
+  seat: ISeat
+}
+
+interface ISeat {
+  seatNumber: number
+  seatId: string
+  seatName: string
+  price: number
 }
 
 export interface IFlight {

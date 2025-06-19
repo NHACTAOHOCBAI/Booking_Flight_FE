@@ -109,13 +109,15 @@ const TicketCard: React.FC<TicketCardProps> = ({ ticket, showCancelButton, onTic
           <Descriptions.Item label='Departure Time'>{flightDetails.departureTime}</Descriptions.Item>
           <Descriptions.Item label='Arrival Time'>{flightDetails.arrivalTime}</Descriptions.Item>
           <Descriptions.Item label='Duration'>{duration}</Descriptions.Item>
-          <Descriptions.Item label='Original Price'>{flightDetails.originPrice.toLocaleString()} VND</Descriptions.Item>
+          <Descriptions.Item label='Original Price'>
+            {(flightDetails.originPrice * ticket.seat.price).toLocaleString()} VND
+          </Descriptions.Item>
           <Descriptions.Item label='Passenger Name'>{ticket.passengerName}</Descriptions.Item>
           <Descriptions.Item label='Passenger Phone'>{ticket.passengerPhone}</Descriptions.Item>
           <Descriptions.Item label='Passenger ID Card'>{ticket.passengerIDCard}</Descriptions.Item>
           <Descriptions.Item label='Passenger Email'>{ticket.passengerEmail}</Descriptions.Item>
-          <Descriptions.Item label='Seat Name'>{ticket.seatName}</Descriptions.Item>
-          <Descriptions.Item label='Seat Number'>{ticket.seatNumber}</Descriptions.Item>
+          <Descriptions.Item label='Seat Name'>{ticket.seat.seatName}</Descriptions.Item>
+          <Descriptions.Item label='Seat Number'>{ticket.seat.seatNumber}</Descriptions.Item>
           <Descriptions.Item label='Baggage'>{ticket.haveBaggage ? 'Yes' : 'No'}</Descriptions.Item>
           <Descriptions.Item label='Ticket Status'>{flightDetails.flightStatus}</Descriptions.Item>
           <Descriptions.Item label='Ticket Image'>
@@ -164,8 +166,8 @@ const TicketPurchasedPage: React.FC<TicketPurchasedPageProps> = ({ type }) => {
       break
   }
 
-  const { data, isLoading, error, refetch } = useGetMyPurchaseTicket({ filter: filterTicket })
-  const purchasedTickets = data?.data.result
+  const { data: purchaseTicketGetData, isLoading, error, refetch } = useGetMyPurchaseTicket({ filter: filterTicket })
+  const purchasedTickets = purchaseTicketGetData?.data.result
   console.log(purchasedTickets)
   return (
     <Card className='rounded-xl shadow-lg'>
