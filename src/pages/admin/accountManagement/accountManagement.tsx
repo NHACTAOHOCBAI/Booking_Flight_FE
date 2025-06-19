@@ -153,42 +153,50 @@ const AccountManagement = () => {
     {
       title: 'Action',
       search: false,
-      render: (_, record) => (
-        <div
-          style={{
-            display: 'flex',
-            gap: 10
-          }}
-        >
-          <Access permission={ALL_PERMISSIONS['ACCOUNTS']['PUT_ACCOUNTS']} hideChildren>
-            {/* <Access permission={permissions} hideChildren> */}
-            <EditOutlined
-              style={{
-                color: '#54a0ff'
-              }}
-              onClick={() => {
-                setUpdateAccount(record)
-                setIsUpdateOpen(true)
-              }}
-            />
-          </Access>
-          <Access permission={ALL_PERMISSIONS['ACCOUNTS']['DELETE_ACCOUNTS']} hideChildren>
-            <Popconfirm
-              title='Delete the account'
-              description='Are you sure to delete this account?'
-              okText='Delete'
-              onConfirm={() => handleDelete(record.id as string)}
-              cancelText='Cancel'
-            >
-              <DeleteOutlined
-                style={{
-                  color: '#ee5253'
-                }}
-              />
-            </Popconfirm>
-          </Access>
-        </div>
-      )
+      render: (_, record) => {
+        return (
+          <div
+            style={{
+              display: 'flex',
+              gap: 10
+            }}
+          >
+            {
+              record.email !== "admin" && (
+                <>
+                  <Access permission={ALL_PERMISSIONS['ACCOUNTS']['PUT_ACCOUNTS']} hideChildren>
+                    {/* <Access permission={permissions} hideChildren> */}
+                    <EditOutlined
+                      style={{
+                        color: '#54a0ff'
+                      }}
+                      onClick={() => {
+                        setUpdateAccount(record)
+                        setIsUpdateOpen(true)
+                      }}
+                    />
+                  </Access>
+                  <Access permission={ALL_PERMISSIONS['ACCOUNTS']['DELETE_ACCOUNTS']} hideChildren>
+                    <Popconfirm
+                      title='Delete the account'
+                      description='Are you sure to delete this account?'
+                      okText='Delete'
+                      onConfirm={() => handleDelete(record.id as string)}
+                      cancelText='Cancel'
+                    >
+                      <DeleteOutlined
+                        style={{
+                          color: '#ee5253'
+                        }}
+                      />
+                    </Popconfirm>
+                  </Access>
+                </>
+              )
+            }
+          </div>
+        )
+      }
     }
   ]
 
