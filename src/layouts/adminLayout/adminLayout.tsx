@@ -22,8 +22,8 @@ const menuStyle: React.CSSProperties = {
 const { Header, Sider, Content } = Layout
 
 const AdminLayout = () => {
-  const { pathname } = useLocation();
-  const endpoints = pathname.split('/').pop() as string;
+  const { pathname } = useLocation()
+  const endpoints = pathname.split('/').pop() as string
   const [collapsed, setCollapsed] = useState(false)
   const [menuItems, setMenuItems] = useState<MenuProps['items']>([])
   const navigate = useNavigate()
@@ -115,92 +115,94 @@ const AdminLayout = () => {
         },
         ...(viewAccount || ACL_ENABLE === 'false'
           ? [
-            {
-              key: 'manage-account',
-              icon: <VscAccount style={{ width: 20, height: 20 }} />,
-              label: <Link to={'/admin/manage-account'}>Account</Link>
-            }
-          ]
+              {
+                key: 'manage-account',
+                icon: <VscAccount style={{ width: 20, height: 20 }} />,
+                label: <Link to={'/admin/manage-account'}>Account</Link>
+              }
+            ]
           : []),
         ...(viewCity || ACL_ENABLE === 'false'
           ? [
-            {
-              key: 'manage-city',
-              icon: <PiCityLight style={{ width: 20, height: 20 }} />,
-              label: <Link to={'/admin/manage-city'}>City</Link>
-            }
-          ]
+              {
+                key: 'manage-city',
+                icon: <PiCityLight style={{ width: 20, height: 20 }} />,
+                label: <Link to={'/admin/manage-city'}>City</Link>
+              }
+            ]
           : []),
 
         ...(viewAirport || ACL_ENABLE === 'false'
           ? [
-            {
-              key: 'manage-airport',
-              icon: <GoLocation style={{ width: 20, height: 20 }} />,
-              label: <Link to={'/admin/manage-airport'}>Airport</Link>
-            }
-          ]
+              {
+                key: 'manage-airport',
+                icon: <GoLocation style={{ width: 20, height: 20 }} />,
+                label: <Link to={'/admin/manage-airport'}>Airport</Link>
+              }
+            ]
           : []),
         ...(viewPlane || ACL_ENABLE === 'false'
           ? [
-            {
-              key: 'manage-plane',
-              icon: <IoAirplaneOutline style={{ width: 20, height: 20 }} />,
-              label: <Link to={'/admin/manage-plane'}>Plane</Link>
-            }
-          ]
+              {
+                key: 'manage-plane',
+                icon: <IoAirplaneOutline style={{ width: 20, height: 20 }} />,
+                label: <Link to={'/admin/manage-plane'}>Plane</Link>
+              }
+            ]
           : []),
 
         ...(viewFlight || ACL_ENABLE === 'false'
           ? [
-            {
-              key: 'manage-flight',
-              icon: <PiAirplaneInFlight style={{ width: 20, height: 20 }} />,
-              label: <Link to={'/admin/manage-flight'}>Flight</Link>
-            }
-          ]
+              {
+                key: 'manage-flight',
+                icon: <PiAirplaneInFlight style={{ width: 20, height: 20 }} />,
+                label: <Link to={'/admin/manage-flight'}>Flight</Link>
+              }
+            ]
           : []),
         ...(viewSeatClass || ACL_ENABLE === 'false'
           ? [
-            {
-              key: 'manage-seat',
-              icon: <PiSeat style={{ width: 20, height: 20 }} />,
-              label: <Link to={'/admin/manage-seat'}>Seat Class</Link>
-            }
-          ]
+              {
+                key: 'manage-seat',
+                icon: <PiSeat style={{ width: 20, height: 20 }} />,
+                label: <Link to={'/admin/manage-seat'}>Seat Class</Link>
+              }
+            ]
           : []),
         ...(viewAirline || ACL_ENABLE === 'false'
           ? [
-            {
-              key: 'manage-airline',
-              icon: <MdOutlineAirlines style={{ width: 20, height: 20 }} />,
-              label: <Link to={'/admin/manage-airline'}>Airline</Link>
-            }
-          ]
+              {
+                key: 'manage-airline',
+                icon: <MdOutlineAirlines style={{ width: 20, height: 20 }} />,
+                label: <Link to={'/admin/manage-airline'}>Airline</Link>
+              }
+            ]
           : []),
 
         ...(viewTicket || ACL_ENABLE === 'false'
           ? [
-            {
-              key: 'manage-ticket',
-              icon: <IoTicketOutline style={{ width: 20, height: 20 }} />,
-              label: <Link to={'/admin/manage-ticket'}>Ticket</Link>
-            }
-          ]
+              {
+                key: 'manage-ticket',
+                icon: <IoTicketOutline style={{ width: 20, height: 20 }} />,
+                label: <Link to={'/admin/manage-ticket'}>Ticket</Link>
+              }
+            ]
           : []),
         ...(viewRole || ACL_ENABLE === 'false'
           ? [
-            {
-              key: 'manage-role',
-              icon: <IoSettingsOutline style={{ width: 20, height: 20 }} />,
-              label: <Link to={'/admin/manage-role'}>Role</Link>
-            }
-          ]
+              {
+                key: 'manage-role',
+                icon: <IoSettingsOutline style={{ width: 20, height: 20 }} />,
+                label: <Link to={'/admin/manage-role'}>Role</Link>
+              }
+            ]
           : [])
       ]
 
       setMenuItems(full)
     }
+    console.log(profile)
+    console.log('re render admin layout')
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [permissions, isPermissionsReady])
 
@@ -223,7 +225,7 @@ const AdminLayout = () => {
           }
         })
       },
-      onCancel() { }
+      onCancel() {}
     })
   }
   const items: MenuProps['items'] = [

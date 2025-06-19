@@ -1,16 +1,18 @@
 import { useGetMyProfile, useUpdateProfile } from '@/hooks/useMyProfile'
-import { MailOutlined, PhoneOutlined, UserOutlined } from '@ant-design/icons' // For icons
+import { MailOutlined, PhoneOutlined, UserOutlined } from '@ant-design/icons'
 import { Avatar, Button, Card, Form, Input, message, Tabs, UploadFile } from 'antd'
-import { useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import ChangePasswordPage from './changePassword'
 import TicketPurchasedPage from './ticketPurchased'
 import UploadImage from '@/components/UploadFile'
-import { isPending } from '@reduxjs/toolkit'
+import { saveProfileToLS } from '@/apis/auth.api'
+import { AppContext } from '@/context/app.context'
 
 function MyProfile() {
   const [fileList, setFileList] = useState<UploadFile[]>([])
   const [isEditingInfo, setIsEditingInfo] = useState(false)
   const [personalInfoForm] = Form.useForm()
+  const { setProfile } = useContext(AppContext)
 
   const { data, refetch } = useGetMyProfile()
   const personalInfo = data?.data
@@ -36,17 +38,18 @@ function MyProfile() {
           })
       }
       updateAccountMutation(body, {
-        onSuccess() {
-          message.success('Update success')
+        onSuccess(data) {
+          console.log(data)
+          setProfile(data.data)
+          saveProfileToLS(data.data)
+          message.success('Personal information has been saved successfully!')
+          setIsEditingInfo(false)
         },
         onError(error: Error) {
           console.log(error)
-          message.error('Update error')
+          message.error('Please check the entered information.')
         }
       })
-
-      setIsEditingInfo(false)
-      message.success('Personal information has been saved successfully!')
     } catch (errorInfo) {
       console.log('Validate Failed:', errorInfo)
       message.error('Please check the entered information.')
@@ -55,6 +58,7 @@ function MyProfile() {
 
   const handleCancelEditInfo = () => {
     setIsEditingInfo(false)
+    setFileList([])
     personalInfoForm.setFieldsValue(personalInfo)
   }
 

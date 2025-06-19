@@ -26,6 +26,8 @@ const NewRole = (props: IProp) => {
         }
       }
     }
+    console.log(checkedPermissions)
+    console.log()
     const body = {
       roleName: value.roleName,
       permissionId: checkedPermissions,
@@ -33,8 +35,8 @@ const NewRole = (props: IProp) => {
     }
     newRoleMutation.mutate(body as any, {
       onSuccess: async () => {
-        await refetchData();
-        messageApi.success("Create role successfully");
+        await refetchData()
+        messageApi.success('Create role successfully')
       },
       onError(error: Error) {
         console.log(error)

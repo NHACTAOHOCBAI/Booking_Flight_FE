@@ -611,7 +611,7 @@ const UpdateFlight = (props: IProp) => {
                 Manage Tickets
               </div>
 
-              <Form.Item label='Seat Class' required>
+              {/* <Form.Item label='Seat Class' required>
                 <Form.List
                   name='listFlight_Seat'
                   rules={[
@@ -673,7 +673,7 @@ const UpdateFlight = (props: IProp) => {
                     </>
                   )}
                 </Form.List>
-              </Form.Item>
+              </Form.Item> */}
 
               <Form.Item<IFlightTable>
                 label={
