@@ -84,7 +84,7 @@ const TicketSearchPage: React.FC = () => {
     setHasSearched(true)
     message.destroy()
 
-    const conditions: string[] = []
+    const conditions: string[] = [`passengerName!''`]
 
     if (email) conditions.push(`passengerEmail~'${email}'`)
     if (name) conditions.push(`passengerName~'${name}'`)

@@ -42,6 +42,7 @@ const UpdateAccount = (props: IProp) => {
     }
     const body = {
       account: {
+        id: updatedAccount.id,
         email: value.email,
         fullName: value.fullName,
         password: value.password,

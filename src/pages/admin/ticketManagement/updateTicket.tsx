@@ -35,6 +35,7 @@ const UpdateTicket = (props: IProp) => {
     }
 
     const body = {
+      id: updatedTicket.id,
       flightId: updatedTicket.flight.id,
       seatId: updatedTicket.seat.id,
       passengerName: value.passengerName,
