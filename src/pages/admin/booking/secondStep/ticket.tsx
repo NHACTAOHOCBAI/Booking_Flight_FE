@@ -40,7 +40,6 @@ const Ticket = ({ FlightDetails, selectedSeats }: Props) => {
   const captureRefs = useRef<HTMLDivElement[]>([])
 
   useEffect(() => {
-    console.log(captureRefs.current.length)
     const generateImageUrls = async () => {
       const urls: string[] = []
       for (let i = 0; i < captureRefs.current.length; i++) {
@@ -57,8 +56,6 @@ const Ticket = ({ FlightDetails, selectedSeats }: Props) => {
 
         return [...prev, ...uniqueNew]
       })
-
-      console.log('ticketImageUrls:', urls)
     }
 
     if (
@@ -72,8 +69,6 @@ const Ticket = ({ FlightDetails, selectedSeats }: Props) => {
   }, [bookingTicketsList])
 
   if (!FlightDetails) return null
-  // console.log('selectedSeats:', selectedSeats)
-  // console.log('bookingTicketsList:', bookingTicketsList)
   if (selectedSeats)
     return (
       <div className='flex flex-col gap-2'>

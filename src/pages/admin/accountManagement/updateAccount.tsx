@@ -53,11 +53,9 @@ const UpdateAccount = (props: IProp) => {
           avatar: fileList[0].originFileObj as File
         })
     }
-    console.log(body)
     updateAccountMutation(body, {
       onSuccess: async () => {
         const { data: userData } = await refetch()
-        console.log(userData)
         if (userData) {
           setProfile(userData.data)
           saveProfileToLS(userData.data)

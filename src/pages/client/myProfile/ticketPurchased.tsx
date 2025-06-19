@@ -27,8 +27,7 @@ const TicketCard: React.FC<TicketCardProps> = ({ ticket, showCancelButton, onTic
   }
 
   const flightDetails = ticket.flight
-  console.log(ticket)
-  const duration = getTimeDifference(flightDetails.departureTime, flightDetails.arrivalTime)
+  const duration = getTimeDifference(flightDetails.departureTime!, flightDetails.arrivalTime!)
   const cancelTicketMutation = useCancelTicket()
   const handleCancelTicket = async () => {
     Modal.confirm({
@@ -60,10 +59,10 @@ const TicketCard: React.FC<TicketCardProps> = ({ ticket, showCancelButton, onTic
       <h3 className='text-lg font-semibold text-gray-800 mb-2'>Flight {flightDetails.flightCode}</h3>
       <div className='space-y-1 text-gray-700'>
         <p className='text-sm'>
-          <span className='font-medium'>From:</span> {flightDetails.departureAirport.airportName}
+          <span className='font-medium'>From:</span> {flightDetails.departureAirport!.airportName}
         </p>
         <p className='text-sm'>
-          <span className='font-medium'>To:</span> {flightDetails.arrivalAirport.airportName}
+          <span className='font-medium'>To:</span> {flightDetails.arrivalAirport!.airportName}
         </p>
         <p className='text-sm'>
           <span className='font-medium'>Departure Time:</span> {flightDetails.departureTime}
@@ -100,17 +99,17 @@ const TicketCard: React.FC<TicketCardProps> = ({ ticket, showCancelButton, onTic
       >
         <Descriptions bordered column={1} size='small' className='mt-4'>
           <Descriptions.Item label='Flight Code'>{flightDetails.flightCode}</Descriptions.Item>
-          <Descriptions.Item label='Airline'>{flightDetails.plane.airline.airlineName}</Descriptions.Item>
+          <Descriptions.Item label='Airline'>{flightDetails.plane!.airline.airlineName}</Descriptions.Item>
           <Descriptions.Item label='Plane'>
-            {flightDetails.plane.planeName} ({flightDetails.plane.planeCode})
+            {flightDetails.plane!.planeName} ({flightDetails.plane!.planeCode})
           </Descriptions.Item>
-          <Descriptions.Item label='Departure Airport'>{flightDetails.departureAirport.airportName}</Descriptions.Item>
-          <Descriptions.Item label='Arrival Airport'>{flightDetails.arrivalAirport.airportName}</Descriptions.Item>
+          <Descriptions.Item label='Departure Airport'>{flightDetails.departureAirport!.airportName}</Descriptions.Item>
+          <Descriptions.Item label='Arrival Airport'>{flightDetails.arrivalAirport!.airportName}</Descriptions.Item>
           <Descriptions.Item label='Departure Time'>{flightDetails.departureTime}</Descriptions.Item>
           <Descriptions.Item label='Arrival Time'>{flightDetails.arrivalTime}</Descriptions.Item>
           <Descriptions.Item label='Duration'>{duration}</Descriptions.Item>
           <Descriptions.Item label='Original Price'>
-            {(flightDetails.originPrice * ticket.seat.price).toLocaleString()} VND
+            {(flightDetails.originPrice! * ticket.seat.price!).toLocaleString()} VND
           </Descriptions.Item>
           <Descriptions.Item label='Passenger Name'>{ticket.passengerName}</Descriptions.Item>
           <Descriptions.Item label='Passenger Phone'>{ticket.passengerPhone}</Descriptions.Item>
@@ -168,7 +167,6 @@ const TicketPurchasedPage: React.FC<TicketPurchasedPageProps> = ({ type }) => {
 
   const { data: purchaseTicketGetData, isLoading, error, refetch } = useGetMyPurchaseTicket({ filter: filterTicket })
   const purchasedTickets = purchaseTicketGetData?.data.result
-  console.log(purchasedTickets)
   return (
     <Card className='rounded-xl shadow-lg'>
       <div className='p-6'>

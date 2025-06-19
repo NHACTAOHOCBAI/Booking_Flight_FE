@@ -1,18 +1,15 @@
+import { MyProfileTicketRes } from '@/globalType/myProfile.type'
 import { onErrorUtil } from '@/globalType/util.type'
-import { useGetAllFlights } from '@/hooks/useFlight'
-import { useGetAllSeats } from '@/hooks/useSeat'
 import { useUpdateTicket } from '@/hooks/useTicket'
-import { Checkbox, Form, FormProps, Input, message, Modal, Select } from 'antd'
+import { Checkbox, Form, FormProps, Input, message, Modal } from 'antd'
 import _ from 'lodash'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect } from 'react'
 import { AiOutlineIdcard } from 'react-icons/ai'
-import { LuScanBarcode } from 'react-icons/lu'
 import { MdDriveFileRenameOutline, MdOutlineLocalPhone, MdOutlineMail } from 'react-icons/md'
-import { PiSeat } from 'react-icons/pi'
 
 interface IProp {
-  updatedTicket: ITicketTable
-  setUpdatedTicket: (value: ITicketTable) => void
+  updatedTicket: MyProfileTicketRes
+  setUpdatedTicket: (value: MyProfileTicketRes) => void
   isUpdateOpen: boolean
   setIsUpdateOpen: (value: boolean) => void
   refetchData: () => Promise<void> | undefined
@@ -20,8 +17,6 @@ interface IProp {
 const UpdateTicket = (props: IProp) => {
   const { updatedTicket, setUpdatedTicket, isUpdateOpen, setIsUpdateOpen, refetchData } = props
   const [form] = Form.useForm()
-
-  const [isFlightId, setIsFlightId] = useState(updatedTicket.flightId)
 
   const [messageApi, contextHolder] = message.useMessage()
   const updateTicketMutation = useUpdateTicket()
@@ -41,8 +36,8 @@ const UpdateTicket = (props: IProp) => {
 
     const body = {
       id: updatedTicket.id,
-      flightId: value.flightId,
-      seatId: value.seatId,
+      flightId: updatedTicket.flight.id,
+      seatId: updatedTicket.seat.id,
       passengerName: value.passengerName,
       passengerPhone: value.passengerPhone,
       passengerIDCard: value.passengerIDCard,
@@ -74,63 +69,35 @@ const UpdateTicket = (props: IProp) => {
     form.resetFields()
     setUpdatedTicket({
       id: '',
-      flightId: '',
-      flightCode: '',
-      seatId: '',
-      seatName: '',
+      flight: {},
+      seat: {},
       passengerName: '',
       passengerPhone: '',
       passengerIDCard: '',
       passengerEmail: '',
-      haveBaggage: false
+      urlImage: '',
+      ticketStatus: '',
+      haveBaggage: false,
+      seatNumber: 0
     })
     setIsUpdateOpen(false)
   }
   useEffect(() => {
     form.setFieldsValue({
       id: updatedTicket.id,
-      flightId: updatedTicket.flightId,
-      flightCode: updatedTicket.flightCode,
-      seatId: updatedTicket.seatId,
-      seatName: updatedTicket.seatName,
+      flightId: updatedTicket.flight.id,
+      flightCode: updatedTicket.flight.flightCode,
+      seatId: updatedTicket.seat.id,
+      seatName: updatedTicket.seat.seatName,
       passengerName: updatedTicket.passengerName,
       passengerPhone: updatedTicket.passengerPhone,
       passengerIDCard: updatedTicket.passengerIDCard,
       passengerEmail: updatedTicket.passengerEmail,
-      haveBaggage: updatedTicket.haveBaggage
+      haveBaggage: updatedTicket.haveBaggage,
+      seatNumber: updatedTicket.seatNumber
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [updatedTicket])
-
-  const seatData = useGetAllSeats({}, isUpdateOpen)
-  const seatOptions = useMemo(
-    () =>
-      seatData.data?.data.result.map((value, index) => {
-        return {
-          key: index,
-          value: value.id,
-          label: value.seatName
-        }
-      }),
-    [seatData]
-  )
-
-  const handleClick = () => {
-    setIsFlightId(form.getFieldValue('flightId'))
-  }
-
-  const flightData = useGetAllFlights({}, isUpdateOpen)
-  const flightOptions = useMemo(
-    () =>
-      flightData.data?.data.result.map((value, index) => {
-        return {
-          key: index,
-          value: value.id,
-          label: value.flightCode
-        }
-      }),
-    [flightData]
-  )
 
   return (
     <>

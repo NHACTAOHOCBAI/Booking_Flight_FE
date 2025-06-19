@@ -39,7 +39,6 @@ function MyProfile() {
       }
       updateAccountMutation(body, {
         onSuccess(data) {
-          console.log(data)
           setProfile(data.data)
           saveProfileToLS(data.data)
           message.success('Personal information has been saved successfully!')

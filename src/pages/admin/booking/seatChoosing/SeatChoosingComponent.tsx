@@ -135,23 +135,9 @@ const SeatChoosingComponent = ({ openNotification, flightDetails, selectedSeats,
     setMessage('')
   }, [ticketNumbers, flightDetails?.id])
 
-  // useEffect(() => {
-  //   const timeout = setTimeout(() => {
-  //     if (openNotification) {
-  //       if (selectedSeats.length !== Number(passengerNumber)) {
-  //         openNotification(2)
-  //       } else {
-  //         openNotification()
-  //       }
-  //     }
-  //   }, 0)
-
-  //   return () => clearTimeout(timeout)
-  // }, [selectedSeats.length, passengerNumber, openNotification])
-
   const handleSeatClick = (seat: Seat) => {
     if (seat.status === 'occupied') {
-      setMessage(`Ghế số ${seat.seatNumber} đã có người. Vui lòng chọn ghế khác.`)
+      setMessage(`Seat number ${seat.seatNumber} is occupied. Please choose another seat.`)
       return
     }
 
@@ -162,18 +148,18 @@ const SeatChoosingComponent = ({ openNotification, flightDetails, selectedSeats,
             const newStatus = s.status === 'selected' ? 'available' : 'selected'
 
             setTempSelectedSeats((prev) => {
-              const isAlreadySelected = prev.some((item) => item.ticketId === s.id) // Kiểm tra bằng id
+              const isAlreadySelected = prev.some((item) => item.ticketId === s.id)
               let newSelected = [...prev]
 
               if (newStatus === 'selected') {
                 if (!isAlreadySelected && newSelected.length < Number(passengerNumber)) {
-                  newSelected.push({ ticketId: s.id, seatNumber: s.seatNumber }) // Lưu object
+                  newSelected.push({ ticketId: s.id, seatNumber: s.seatNumber })
                 } else if (newSelected.length >= Number(passengerNumber)) {
-                  setMessage(`Bạn chỉ có thể chọn tối đa ${passengerNumber} ghế.`)
+                  setMessage(`You can select a maximum of ${passengerNumber} seats.`)
                   return prev
                 }
               } else {
-                newSelected = newSelected.filter((item) => item.ticketId !== s.id) // Lọc bằng id
+                newSelected = newSelected.filter((item) => item.ticketId !== s.id)
               }
               setMessage('')
 
@@ -186,57 +172,6 @@ const SeatChoosingComponent = ({ openNotification, flightDetails, selectedSeats,
       )
     )
   }
-  // const handleSeatClick = (seat: Seat) => {
-  //   if (seat.status === 'occupied') {
-  //     setMessage(`Ghế số ${seat.seatNumber} đã có người. Vui lòng chọn ghế khác.`)
-  //     return
-  //   }
-
-  //   setSeats((prevSeats) =>
-  //     prevSeats.map((row) =>
-  //       row.map((s) => {
-  //         if (s && s.id === seat.id) {
-  //           const newStatus = s.status === 'selected' ? 'available' : 'selected'
-
-  //           setSelectedSeats((prev) => {
-  //             const isAlreadySelected = prev.some((item) => item.ticketId === s.id)
-  //             let newSelected = [...prev]
-
-  //             if (newStatus === 'selected') {
-  //               if (!isAlreadySelected && newSelected.length < Number(passengerNumber)) {
-  //                 newSelected.push({ ticketId: s.id, seatNumber: s.seatNumber })
-  //               } else if (newSelected.length >= Number(passengerNumber)) {
-  //                 setMessage(`Bạn chỉ có thể chọn tối đa ${passengerNumber} ghế.`)
-  //                 return prev
-  //               }
-  //             } else {
-  //               newSelected = newSelected.filter((item) => item.ticketId !== s.id)
-  //             }
-
-  //             setMessage('')
-
-  //             const sorted = newSelected.sort((a, b) => Number(a.seatNumber) - Number(b.seatNumber))
-
-  //             // 🔔 Gọi thông báo sau khi chọn/xoá
-  //             if (openNotification) {
-  //               if (sorted.length !== Number(passengerNumber)) {
-  //                 openNotification(2) // Ví dụ: chưa đủ số lượng
-  //               } else {
-  //                 openNotification() // Đã đủ
-  //               }
-  //             }
-
-  //             return sorted
-  //           })
-
-  //           return { ...s, status: newStatus }
-  //         }
-
-  //         return s
-  //       })
-  //     )
-  //   )
-  // }
 
   const renderSeat = (seat: Seat | null) => {
     if (!seat) {
@@ -250,22 +185,22 @@ const SeatChoosingComponent = ({ openNotification, flightDetails, selectedSeats,
 
     let seatClass =
       'w-10 h-12 sm:w-11 sm:h-14 rounded-2xl shadow-sm flex items-center justify-center text-xs font-semibold transform transition-transform duration-100 ease-in-out border border-gray-300 relative overflow-hidden'
-    let tooltipText = `Ghế số ${seat.seatNumber}`
+    let tooltipText = `Seat number ${seat.seatNumber}`
     let content: React.ReactNode = null
 
     const isSeatSelected = tempSelectedSeats.some((item) => item.ticketId === seat.id)
 
     if (seat.status === 'occupied') {
       seatClass += ' bg-gray-200 text-gray-600 cursor-not-allowed'
-      tooltipText += ' (Đã có người)'
+      tooltipText += ' (Occupied)'
       content = <i className='fas fa-xmark text-gray-500 text-base z-10 relative'></i>
     } else if (isSeatSelected) {
       seatClass += ' bg-blue-400 text-white cursor-pointer hover:bg-blue-500 hover:scale-105'
-      tooltipText += ' (Đang chọn)'
+      tooltipText += ' (Selected)'
       content = <span className='z-10 relative'>{seat.seatNumber}</span>
     } else {
       seatClass += ' cursor-pointer hover:scale-105'
-      tooltipText += ' (Có sẵn)'
+      tooltipText += ' (Available)'
 
       content = (
         <>
@@ -294,15 +229,14 @@ const SeatChoosingComponent = ({ openNotification, flightDetails, selectedSeats,
   }
   const handleConfirm = () => {
     if (tempSelectedSeats.length === 0) {
-      setMessage('Vui lòng chọn ít nhất một ghế.')
+      setMessage('Please select at least one seat.')
       openNotification?.(2)
     } else if (tempSelectedSeats.length !== Number(passengerNumber)) {
-      setMessage(`Vui lòng chọn chính xác ${passengerNumber} ghế.`)
+      setMessage(`Please select exactly ${passengerNumber} seats.`)
       openNotification?.(2)
     } else {
-      console.log('Ghế đã chọn:', tempSelectedSeats)
       setSelectedSeats(tempSelectedSeats)
-      setMessage(`Bạn đã chọn các ghế: ${tempSelectedSeats.map((s) => s.seatNumber).join(', ')}. Cảm ơn!`)
+      setMessage(`You have selected seats: ${tempSelectedSeats.map((s) => s.seatNumber).join(', ')}. Thank you!`)
       openNotification?.()
     }
   }
@@ -312,7 +246,7 @@ const SeatChoosingComponent = ({ openNotification, flightDetails, selectedSeats,
       <div className='bg-white p-6 sm:p-10 rounded-xl shadow-2xl w-full max-w-4xl border-t-8 border-indigo-600'>
         <h1 className='text-3xl sm:text-4xl font-extrabold text-gray-800 mb-6 text-center'>
           <i className='fas fa-plane-departure text-indigo-600 mr-3'></i>
-          Chọn Chỗ Ngồi Của Bạn
+          Select Your Seat
         </h1>
 
         <div className='flex flex-wrap justify-center gap-4 mb-8 text-sm'>
@@ -326,24 +260,24 @@ const SeatChoosingComponent = ({ openNotification, flightDetails, selectedSeats,
               ></div>
               <div className='absolute inset-0 bg-blue-100 opacity-50'></div>
             </span>
-            <span>Ghế Tiêu chuẩn</span>
+            <span>Standard Seat</span>
           </div>
           <div className='flex items-center gap-2'>
             <span className='w-5 h-5 rounded-md bg-blue-400'></span>
-            <span>Đang chọn</span>
+            <span>Selected</span>
           </div>
           <div className='flex items-center gap-2'>
             <span className='w-5 h-5 rounded-md bg-gray-200 flex items-center justify-center'>
               <i className='fas fa-xmark text-gray-500 text-xs'></i>
             </span>
-            <span>Đã có người</span>
+            <span>Occupied</span>
           </div>
         </div>
 
         <div className='relative w-full flex flex-col items-center py-6'>
           <div className='text-gray-700 text-lg font-bold mb-8'>
             <i className='fas fa-arrow-up mr-2'></i>
-            Phía trước máy bay
+            Front of the plane
             <i className='fas fa-arrow-up ml-2'></i>
           </div>
 
@@ -351,7 +285,7 @@ const SeatChoosingComponent = ({ openNotification, flightDetails, selectedSeats,
             <div className='px-4 sm:px-8'>
               <div className='min-w-max flex flex-col items-center'>
                 {(!fetchedTicketsData || ticketNumbers.length === 0) && (
-                  <p className='text-center text-gray-600'>Đang tải ghế...</p>
+                  <p className='text-center text-gray-600'>Loading seats...</p>
                 )}
 
                 {seats.length > 0 && (
@@ -384,7 +318,7 @@ const SeatChoosingComponent = ({ openNotification, flightDetails, selectedSeats,
 
           <div className='text-gray-700 text-lg font-bold mt-8'>
             <i className='fas fa-arrow-down mr-2'></i>
-            Phía sau máy bay
+            Back of the plane
             <i className='fas fa-arrow-down ml-2'></i>
           </div>
         </div>
@@ -393,7 +327,7 @@ const SeatChoosingComponent = ({ openNotification, flightDetails, selectedSeats,
           {message && <div className='mb-4 text-red-600 font-semibold'>{message}</div>}
 
           <div className='mb-6'>
-            <h2 className='text-xl font-bold text-gray-800 mb-3'>Ghế đã chọn:</h2>
+            <h2 className='text-xl font-bold text-gray-800 mb-3'>Selected Seats:</h2>
             {tempSelectedSeats.length > 0 ? (
               <div className='flex flex-wrap justify-center gap-3'>
                 {tempSelectedSeats.map((item) => (
@@ -401,12 +335,12 @@ const SeatChoosingComponent = ({ openNotification, flightDetails, selectedSeats,
                 ))}
               </div>
             ) : (
-              <p className='text-gray-600 italic'>Chưa có ghế nào được chọn.</p>
+              <p className='text-gray-600 italic'>No seats selected yet.</p>
             )}
           </div>
 
           <CustomButton type='primary' onClick={handleConfirm} className='w-full sm:w-auto'>
-            Xác nhận lựa chọn
+            Confirm Selection
             <i className='fas fa-check-circle ml-2'></i>
           </CustomButton>
         </div>

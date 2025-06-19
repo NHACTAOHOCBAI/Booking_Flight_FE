@@ -269,14 +269,14 @@ const TicketSearchPage: React.FC = () => {
                             <FaMapMarkerAlt className='h-4 w-4 text-gray-400' />
                             <div>
                               <p className='text-sm font-medium text-gray-900'>From</p>
-                              <p className='text-sm text-gray-600'>{ticket.flight.departureAirport.airportName}</p>
+                              <p className='text-sm text-gray-600'>{ticket.flight.departureAirport!.airportName}</p>
                             </div>
                           </div>
                           <div className='flex items-center space-x-3'>
                             <FaMapMarkerAlt className='h-4 w-4 text-gray-400' />
                             <div>
                               <p className='text-sm font-medium text-gray-900'>To</p>
-                              <p className='text-sm text-gray-600'>{ticket.flight.arrivalAirport.airportName}</p>
+                              <p className='text-sm text-gray-600'>{ticket.flight.arrivalAirport!.airportName}</p>
                             </div>
                           </div>
                         </div>

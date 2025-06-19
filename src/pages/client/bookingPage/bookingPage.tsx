@@ -202,19 +202,9 @@ const BookingPage = () => {
     data: departureFlightsData,
     isLoading: isLoadingDepartureFlights,
     isError: isDepartureFlightsError
-    // refetch: refetchDepartureFlights
   } = useQuery({
     queryKey: ['departureFlights', bookingState.queryConfig],
     queryFn: async () => {
-      // const departureParams = {
-      //   ...omit(bookingState.queryConfig, ['tripType', 'passengerNumber']),
-      //   'departureAirport.city.cityName': bookingState.queryConfig['departureAirport.city.cityName'],
-      //   'arrivalAirport.city.cityName': bookingState.queryConfig['arrivalAirport.city.cityName'],
-      //   departureTime: bookingState.queryConfig.departureTime
-      // }
-
-      // console.log('Fetching departure flights with config:', departureParams)
-
       const url = buildFlightFilterQuery({
         departureCityName: bookingState.queryConfig['departureAirport.city.cityName'] as string,
         arrivalCityName: bookingState.queryConfig['arrivalAirport.city.cityName'] as string,

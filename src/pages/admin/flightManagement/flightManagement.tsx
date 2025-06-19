@@ -147,7 +147,6 @@ const FlightManagement = () => {
       search: false,
       valueType: 'date',
       render: (_, record) => {
-        console.log(record)
         return dayjs(record.arrivalTime, 'HH:mm DD/MM/YYYY').format('HH:mm DD/MM/YYYY')
       }
     },

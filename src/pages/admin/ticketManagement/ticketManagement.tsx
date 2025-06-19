@@ -1,7 +1,6 @@
-import { DeleteOutlined, DownloadOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons'
+import { DownloadOutlined, EditOutlined } from '@ant-design/icons'
 import type { ActionType, ProColumns } from '@ant-design/pro-components'
 import { ProTable } from '@ant-design/pro-components'
-import { Button, message, Popconfirm } from 'antd'
 import { useContext, useRef, useState } from 'react'
 import NewTicket from './newTicket'
 
@@ -9,61 +8,65 @@ import ticketApi from '@/apis/apis/ticket.api'
 import Access from '@/components/access'
 import ErrorPage from '@/components/ErrorPage/ErrorPage'
 import { AppContext } from '@/context/app.context'
-import { useDeleteTicket } from '@/hooks/useTicket'
-import DetailTicket from './detailTicket'
-import UpdateTicket from './updateTicket'
 import { MyProfileTicketRes } from '@/globalType/myProfile.type'
 import { TICKET_STATUSES_ENUM } from '@/globalType/ticket.type'
+import DetailTicket from './detailTicket'
+import UpdateTicket from './updateTicket'
 
 const TicketManagement = () => {
   //detail
+
   const [isDetailOpen, setIsDetailOpen] = useState(false)
-  const [detailTicket, setDetailTicket] = useState<ITicketTable>({
+  const [detailTicket, setDetailTicket] = useState<MyProfileTicketRes>({
     id: '',
-    flightCode: '',
-    seatName: '',
+    flight: {},
+    seat: {},
     passengerName: '',
     passengerPhone: '',
     passengerIDCard: '',
     passengerEmail: '',
-    seatNumber: 0,
+    urlImage: '',
     ticketStatus: '',
-    haveBaggage: false
+    haveBaggage: false,
+    seatNumber: 0
   })
 
   //update
   const [isUpdateOpen, setIsUpdateOpen] = useState(false)
-  const [updatedTicket, setUpdatedTicket] = useState<ITicketTable>({
+  const [updatedTicket, setUpdatedTicket] = useState<MyProfileTicketRes>({
     id: '',
-    flightCode: '',
-    seatName: '',
+    flight: {},
+    seat: {},
     passengerName: '',
     passengerPhone: '',
     passengerIDCard: '',
     passengerEmail: '',
-    haveBaggage: false
+    urlImage: '',
+    ticketStatus: '',
+    haveBaggage: false,
+    seatNumber: 0
   })
   //New
   const [isNewOpen, setIsNewOpen] = useState(false)
 
   // delete
-  const [messageApi, contextHolder] = message.useMessage()
-  const handleDeleteMutation = useDeleteTicket()
-  const handleDelete = (id: string) => {
-    handleDeleteMutation.mutate(id, {
-      onSuccess: async () => {
-        await actionRef.current?.reload()
-        messageApi.success("Delete ticket successfully");
-      },
-      onError(error) {
-        console.log(error)
-        messageApi.open({
-          type: 'error',
-          content: error.message
-        })
-      }
-    })
-  }
+  // const [messageApi, contextHolder] = message.useMessage()
+  // const handleDeleteMutation = useDeleteTicket()
+  // const handleDelete = (id: string) => {
+  //   handleDeleteMutation.mutate(id, {
+  //     onSuccess: async () => {
+  //       await actionRef.current?.reload()
+  //       messageApi.success('Delete ticket successfully')
+  //     },
+  //     onError(error) {
+  //       console.log(error)
+  //       messageApi.open({
+  //         type: 'error',
+  //         content: error.message
+  //       })
+  //     }
+  //   })
+  // }
 
   const ALL_PERMISSIONS = useContext(AppContext).PERMISSIONS.permissions
 
@@ -79,17 +82,20 @@ const TicketManagement = () => {
       title: 'Seat Number',
       search: false,
 
-      render: (_, record) => (
-        <a
-          style={{ color: '#3498db' }}
-          onClick={() => {
-            setDetailTicket(record)
-            setIsDetailOpen(true)
-          }}
-        >
-          {record.seatNumber}
-        </a>
-      )
+      render: (_, record) => {
+        console.log(record)
+        return (
+          <a
+            style={{ color: '#3498db' }}
+            onClick={() => {
+              setDetailTicket(record)
+              setIsDetailOpen(true)
+            }}
+          >
+            {record.seatNumber}
+          </a>
+        )
+      }
     },
     {
       title: 'Flight Code',
@@ -122,6 +128,7 @@ const TicketManagement = () => {
       valueType: 'select',
       valueEnum: TICKET_STATUSES_ENUM,
       render: (_, record) => {
+        console.log(record)
         return <div>{record.ticketStatus}</div>
       }
     },
@@ -165,7 +172,6 @@ const TicketManagement = () => {
   const [error, setError] = useState<unknown>(null)
   return (
     <>
-      {contextHolder}
       {error ? (
         <ErrorPage />
       ) : (
@@ -200,7 +206,7 @@ const TicketManagement = () => {
                     size: params.pageSize,
                     filter: filterString
                   })
-
+                  console.log(response)
                   return {
                     data: response.data?.result,
                     success: true,
@@ -230,7 +236,11 @@ const TicketManagement = () => {
               }}
             />
           </Access>
-          <NewTicket refetchData={() => actionRef.current?.reload()} isNewOpen={isNewOpen} setIsNewOpen={setIsNewOpen} />
+          <NewTicket
+            refetchData={() => actionRef.current?.reload()}
+            isNewOpen={isNewOpen}
+            setIsNewOpen={setIsNewOpen}
+          />
           <UpdateTicket
             refetchData={() => actionRef.current?.reload()}
             setUpdatedTicket={setUpdatedTicket}

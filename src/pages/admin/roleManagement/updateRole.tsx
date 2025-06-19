@@ -29,8 +29,7 @@ const UpdateRole = (props: IProp) => {
         }
       }
     }
-    console.log(value.permissionIds)
-    console.log(checkedPermissions)
+
     const body = {
       id: updatedRole.id,
       roleName: value.roleName,
@@ -39,8 +38,8 @@ const UpdateRole = (props: IProp) => {
     }
     updateRoleMutation.mutate(body as any, {
       onSuccess: async () => {
-        await refetchData();
-        messageApi.success("Update account successfully");
+        await refetchData()
+        messageApi.success('Update account successfully')
       },
       onError(error: Error) {
         console.log(error)
@@ -49,7 +48,8 @@ const UpdateRole = (props: IProp) => {
           type: messageError.type,
           content: messageError.content
         })
-      }, onSettled() {
+      },
+      onSettled() {
         handleCancel()
       }
     })

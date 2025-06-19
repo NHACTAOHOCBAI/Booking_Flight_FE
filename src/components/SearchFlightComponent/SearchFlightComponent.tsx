@@ -159,7 +159,12 @@ const SearchFlightComponent: React.FC = () => {
 
         <div className='flex flex-col sm:flex-row items-center gap-3 sm:gap-2'>
           <div className='w-full sm:flex-1'>
-            <SearchAddress value={departureValue} setValue={setDepartureValue} placeholder='Origin (City or Airport)' />
+            <SearchAddress
+              disabledOptions={arrivalValue}
+              value={departureValue}
+              setValue={setDepartureValue}
+              placeholder='Origin City'
+            />
           </div>
           <button
             onClick={handleExchange}
@@ -170,9 +175,10 @@ const SearchFlightComponent: React.FC = () => {
           </button>
           <div className='w-full sm:flex-1'>
             <SearchAddress
+              disabledOptions={departureValue}
               value={arrivalValue}
               setValue={setArrivalValue}
-              placeholder='Destination (City or Airport)'
+              placeholder='Destination City'
             />
           </div>
         </div>
@@ -195,12 +201,10 @@ const SearchFlightComponent: React.FC = () => {
             format='DD MMM, YYYY'
             value={returnDate}
             onChange={(dateVal: Dayjs | null) => setReturnDate(dateVal)}
-            disabled={tripType === 'one-way'}
+            disabled={tripType === 'one-way' || !departureDate}
             disabledDate={(current) => {
-              const isBeforeToday = current.isBefore(dayjs().startOf('day'))
-
-              const isBeforeDeparture = departureDate ? current.isBefore(departureDate.add(0, 'day'), 'day') : false
-
+              const isBeforeToday = current && current < dayjs().startOf('day')
+              const isBeforeDeparture = departureDate ? current < departureDate.startOf('day') : false
               return isBeforeToday || isBeforeDeparture
             }}
           />

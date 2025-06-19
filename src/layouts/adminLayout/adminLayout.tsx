@@ -201,8 +201,7 @@ const AdminLayout = () => {
 
       setMenuItems(full)
     }
-    console.log(profile)
-    console.log('re render admin layout')
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [permissions, isPermissionsReady])
 

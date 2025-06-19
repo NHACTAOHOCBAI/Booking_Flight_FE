@@ -9,6 +9,7 @@ export interface MyProfileTicketResList {
 }
 
 export interface MyProfileTicketRes {
+  seatNumber: number
   id: string
   passengerName: string
   passengerPhone: string
@@ -22,22 +23,21 @@ export interface MyProfileTicketRes {
 }
 
 interface ISeat {
-  seatNumber: number
-  seatId: string
-  seatName: string
-  price: number
+  id?: string
+  seatName?: string
+  price?: number
 }
 
 export interface IFlight {
-  id: string
-  flightCode: string
-  plane: IPlane
-  departureAirport: IAirport
-  arrivalAirport: IAirport
-  departureTime: string
-  arrivalTime: string
-  originPrice: number
-  flightStatus: string
+  id?: string
+  flightCode?: string
+  plane?: IPlane
+  departureAirport?: IAirport
+  arrivalAirport?: IAirport
+  departureTime?: string
+  arrivalTime?: string
+  originPrice?: number
+  flightStatus?: string
 }
 
 export interface IPlane {

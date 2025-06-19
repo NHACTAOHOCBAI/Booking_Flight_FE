@@ -23,27 +23,21 @@ const ModuleApi = (props: IProps) => {
 
   const { PERMISSIONS } = useContext(AppContext)
   const listPermissions = PERMISSIONS.permissions
-  console.log(listPermissions)
   useEffect(() => {
     if (listPermissions && singleRole?.id && openModal === true) {
       //current permissions of role
 
       const userPermissions = groupByPermission(singleRole.permissions as IPermission[])
-      console.log(userPermissions)
 
       const p: any = {}
 
       Object.entries(listPermissions).forEach(([model, perms]) => {
         let allChecked = true
-        console.log(model, perms)
         const userModel = userPermissions.find((up) => up.model === model)
-        console.log(userModel)
         Object.keys(perms).forEach((permId) => {
           p[permId] = false
-          console.log(permId)
           if (userModel) {
             const hasPerm = userModel.permissions.find((perm) => perm.name === permId)
-            console.log(hasPerm)
             if (hasPerm) {
               p[permId] = true
               handleSingleCheck(true, hasPerm.id as string, model)
@@ -57,7 +51,6 @@ const ModuleApi = (props: IProps) => {
 
         // Đánh dấu model nếu user có tất cả quyền trong model đó
         p[model] = allChecked
-        console.log(allChecked)
         if (allChecked) handleSwitchAll(true, model)
       })
 

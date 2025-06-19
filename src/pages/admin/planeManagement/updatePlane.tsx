@@ -37,7 +37,6 @@ const UpdatePlane = (props: IProp) => {
       planeName: value.planeName,
       airlineId: value.airlineId
     }
-    console.log(body.id)
     updatePlaneMutation.mutate(body, {
       onSuccess: async () => {
         await refetchData()

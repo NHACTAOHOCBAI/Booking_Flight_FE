@@ -130,7 +130,6 @@ const AdminBooking: React.FC = () => {
       ...(profile ? { accountId: profile.id } : {}),
       passengers: passengers
     }
-    console.log(passengers)
 
     try {
       await bookingFlightMutation.mutateAsync(body)
@@ -188,8 +187,7 @@ const AdminBooking: React.FC = () => {
           return { ticketId: seat.ticketId, seatNumber: seat.seatNumber }
         })
       ]
-      console.log('bookingTicketsList', bookingTicketsList)
-      console.log(ticketNumbers)
+
       dispatch(
         setBookingFlight({
           ...bookingFlight,
@@ -290,7 +288,6 @@ const AdminBooking: React.FC = () => {
             {current === steps.length - 1 && (
               <button
                 onClick={async () => {
-                  console.log(bookingFlight)
                   const departure = bookingFlight.departureFlightDetails
                   const returnFlight = bookingFlight.returnFlightDetails
                   try {

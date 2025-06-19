@@ -24,9 +24,10 @@ interface InputWithPopoverProps {
   setValue: (value: string) => void
   placeholder?: string
   value: string
+  disabledOptions?: string
 }
 
-const SearchAddress: React.FC<InputWithPopoverProps> = ({ setValue, placeholder, value }) => {
+const SearchAddress: React.FC<InputWithPopoverProps> = ({ disabledOptions, setValue, value }) => {
   const [popoverContent, setPopoverContent] = useState<TabData[]>([])
   const [popoverVisible, setPopoverVisible] = useState(false)
   const [activeTabKey, setActiveTabKey] = useState<string>('')
@@ -181,7 +182,7 @@ const SearchAddress: React.FC<InputWithPopoverProps> = ({ setValue, placeholder,
             label: tab.label,
             children: (
               <List
-                dataSource={tab.list}
+                dataSource={tab.list.filter((item) => item.value !== disabledOptions)} // tránh hiển thị item bị disable
                 renderItem={(item) => (
                   <List.Item
                     style={{ padding: '8px 16px', cursor: 'pointer' }}

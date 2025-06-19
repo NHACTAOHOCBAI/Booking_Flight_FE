@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import airportApi from '@/apis/apis/airport.api'
 import planeApi from '@/apis/apis/plane.api'
 import seatApi from '@/apis/apis/seat.api'
@@ -26,10 +27,160 @@ const NewFlight = (props: IProp) => {
   const [departureDate, setDepartureDate] = useState<Dayjs | null>(null)
   const [returnDate, setReturnDate] = useState<Dayjs | null>(null)
   const [departureInterDate, setDepartureInterDate] = useState<Dayjs | null>(null)
-  const [returnInterDate, setReturnInterDate] = useState<Dayjs | null>(null)
+  const [, setReturnInterDate] = useState<Dayjs | null>(null)
 
   const [messageApi, contextHolder] = message.useMessage()
   const newFlightMutation = useCreateFlight()
+  useEffect(() => {
+    // Khi xoá departureTime
+    if (!departureDate) {
+      form.setFieldsValue({
+        arrivalTime: null,
+        listFlight_Airport: []
+      })
+      setReturnDate(null)
+      setDepartureInterDate(null)
+      setReturnInterDate(null)
+      return
+    }
+
+    // Khi xoá arrivalTime
+    if (!returnDate) {
+      form.setFieldsValue({
+        listFlight_Airport: []
+      })
+      setDepartureInterDate(null)
+      setReturnInterDate(null)
+      return
+    }
+  }, [departureDate, returnDate, departureInterDate, form])
+
+  const [, setDepartureInterIndex] = useState<number | null>(null)
+
+  const validateSequentialTimes = (intermediateFlights: any[]) => {
+    if (!intermediateFlights || intermediateFlights.length === 0) return true
+
+    for (let i = 0; i < intermediateFlights.length - 1; i++) {
+      const current = intermediateFlights[i]
+      const next = intermediateFlights[i + 1]
+
+      if (current.arrivalTime && next.departureTime) {
+        if (dayjs(current.arrivalTime).isAfter(dayjs(next.departureTime))) {
+          return false
+        }
+      }
+    }
+    return true
+  }
+
+  const getIntermediateDepartureDisabledTime = (
+    current: Dayjs,
+    subFieldIndex: number,
+
+    intermediateFlights: any[]
+  ) => {
+    if (!departureDate || !current || !returnDate) return {}
+
+    // Thời gian tối thiểu (từ main departure hoặc previous intermediate arrival)
+    let minTime = departureDate
+    if (subFieldIndex > 0 && intermediateFlights[subFieldIndex - 1]?.arrivalTime) {
+      const prevArrival = dayjs(intermediateFlights[subFieldIndex - 1].arrivalTime)
+      minTime = prevArrival.isAfter(minTime) ? prevArrival : minTime
+    }
+
+    // Thời gian tối đa (đến main arrival hoặc next intermediate departure)
+    let maxTime = returnDate
+    if (subFieldIndex < intermediateFlights.length - 1 && intermediateFlights[subFieldIndex + 1]?.departureTime) {
+      const nextDeparture = dayjs(intermediateFlights[subFieldIndex + 1].departureTime)
+      maxTime = nextDeparture.isBefore(maxTime) ? nextDeparture : maxTime
+    }
+
+    const isSameDayAsMin = current.isSame(minTime, 'day')
+    const isSameDayAsMax = current.isSame(maxTime, 'day')
+
+    return {
+      disabledHours: () => {
+        const disabled: number[] = []
+
+        if (isSameDayAsMin) {
+          for (let i = 0; i < minTime.hour(); i++) disabled.push(i)
+        }
+
+        if (isSameDayAsMax) {
+          for (let i = maxTime.hour() + 1; i < 24; i++) disabled.push(i)
+        }
+
+        return disabled
+      },
+      disabledMinutes: (selectedHour: number) => {
+        const disabled: number[] = []
+
+        if (isSameDayAsMin && selectedHour === minTime.hour()) {
+          for (let i = 0; i < minTime.minute(); i++) disabled.push(i)
+        }
+
+        if (isSameDayAsMax && selectedHour === maxTime.hour()) {
+          for (let i = maxTime.minute() + 1; i < 60; i++) disabled.push(i)
+        }
+
+        return disabled
+      }
+    }
+  }
+
+  const getIntermediateArrivalDisabledTime = (
+    current: Dayjs,
+    subFieldIndex: number,
+
+    intermediateFlights: any[]
+  ) => {
+    if (!current || !returnDate) return {}
+
+    // Thời gian tối thiểu (từ current intermediate departure)
+    const currentDeparture = intermediateFlights[subFieldIndex]?.departureTime
+    if (!currentDeparture) return {}
+
+    const minTime = dayjs(currentDeparture)
+
+    // Thời gian tối đa (đến main arrival hoặc next intermediate departure)
+    let maxTime = returnDate
+    if (subFieldIndex < intermediateFlights.length - 1 && intermediateFlights[subFieldIndex + 1]?.departureTime) {
+      const nextDeparture = dayjs(intermediateFlights[subFieldIndex + 1].departureTime)
+      maxTime = nextDeparture.isBefore(maxTime) ? nextDeparture : maxTime
+    }
+
+    const isSameDayAsMin = current.isSame(minTime, 'day')
+    const isSameDayAsMax = current.isSame(maxTime, 'day')
+
+    return {
+      disabledHours: () => {
+        const disabled: number[] = []
+
+        if (isSameDayAsMin) {
+          for (let i = 0; i < minTime.hour(); i++) disabled.push(i)
+        }
+
+        if (isSameDayAsMax) {
+          for (let i = maxTime.hour() + 1; i < 24; i++) disabled.push(i)
+        }
+
+        return disabled
+      },
+      disabledMinutes: (selectedHour: number) => {
+        const disabled: number[] = []
+
+        if (isSameDayAsMin && selectedHour === minTime.hour()) {
+          for (let i = 0; i < minTime.minute(); i++) disabled.push(i)
+        }
+
+        if (isSameDayAsMax && selectedHour === maxTime.hour()) {
+          for (let i = maxTime.minute() + 1; i < 60; i++) disabled.push(i)
+        }
+
+        return disabled
+      }
+    }
+  }
 
   const onFinish: FormProps<IFlightTable>['onFinish'] = async (value) => {
     //format day time
@@ -38,7 +189,7 @@ const NewFlight = (props: IProp) => {
     if (value.listFlight_Airport) {
       value.listFlight_Airport = value.listFlight_Airport.map((values) => {
         return {
-          airportId: values.airportId.value,
+          airportId: values.airportId?.value || '',
           arrivalTime: dayjs(values.arrivalTime).format('HH:mm DD/MM/YYYY'),
           departureTime: dayjs(values.departureTime).format('HH:mm DD/MM/YYYY'),
           note: values.note ? values.note : 'nothing'
@@ -46,7 +197,6 @@ const NewFlight = (props: IProp) => {
       })
     }
     value.listFlight_Seat = value.listFlight_Seat ? value.listFlight_Seat : []
-    console.log(value)
 
     //call mutation
     const body = {
@@ -107,8 +257,6 @@ const NewFlight = (props: IProp) => {
   }, [airportData])
   const departureAirportId = Form.useWatch('departureAirportId', form)
   const arrivalAirportId = Form.useWatch('arrivalAirportId', form)
-
-  // const [interAirportOptionCheck, setInterAirportOptionCheck] = useState<(string | undefined)[]>([])
 
   const intermediateAirports = Form.useWatch('listFlight_Airport', form) || []
 
@@ -328,6 +476,7 @@ const NewFlight = (props: IProp) => {
                       showTime={{ format: 'HH:mm' }}
                       value={returnDate}
                       onChange={(dateVal: Dayjs | null) => setReturnDate(dateVal)}
+                      disabled={!departureDate}
                       disabledDate={(current) => {
                         const isBeforeDeparture = departureDate ? current.isBefore(departureDate, 'day') : false
 
@@ -361,7 +510,23 @@ const NewFlight = (props: IProp) => {
                 </Col>
               </Row>
               <Form.Item<IFlightTable> label='Intermediate airport'>
-                <Form.List name='listFlight_Airport'>
+                <Form.List
+                  name='listFlight_Airport'
+                  rules={[
+                    {
+                      validator: async (_, value) => {
+                        if (!value || value.length === 0) return Promise.resolve()
+
+                        // Validate sequential times
+                        if (!validateSequentialTimes(value)) {
+                          return Promise.reject(new Error('Intermediate flights must be in chronological order'))
+                        }
+
+                        return Promise.resolve()
+                      }
+                    }
+                  ]}
+                >
                   {(subFields, subOpt) => (
                     <div style={{ display: 'flex', flexDirection: 'column', rowGap: 16 }}>
                       {subFields.map((subField) => (
@@ -399,13 +564,17 @@ const NewFlight = (props: IProp) => {
                                   ]}
                                   name={[subField.name, 'departureTime']}
                                 >
-                                  <DatePicker
+                                  {/* <DatePicker
                                     size='large'
                                     placeholder='Departure Date'
                                     className='w-full'
                                     format='DD MMM, YYYY, HH:mm'
                                     showTime={{ format: 'HH:mm' }}
-                                    onChange={(dateVal: Dayjs | null) => setDepartureInterDate(dateVal)}
+                                    onChange={(dateVal: Dayjs | null) => {
+                                      setDepartureInterIndex(subField.name)
+                                      setDepartureInterDate(dateVal)
+                                    }}
+                                    disabled={!departureDate || !returnDate}
                                     disabledDate={(current) => {
                                       const isAfterReturnDate = current && current > dayjs(returnDate).startOf('day')
                                       const isBeforeDeparture = current && current < dayjs(departureDate).startOf('day')
@@ -451,6 +620,57 @@ const NewFlight = (props: IProp) => {
                                         }
                                       }
                                     }}
+                                  /> */}
+
+                                  <DatePicker
+                                    size='large'
+                                    placeholder='Departure Date'
+                                    className='w-full'
+                                    format='DD MMM, YYYY, HH:mm'
+                                    showTime={{ format: 'HH:mm' }}
+                                    onChange={(dateVal: Dayjs | null) => {
+                                      setDepartureInterIndex(subField.name)
+                                      setDepartureInterDate(dateVal)
+
+                                      // Reset arrival time của current intermediate
+                                      const currentList = form.getFieldValue('listFlight_Airport') || []
+                                      const updatedList = currentList.map((item: any, index: number) => {
+                                        if (index > subField.name) {
+                                          return {
+                                            ...item,
+                                            departureTime: null,
+                                            arrivalTime: null
+                                          }
+                                        }
+                                        return item
+                                      })
+                                      form.setFieldsValue({ listFlight_Airport: updatedList })
+                                    }}
+                                    disabled={!departureDate || !returnDate}
+                                    disabledDate={(current) => {
+                                      // Không được trước main departure
+                                      const isBeforeDeparture = current && current < dayjs(departureDate).startOf('day')
+                                      // Không được sau main arrival
+                                      const isAfterReturn = current && current > dayjs(returnDate).startOf('day')
+
+                                      // Không được trước previous intermediate arrival
+                                      const prevInterArrival =
+                                        subField.name > 0
+                                          ? form.getFieldValue(['listFlight_Airport', subField.name - 1, 'arrivalTime'])
+                                          : null
+                                      const isBeforePrevArrival =
+                                        prevInterArrival && current && current < dayjs(prevInterArrival).startOf('day')
+
+                                      return isBeforeDeparture || isAfterReturn || isBeforePrevArrival
+                                    }}
+                                    disabledTime={(current) =>
+                                      getIntermediateDepartureDisabledTime(
+                                        current,
+                                        subField.name,
+
+                                        form.getFieldValue('listFlight_Airport') || []
+                                      )
+                                    }
                                   />
                                 </Form.Item>
                               </Col>
@@ -465,7 +685,7 @@ const NewFlight = (props: IProp) => {
                                   noStyle
                                   name={[subField.name, 'arrivalTime']}
                                 >
-                                  <DatePicker
+                                  {/* <DatePicker
                                     size='large'
                                     placeholder='Arrival Date'
                                     className='w-full'
@@ -473,6 +693,7 @@ const NewFlight = (props: IProp) => {
                                     showTime={{ format: 'HH:mm' }}
                                     value={returnInterDate}
                                     onChange={(dateVal: Dayjs | null) => setReturnInterDate(dateVal)}
+                                    disabled={!departureInterDate}
                                     disabledDate={(current) => {
                                       const isAfterReturnDate = current && current > dayjs(returnDate).startOf('day')
                                       const isBeforeDeparture =
@@ -519,6 +740,58 @@ const NewFlight = (props: IProp) => {
                                         }
                                       }
                                     }}
+                                  /> */}
+
+                                  <DatePicker
+                                    size='large'
+                                    placeholder='Arrival Date'
+                                    className='w-full'
+                                    format='DD MMM, YYYY, HH:mm'
+                                    showTime={{ format: 'HH:mm' }}
+                                    onChange={(dateVal: Dayjs | null) => {
+                                      setReturnInterDate(dateVal)
+
+                                      // Reset departure time của next intermediate flights
+                                      const currentList = form.getFieldValue('listFlight_Airport') || []
+                                      const updatedList = currentList.map((item: any, index: number) => {
+                                        if (index > subField.name) {
+                                          return {
+                                            ...item,
+                                            departureTime: null,
+                                            arrivalTime: null
+                                          }
+                                        }
+                                        return item
+                                      })
+                                      form.setFieldsValue({ listFlight_Airport: updatedList })
+                                    }}
+                                    disabled={
+                                      !form.getFieldValue(['listFlight_Airport', subField.name, 'departureTime'])
+                                    }
+                                    disabledDate={(current) => {
+                                      const currentDeparture = form.getFieldValue([
+                                        'listFlight_Airport',
+                                        subField.name,
+                                        'departureTime'
+                                      ])
+                                      if (!currentDeparture) return true
+
+                                      // Không được trước current departure
+                                      const isBeforeDeparture =
+                                        current && current < dayjs(currentDeparture).startOf('day')
+                                      // Không được sau main arrival
+                                      const isAfterReturn = current && current > dayjs(returnDate).startOf('day')
+
+                                      return isBeforeDeparture || isAfterReturn
+                                    }}
+                                    disabledTime={(current) =>
+                                      getIntermediateArrivalDisabledTime(
+                                        current,
+                                        subField.name,
+
+                                        form.getFieldValue('listFlight_Airport') || []
+                                      )
+                                    }
                                   />
                                 </Form.Item>
                               </Col>
@@ -559,8 +832,7 @@ const NewFlight = (props: IProp) => {
               >
                 Manage Tickets
               </div>
-
-              <Form.Item label='Seat Class' required>
+              {/* <Form.Item label='Seat Class' required>
                 <Form.List
                   name='listFlight_Seat'
                   rules={[
@@ -615,6 +887,80 @@ const NewFlight = (props: IProp) => {
 
                       <Button type='dashed' onClick={() => add()} block>
                         + Add Seat Class
+                      </Button>
+
+                      <Form.ErrorList errors={errors} />
+                    </>
+                  )}
+                </Form.List>
+              </Form.Item> */}
+
+              <Form.Item label='Seat Class' required>
+                <Form.List
+                  name='listFlight_Seat'
+                  rules={[
+                    {
+                      validator: async (_, value) => {
+                        if (!value || value.length === 0) {
+                          return Promise.reject(new Error('Please input at least one seat class'))
+                        }
+
+                        const seatIds = value.map((item: any) => item?.seatId).filter(Boolean)
+                        const uniqueSeatIds = new Set(seatIds)
+
+                        if (seatIds.length !== uniqueSeatIds.size) {
+                          return Promise.reject(new Error('Seat class must be unique'))
+                        }
+
+                        return Promise.resolve()
+                      }
+                    }
+                  ]}
+                >
+                  {(fields, { add, remove }, { errors }) => (
+                    <>
+                      {fields.map((field, index) => {
+                        const otherSelectedIds = fields
+                          .filter((_, i) => i !== index)
+                          .map((f) => form.getFieldValue(['listFlight_Seat', f.name, 'seatId']))
+                          .filter(Boolean)
+
+                        const availableOptions =
+                          seatOptions?.filter((option) => !otherSelectedIds.includes(option.value)) || []
+
+                        return (
+                          <Space key={field.key} align='baseline' style={{ display: 'flex', marginBottom: 8 }}>
+                            <Form.Item
+                              name={[field.name, 'seatId']}
+                              rules={[{ required: true, message: 'Please select seat class' }]}
+                            >
+                              <Select
+                                placeholder='Seat class'
+                                options={availableOptions.map((s) => ({
+                                  label: s.label,
+                                  value: s.value
+                                }))}
+                                style={{ width: 200 }}
+                              />
+                            </Form.Item>
+                            <Form.Item
+                              name={[field.name, 'quantity']}
+                              rules={[{ required: true, message: 'Please input quantity' }]}
+                            >
+                              <InputNumber min={1} placeholder='Quantity' />
+                            </Form.Item>
+                            <CloseOutlined onClick={() => remove(field.name)} />
+                          </Space>
+                        )
+                      })}
+
+                      <Button
+                        type='dashed'
+                        onClick={() => add()}
+                        block
+                        disabled={fields.length >= (seatOptions?.length || 0)}
+                      >
+                        {fields.length >= (seatOptions?.length || 0) ? 'All seat classes selected' : '+ Add Seat Class'}
                       </Button>
 
                       <Form.ErrorList errors={errors} />

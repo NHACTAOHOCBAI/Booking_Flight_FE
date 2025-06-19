@@ -32,7 +32,6 @@ const SignUpPage = () => {
     }
     registerMutation.mutate(body, {
       onSuccess: (data) => {
-        console.log(data.message)
         navigate('/signup/signupSuccess', { replace: true })
       },
       onError: (error) => {

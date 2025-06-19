@@ -54,7 +54,6 @@ const UpdateFlight = (props: IProp) => {
       })
     } else value.listFlight_Airport = []
     value.listFlight_Seat = value.listFlight_Seat ? value.listFlight_Seat : []
-    console.log(value)
 
     const initialValue = _.omit(updatedFlight, ['id', 'planeName', 'departureAirportName', 'arrivalAirportName'])
     const isDirty = !_.isEqual(value, initialValue)
@@ -525,7 +524,6 @@ const UpdateFlight = (props: IProp) => {
                                       const isAfterReturnDate = current && current > dayjs(returnDate).startOf('day')
                                       const isBeforeDeparture =
                                         current && current < dayjs(departureInterDate).startOf('day')
-                                      console.log(departureInterDate)
                                       return isAfterReturnDate || isBeforeDeparture
                                     }}
                                     disabledTime={(current) => {

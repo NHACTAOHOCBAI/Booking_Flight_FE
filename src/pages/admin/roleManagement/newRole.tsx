@@ -26,8 +26,6 @@ const NewRole = (props: IProp) => {
         }
       }
     }
-    console.log(checkedPermissions)
-    console.log()
     const body = {
       roleName: value.roleName,
       permissionId: checkedPermissions,

@@ -1,9 +1,10 @@
+import { MyProfileTicketRes } from '@/globalType/myProfile.type'
 import { Descriptions, Drawer } from 'antd'
 import { DescriptionsProps } from 'antd/lib'
 
 interface IProps {
-  detailTicket: ITicketTable
-  setDetailTicket: (value: ITicketTable) => void
+  detailTicket: MyProfileTicketRes
+  setDetailTicket: (value: MyProfileTicketRes) => void
   isDetailOpen: boolean
   setIsDetailOpen: (open: boolean) => void
 }
@@ -13,25 +14,25 @@ const DetailTicket = (props: IProps) => {
     setIsDetailOpen(false)
     setDetailTicket({
       id: '',
-      flightCode: '',
-      seatName: '',
+      flight: {},
+      seat: {},
       passengerName: '',
       passengerPhone: '',
       passengerIDCard: '',
       passengerEmail: '',
-      seatNumber: 0,
+      urlImage: '',
       ticketStatus: '',
-      haveBaggage: false
+      haveBaggage: false,
+      seatNumber: 0
     })
   }
-  console.log(detailTicket)
 
   const SeatItems: DescriptionsProps['items'] = [
     {
       key: 'SeatClass',
       label: 'Seat Class',
       span: 4,
-      children: detailTicket?.seatName
+      children: detailTicket?.seat.seatName
     },
     {
       key: 'PassengerName',
@@ -61,7 +62,14 @@ const DetailTicket = (props: IProps) => {
       key: 'SeatNumber',
       label: 'Seat Number',
       span: 4,
-      children: detailTicket?.seatNumber
+      children: detailTicket?.seat.seatNumber
+    },
+    {
+      key: 'TicketPrice',
+      label: 'Ticket Price',
+      span: 4,
+      children:
+        ((detailTicket?.seat.price as number) * (detailTicket.flight.originPrice as number)).toLocaleString() || 0
     },
     {
       key: 'TicketStatus',
