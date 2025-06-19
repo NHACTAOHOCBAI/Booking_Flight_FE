@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { PlusOutlined } from '@ant-design/icons'
+
 import { Image, Upload } from 'antd'
 import type { GetProp, UploadFile, UploadProps } from 'antd'
 
@@ -18,9 +18,18 @@ interface UploadImageProps {
   setFileList: React.Dispatch<React.SetStateAction<UploadFile[]>>
   isPending?: boolean
   circle?: boolean
+  children?: React.ReactNode
+  disabled?: boolean
 }
 
-const UploadImage: React.FC<UploadImageProps> = ({ fileList, setFileList, isPending = false, circle = false }) => {
+const UploadImage: React.FC<UploadImageProps> = ({
+  fileList,
+  setFileList,
+  isPending = false,
+  circle = false,
+  children,
+  disabled = false
+}) => {
   const [previewOpen, setPreviewOpen] = useState(false)
   const [previewImage, setPreviewImage] = useState('')
 
@@ -37,17 +46,10 @@ const UploadImage: React.FC<UploadImageProps> = ({ fileList, setFileList, isPend
     setFileList(newFileList)
   }
 
-  const uploadButton = (
-    <button style={{ border: 0, background: 'none' }} type='button'>
-      <PlusOutlined />
-      <div style={{ marginTop: 8 }}>Upload</div>
-    </button>
-  )
-
   return (
     <>
       <Upload
-        disabled={isPending}
+        disabled={isPending || disabled}
         beforeUpload={() => false}
         listType={circle ? 'picture-circle' : 'picture-card'}
         fileList={fileList}
@@ -55,11 +57,37 @@ const UploadImage: React.FC<UploadImageProps> = ({ fileList, setFileList, isPend
         onChange={handleChange}
         accept='image/*'
         maxCount={1}
+        showUploadList={false} // ẩn danh sách ảnh mặc định, mình tự render
       >
-        {fileList.length >= 1 ? null : uploadButton}
+        {fileList.length > 0 ? (
+          // Hiển thị thumbnail ảnh upload
+          <img
+            src={
+              fileList[0].url ||
+              (fileList[0].preview as string) ||
+              (fileList[0].originFileObj && URL.createObjectURL(fileList[0].originFileObj))
+            }
+            alt='preview'
+            style={{
+              width: circle ? 96 : 104,
+              height: circle ? 96 : 104,
+              borderRadius: circle ? '50%' : 4,
+              objectFit: 'cover',
+              cursor: 'pointer',
+              border: '4px solid #a0c4ff',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.15)'
+            }}
+            onClick={() => handlePreview(fileList[0])} // cho phép click xem modal preview
+          />
+        ) : (
+          // Hiển thị children (ví dụ Avatar) khi chưa có ảnh
+          children
+        )}
       </Upload>
+
       {previewImage && (
         <Image
+          style={{ width: 520, height: 520 }}
           wrapperStyle={{ display: 'none' }}
           preview={{
             visible: previewOpen,

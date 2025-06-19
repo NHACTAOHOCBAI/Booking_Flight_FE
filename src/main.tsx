@@ -196,6 +196,7 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
+        path: 'emailConfirm',
         element: <EmailConfirm />
       },
       {

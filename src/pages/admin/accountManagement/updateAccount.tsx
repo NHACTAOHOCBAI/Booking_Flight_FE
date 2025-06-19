@@ -43,7 +43,10 @@ const UpdateAccount = (props: IProp) => {
       username: value.username,
       roleId: value.role,
       phone: value.phone,
-      avatar: fileList[0].originFileObj as File
+      ...(fileList &&
+        fileList.length > 0 && {
+          avatar: fileList[0].originFileObj as File
+        })
     }
     console.log(body)
     updateAccountMutation(body, {

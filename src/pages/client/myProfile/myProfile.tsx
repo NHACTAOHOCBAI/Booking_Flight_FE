@@ -1,13 +1,14 @@
 import { useGetMyProfile, useUpdateProfile } from '@/hooks/useMyProfile'
 import { MailOutlined, PhoneOutlined, UserOutlined } from '@ant-design/icons' // For icons
-import { Avatar, Button, Card, Form, Input, message, Tabs } from 'antd'
+import { Avatar, Button, Card, Form, Input, message, Tabs, UploadFile } from 'antd'
 import { useEffect, useState } from 'react'
 import ChangePasswordPage from './changePassword'
 import TicketPurchasedPage from './ticketPurchased'
+import UploadImage from '@/components/UploadFile'
+import { isPending } from '@reduxjs/toolkit'
 
 function MyProfile() {
-  // const [personalInfo, setPersonalInfo] = useState({})
-
+  const [fileList, setFileList] = useState<UploadFile[]>([])
   const [isEditingInfo, setIsEditingInfo] = useState(false)
   const [personalInfoForm] = Form.useForm()
 
@@ -20,7 +21,7 @@ function MyProfile() {
   const handleEditInfo = () => {
     setIsEditingInfo(true)
   }
-  const updateAccountMutation = useUpdateProfile()
+  const { mutate: updateAccountMutation, isPending } = useUpdateProfile()
   const handleSaveInfo = async () => {
     try {
       const value = await personalInfoForm.validateFields()
@@ -28,11 +29,13 @@ function MyProfile() {
       const body = {
         email: value.email,
         fullName: value.fullName,
-        avatar: value.avatar,
-
-        phone: value.phone
+        phone: value.phone,
+        ...(fileList &&
+          fileList.length > 0 && {
+            avatar: fileList[0].originFileObj as File
+          })
       }
-      updateAccountMutation.mutate(body, {
+      updateAccountMutation(body, {
         onSuccess() {
           message.success('Update success')
         },
@@ -66,21 +69,21 @@ function MyProfile() {
             <p className='mt-1 text-sm text-gray-500 mb-6'>Manage your profile details.</p>
             <Form form={personalInfoForm} layout='vertical' initialValues={personalInfo} onFinish={handleSaveInfo}>
               <div className='flex items-center space-x-4 mb-6'>
-                <Avatar
-                  size={96}
-                  src={personalInfo?.avatar}
-                  icon={<UserOutlined />}
-                  className='border-4 border-blue-200 shadow-md'
-                />
-
-                <Form.Item label='Avatar URL' name='avatar' className='flex-grow'>
-                  <Input
-                    prefix={<UserOutlined />}
-                    placeholder='Enter avatar URL'
-                    readOnly={!isEditingInfo}
-                    className={!isEditingInfo ? 'bg-gray-50 text-gray-600' : ''}
-                  />
-                </Form.Item>
+                <div className='mb-[10px]'>
+                  <UploadImage
+                    disabled={!isEditingInfo}
+                    isPending={isPending}
+                    fileList={fileList}
+                    setFileList={setFileList}
+                  >
+                    <Avatar
+                      size={96}
+                      src={personalInfo?.avatar as string}
+                      icon={<UserOutlined />}
+                      className='border-4 border-blue-200 shadow-md'
+                    ></Avatar>
+                  </UploadImage>
+                </div>
               </div>
 
               <Form.Item label='Full Name' name='fullName'>

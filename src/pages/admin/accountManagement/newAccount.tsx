@@ -32,10 +32,14 @@ const NewAccount = (props: IProp) => {
       username: value.username,
       roleId: value.role,
       phone: value.phone,
-      avatar: fileList[0].originFileObj as File
+      ...(fileList &&
+        fileList.length > 0 && {
+          avatar: fileList[0].originFileObj as File
+        })
     }
     newAccountMutation(body, {
-      onSuccess(data) {
+      onSuccess: async (data) => {
+        await refetchData()
         messageApi.open({
           type: 'success',
           content: data.message

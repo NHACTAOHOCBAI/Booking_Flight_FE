@@ -70,5 +70,5 @@ export interface UpdateProfile {
   email?: string
   fullName?: string
   phone?: string
-  avatar?: string
+  avatar?: string | File
 }
