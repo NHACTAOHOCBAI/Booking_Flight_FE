@@ -1,6 +1,6 @@
 import http from '@/apis/http'
 import { SuccessResponse } from '@/globalType/util.type'
-import { AccountList } from '@/globalType/account.type'
+import { AccountList, NewAccountReq } from '@/globalType/account.type'
 import { ListConfig } from '@/globalType/listConfig.type'
 
 const URL = 'api/accounts'
@@ -14,7 +14,7 @@ const accountApi = {
     const res = await http.get<SuccessResponse<AccountList>>(URL, { params })
     return res.data
   },
-  createAccount: async (param: IAccountTable) => {
+  createAccount: async (param: NewAccountReq) => {
     const res = await http.post<SuccessResponse<IAccountTable>>(URL, param)
     return res.data
   },
@@ -22,7 +22,7 @@ const accountApi = {
     const res = await http.delete<SuccessResponse<string>>(`${URL}/${id}`)
     return res.data
   },
-  updateAccount: async (param: IAccountTable) => {
+  updateAccount: async (param: NewAccountReq) => {
     const res = await http.put<SuccessResponse<string>>(`${URL}/${param.id}`, param)
     return res.data
   }

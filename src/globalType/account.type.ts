@@ -14,6 +14,11 @@ declare global {
   }
 }
 
+export interface NewAccountReq {
+  account: IAccountTable
+  avatar?: File
+}
+
 export interface AccountList {
   result: IAccountTable[]
   pagination: {

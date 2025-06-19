@@ -41,13 +41,14 @@ const UpdateAccount = (props: IProp) => {
       return
     }
     const body = {
-      id: updatedAccount.id,
-      email: value.email,
-      fullName: value.fullName,
-      password: updatedAccount.password || '123',
-      username: value.username,
-      roleId: value.role,
-      phone: value.phone,
+      account: {
+        email: value.email,
+        fullName: value.fullName,
+        password: value.password,
+        username: value.username,
+        roleId: value.role,
+        phone: value.phone
+      },
       ...(fileList &&
         fileList.length > 0 && {
           avatar: fileList[0].originFileObj as File

@@ -62,7 +62,7 @@ const DetailTicket = (props: IProps) => {
       key: 'SeatNumber',
       label: 'Seat Number',
       span: 4,
-      children: detailTicket?.seat.seatNumber
+      children: detailTicket?.seatNumber
     },
     {
       key: 'TicketPrice',

@@ -26,12 +26,14 @@ const NewAccount = (props: IProp) => {
 
   const onFinish: FormProps<IAccountTable>['onFinish'] = async (value) => {
     const body = {
-      email: value.email,
-      fullName: value.fullName,
-      password: value.password,
-      username: value.username,
-      roleId: value.role,
-      phone: value.phone,
+      account: {
+        email: value.email,
+        fullName: value.fullName,
+        password: value.password,
+        username: value.username,
+        roleId: value.role,
+        phone: value.phone
+      },
       ...(fileList &&
         fileList.length > 0 && {
           avatar: fileList[0].originFileObj as File

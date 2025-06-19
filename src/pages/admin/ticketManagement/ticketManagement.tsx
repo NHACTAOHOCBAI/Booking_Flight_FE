@@ -1,4 +1,4 @@
-import { DownloadOutlined, EditOutlined } from '@ant-design/icons'
+import { DeleteOutlined, DownloadOutlined, EditOutlined } from '@ant-design/icons'
 import type { ActionType, ProColumns } from '@ant-design/pro-components'
 import { ProTable } from '@ant-design/pro-components'
 import { useContext, useRef, useState } from 'react'
@@ -12,6 +12,8 @@ import { MyProfileTicketRes } from '@/globalType/myProfile.type'
 import { TICKET_STATUSES_ENUM } from '@/globalType/ticket.type'
 import DetailTicket from './detailTicket'
 import UpdateTicket from './updateTicket'
+import { message, Popconfirm } from 'antd'
+import { useCancelTicket } from '@/hooks/useBooking'
 
 const TicketManagement = () => {
   //detail
@@ -50,23 +52,23 @@ const TicketManagement = () => {
   const [isNewOpen, setIsNewOpen] = useState(false)
 
   // delete
-  // const [messageApi, contextHolder] = message.useMessage()
-  // const handleDeleteMutation = useDeleteTicket()
-  // const handleDelete = (id: string) => {
-  //   handleDeleteMutation.mutate(id, {
-  //     onSuccess: async () => {
-  //       await actionRef.current?.reload()
-  //       messageApi.success('Delete ticket successfully')
-  //     },
-  //     onError(error) {
-  //       console.log(error)
-  //       messageApi.open({
-  //         type: 'error',
-  //         content: error.message
-  //       })
-  //     }
-  //   })
-  // }
+  const [messageApi, contextHolder] = message.useMessage()
+  const handleDeleteMutation = useCancelTicket()
+  const handleDelete = (id: string) => {
+    handleDeleteMutation.mutate([id], {
+      onSuccess: async () => {
+        await actionRef.current?.reload()
+        messageApi.success('Cancel ticket successfully')
+      },
+      onError(error) {
+        console.log(error)
+        messageApi.open({
+          type: 'error',
+          content: error.message
+        })
+      }
+    })
+  }
 
   const ALL_PERMISSIONS = useContext(AppContext).PERMISSIONS.permissions
 
@@ -100,7 +102,7 @@ const TicketManagement = () => {
     {
       title: 'Flight Code',
 
-      render: (_, record) => <div>{record.flight.flightCode}</div>
+      render: (_, record) => <div>{record.flight ? record.flight.flightCode : 'null'}</div>
     },
     {
       title: 'Seat Name',
@@ -154,15 +156,41 @@ const TicketManagement = () => {
             }}
           />
           <Access permission={ALL_PERMISSIONS['TICKETS']['PUT_TICKETS']} hideChildren>
-            <EditOutlined
-              style={{
-                color: '#54a0ff'
-              }}
-              onClick={() => {
-                setUpdatedTicket(record)
-                setIsUpdateOpen(true)
-              }}
-            />
+            {record.ticketStatus !== 'CANCELLED' ? (
+              <EditOutlined
+                style={{
+                  color: '#54a0ff'
+                }}
+                onClick={() => {
+                  setUpdatedTicket(record)
+                  setIsUpdateOpen(true)
+                }}
+              />
+            ) : (
+              <div className='text-gray-400 cursor-not-allowed'>
+                <EditOutlined />
+              </div>
+            )}
+          </Access>
+
+          <Access permission={ALL_PERMISSIONS['TICKETS']['DELETE_TICKETS']} hideChildren>
+            {record.ticketStatus == 'BOOKED' ? (
+              <Popconfirm
+                title='Delete the airport'
+                description='When you cancel, the ticket can be available again, do you want to cancel this ticket?'
+                okText='Delete'
+                onConfirm={() => handleDelete(record.id as string)}
+                cancelText='Cancel'
+              >
+                <DeleteOutlined
+                  style={{
+                    color: '#ee5253'
+                  }}
+                />
+              </Popconfirm>
+            ) : (
+              <div className='text-gray-400 cursor-not-allowed'></div>
+            )}
           </Access>
         </div>
       )
@@ -172,6 +200,7 @@ const TicketManagement = () => {
   const [error, setError] = useState<unknown>(null)
   return (
     <>
+      {contextHolder}
       {error ? (
         <ErrorPage />
       ) : (

@@ -35,7 +35,6 @@ const UpdateTicket = (props: IProp) => {
     }
 
     const body = {
-      id: updatedTicket.id,
       flightId: updatedTicket.flight.id,
       seatId: updatedTicket.seat.id,
       passengerName: value.passengerName,
@@ -85,8 +84,8 @@ const UpdateTicket = (props: IProp) => {
   useEffect(() => {
     form.setFieldsValue({
       id: updatedTicket.id,
-      flightId: updatedTicket.flight.id,
-      flightCode: updatedTicket.flight.flightCode,
+      flightId: updatedTicket.flight ? updatedTicket.flight.id : '',
+      flightCode: updatedTicket.flight ? updatedTicket.flight.flightCode : '',
       seatId: updatedTicket.seat.id,
       seatName: updatedTicket.seat.seatName,
       passengerName: updatedTicket.passengerName,

@@ -116,7 +116,7 @@ const TicketCard: React.FC<TicketCardProps> = ({ ticket, showCancelButton, onTic
           <Descriptions.Item label='Passenger ID Card'>{ticket.passengerIDCard}</Descriptions.Item>
           <Descriptions.Item label='Passenger Email'>{ticket.passengerEmail}</Descriptions.Item>
           <Descriptions.Item label='Seat Name'>{ticket.seat.seatName}</Descriptions.Item>
-          <Descriptions.Item label='Seat Number'>{ticket.seat.seatNumber}</Descriptions.Item>
+          <Descriptions.Item label='Seat Number'>{ticket.seatNumber}</Descriptions.Item>
           <Descriptions.Item label='Baggage'>{ticket.haveBaggage ? 'Yes' : 'No'}</Descriptions.Item>
           <Descriptions.Item label='Ticket Status'>{flightDetails.flightStatus}</Descriptions.Item>
           <Descriptions.Item label='Ticket Image'>
@@ -143,7 +143,6 @@ const TicketPurchasedPage: React.FC<TicketPurchasedPageProps> = ({ type }) => {
     case 'incoming':
       pageTitle = 'Incoming Flight Tickets'
       pageDescription = 'View details of your upcoming flight tickets.'
-
       filterTicket = `ticketStatus:'BOOKED'`
       break
     case 'flown':
@@ -155,7 +154,6 @@ const TicketPurchasedPage: React.FC<TicketPurchasedPageProps> = ({ type }) => {
     case 'cancelled':
       pageTitle = 'Cancelled Tickets'
       pageDescription = 'View details of your cancelled flight tickets.'
-
       filterTicket = `ticketStatus:'CANCELLED'`
       break
     default:
