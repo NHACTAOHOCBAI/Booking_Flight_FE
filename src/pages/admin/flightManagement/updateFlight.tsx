@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Button, Col, DatePicker, Form, FormProps, Input, InputNumber, message, Modal, Row, Select, Space } from 'antd'
 import { CloseOutlined } from '@ant-design/icons'
 import dayjs, { Dayjs } from 'dayjs'
@@ -12,10 +13,10 @@ import { useUpdateFlight } from '@/hooks/useFlight'
 import { onErrorUtil } from '@/globalType/util.type'
 import airportApi from '@/apis/apis/airport.api'
 import planeApi from '@/apis/apis/plane.api'
-import seatApi from '@/apis/apis/seat.api'
 import { useQuery } from '@tanstack/react-query'
 import _ from 'lodash'
 import { validateIntermediateTime } from '@/utils/utils'
+import { getIntermediateDepartureDisabledTime, getIntermediateArrivalDisabledTime } from '@/utils/validateTime'
 
 interface IProp {
   isUpdateOpen: boolean
@@ -34,7 +35,33 @@ const UpdateFlight = (props: IProp) => {
   const [departureDate, setDepartureDate] = useState<Dayjs | null>(null)
   const [returnDate, setReturnDate] = useState<Dayjs | null>(null)
   const [departureInterDate, setDepartureInterDate] = useState<Dayjs | null>(null)
-  const [returnInterDate, setReturnInterDate] = useState<Dayjs | null>(null)
+  const [, setReturnInterDate] = useState<Dayjs | null>(null)
+
+  useEffect(() => {
+    // Khi xoá departureTime
+    if (!departureDate) {
+      form.setFieldsValue({
+        arrivalTime: null,
+        listFlight_Airport: []
+      })
+      setReturnDate(null)
+      setDepartureInterDate(null)
+      setReturnInterDate(null)
+      return
+    }
+
+    // Khi xoá arrivalTime
+    if (!returnDate) {
+      form.setFieldsValue({
+        listFlight_Airport: []
+      })
+      setDepartureInterDate(null)
+      setReturnInterDate(null)
+      return
+    }
+  }, [departureDate, returnDate, departureInterDate, form])
+
+  const [, setDepartureInterIndex] = useState<number | null>(null)
 
   const onFinish: FormProps<IFlightTable>['onFinish'] = async (value) => {
     //format day time
@@ -45,7 +72,7 @@ const UpdateFlight = (props: IProp) => {
         return {
           id: values.id,
           flightId: values.flightId,
-          airportId: values.airportId,
+          airportId: values.airportId?.value || values.airportId,
           airportName: values.airportName,
           arrivalTime: dayjs(values.arrivalTime, 'HH:mm DD/MM/YYYY').format('HH:mm DD/MM/YYYY'),
           departureTime: dayjs(values.departureTime, 'HH:mm DD/MM/YYYY').format('HH:mm DD/MM/YYYY'),
@@ -53,7 +80,6 @@ const UpdateFlight = (props: IProp) => {
         }
       })
     } else value.listFlight_Airport = []
-    value.listFlight_Seat = value.listFlight_Seat ? value.listFlight_Seat : []
 
     const initialValue = _.omit(updatedFlight, ['id', 'planeName', 'departureAirportName', 'arrivalAirportName'])
     const isDirty = !_.isEqual(value, initialValue)
@@ -75,7 +101,7 @@ const UpdateFlight = (props: IProp) => {
       arrivalTime: value.arrivalTime,
       originPrice: value.originPrice,
       listFlight_Airport: value.listFlight_Airport,
-      listFlight_Seat: value.listFlight_Seat
+      listFlight_Seat: updatedFlight.listFlight_Seat
     }
     updataFlightMutation.mutate(body, {
       onSuccess: async () => {
@@ -162,12 +188,10 @@ const UpdateFlight = (props: IProp) => {
   const departureAirportId = Form.useWatch('departureAirportId', form)
   const arrivalAirportId = Form.useWatch('arrivalAirportId', form)
 
-  // const [interAirportOptionCheck, setInterAirportOptionCheck] = useState<(string | undefined)[]>([])
-
   const intermediateAirports = Form.useWatch('listFlight_Airport', form) || []
 
   const selectedIntermediateAirportIds = intermediateAirports
-    .map((item: { airportId: { value: string } }) => item?.airportId.value)
+    .map((item: { airportId?: { value: string } }) => item?.airportId?.value)
     .filter(Boolean)
 
   const interAirportOptionCheck = airportOptions
@@ -219,22 +243,6 @@ const UpdateFlight = (props: IProp) => {
     [planeData]
   )
 
-  const seatData = useQuery({
-    queryKey: ['seats'],
-    queryFn: () => seatApi.getSeats({}),
-    enabled: isUpdateOpen
-  })
-  const seatOptions = useMemo(
-    () =>
-      seatData.data?.data.result.map((value, index) => {
-        return {
-          key: index,
-          value: value.id,
-          label: value.seatName
-        }
-      }),
-    [seatData]
-  )
   return (
     <>
       {contextHolder}
@@ -384,6 +392,7 @@ const UpdateFlight = (props: IProp) => {
                       showTime={{ format: 'HH:mm' }}
                       value={returnDate}
                       onChange={(dateVal: Dayjs | null) => setReturnDate(dateVal)}
+                      disabled={!departureDate}
                       disabledDate={(current) => {
                         const isBeforeDeparture = departureDate ? current.isBefore(departureDate, 'day') : false
 
@@ -458,52 +467,50 @@ const UpdateFlight = (props: IProp) => {
                                     className='w-full'
                                     format='DD MMM, YYYY, HH:mm'
                                     showTime={{ format: 'HH:mm' }}
-                                    onChange={(dateVal: Dayjs | null) => setDepartureInterDate(dateVal)}
-                                    disabledDate={(current) => {
-                                      const isAfterReturnDate = current && current > dayjs(returnDate).startOf('day')
-                                      const isBeforeDeparture = current && current < dayjs(departureDate).startOf('day')
-                                      return isAfterReturnDate || isBeforeDeparture
-                                    }}
-                                    disabledTime={(current) => {
-                                      if (!departureDate || !current || !returnDate) return {}
+                                    onChange={(dateVal: Dayjs | null) => {
+                                      setDepartureInterIndex(subField.name)
+                                      setDepartureInterDate(dateVal)
 
-                                      const isSameDayAsDeparture = current.isSame(departureDate, 'day')
-                                      const isSameDayAsReturn = current.isSame(returnDate, 'day')
-
-                                      const depHour = departureDate.hour()
-                                      const depMinute = departureDate.minute()
-                                      const returnHour = returnDate.hour()
-                                      const returnMinute = returnDate.minute()
-
-                                      return {
-                                        disabledHours: () => {
-                                          const disabled: number[] = []
-
-                                          if (isSameDayAsDeparture) {
-                                            for (let i = 0; i < depHour; i++) disabled.push(i)
+                                      // Reset arrival time của current intermediate
+                                      const currentList = form.getFieldValue('listFlight_Airport') || []
+                                      const updatedList = currentList.map((item: any, index: number) => {
+                                        if (index > subField.name) {
+                                          return {
+                                            ...item,
+                                            departureTime: null,
+                                            arrivalTime: null
                                           }
-
-                                          if (isSameDayAsReturn) {
-                                            for (let i = returnHour + 1; i < 24; i++) disabled.push(i)
-                                          }
-
-                                          return disabled
-                                        },
-                                        disabledMinutes: (selectedHour) => {
-                                          const disabled: number[] = []
-
-                                          if (isSameDayAsDeparture && selectedHour === depHour) {
-                                            for (let i = 0; i < depMinute; i++) disabled.push(i)
-                                          }
-
-                                          if (isSameDayAsReturn && selectedHour === returnHour) {
-                                            for (let i = returnMinute + 1; i < 60; i++) disabled.push(i)
-                                          }
-
-                                          return disabled
                                         }
-                                      }
+                                        return item
+                                      })
+                                      form.setFieldsValue({ listFlight_Airport: updatedList })
                                     }}
+                                    disabled={!departureDate || !returnDate}
+                                    disabledDate={(current) => {
+                                      // Không được trước main departure
+                                      const isBeforeDeparture = current && current < dayjs(departureDate).startOf('day')
+                                      // Không được sau main arrival
+                                      const isAfterReturn = current && current > dayjs(returnDate).startOf('day')
+
+                                      // Không được trước previous intermediate arrival
+                                      const prevInterArrival =
+                                        subField.name > 0
+                                          ? form.getFieldValue(['listFlight_Airport', subField.name - 1, 'arrivalTime'])
+                                          : null
+                                      const isBeforePrevArrival =
+                                        prevInterArrival && current && current < dayjs(prevInterArrival).startOf('day')
+
+                                      return isBeforeDeparture || isAfterReturn || isBeforePrevArrival
+                                    }}
+                                    disabledTime={(current) =>
+                                      getIntermediateDepartureDisabledTime(
+                                        current,
+                                        subField.name,
+                                        departureDate as Dayjs,
+                                        returnDate as Dayjs,
+                                        form.getFieldValue('listFlight_Airport') || []
+                                      )
+                                    }
                                   />
                                 </Form.Item>
                               </Col>
@@ -521,53 +528,50 @@ const UpdateFlight = (props: IProp) => {
                                     className='w-full'
                                     format='DD MMM, YYYY, HH:mm'
                                     showTime={{ format: 'HH:mm' }}
-                                    onChange={(dateVal: Dayjs | null) => setReturnInterDate(dateVal)}
-                                    disabledDate={(current) => {
-                                      const isAfterReturnDate = current && current > dayjs(returnDate).startOf('day')
-                                      const isBeforeDeparture =
-                                        current && current < dayjs(departureInterDate).startOf('day')
-                                      return isAfterReturnDate || isBeforeDeparture
-                                    }}
-                                    disabledTime={(current) => {
-                                      if (!departureInterDate || !current || !returnDate) return {}
+                                    onChange={(dateVal: Dayjs | null) => {
+                                      setReturnInterDate(dateVal)
 
-                                      const isSameDayAsDeparture = current.isSame(departureInterDate, 'day')
-                                      const isSameDayAsReturn = current.isSame(returnDate, 'day')
-
-                                      const depHour = departureInterDate.hour()
-                                      const depMinute = departureInterDate.minute()
-                                      const returnHour = returnDate.hour()
-                                      const returnMinute = returnDate.minute()
-
-                                      return {
-                                        disabledHours: () => {
-                                          const disabled: number[] = []
-
-                                          if (isSameDayAsDeparture) {
-                                            for (let i = 0; i < depHour; i++) disabled.push(i)
+                                      // Reset departure time của next intermediate flights
+                                      const currentList = form.getFieldValue('listFlight_Airport') || []
+                                      const updatedList = currentList.map((item: any, index: number) => {
+                                        if (index > subField.name) {
+                                          return {
+                                            ...item,
+                                            departureTime: null,
+                                            arrivalTime: null
                                           }
-
-                                          if (isSameDayAsReturn) {
-                                            for (let i = returnHour + 1; i < 24; i++) disabled.push(i)
-                                          }
-
-                                          return disabled
-                                        },
-                                        disabledMinutes: (selectedHour) => {
-                                          const disabled: number[] = []
-
-                                          if (isSameDayAsDeparture && selectedHour === depHour) {
-                                            for (let i = 0; i < depMinute; i++) disabled.push(i)
-                                          }
-
-                                          if (isSameDayAsReturn && selectedHour === returnHour) {
-                                            for (let i = returnMinute + 1; i < 60; i++) disabled.push(i)
-                                          }
-
-                                          return disabled
                                         }
-                                      }
+                                        return item
+                                      })
+                                      form.setFieldsValue({ listFlight_Airport: updatedList })
                                     }}
+                                    disabled={
+                                      !form.getFieldValue(['listFlight_Airport', subField.name, 'departureTime'])
+                                    }
+                                    disabledDate={(current) => {
+                                      const currentDeparture = form.getFieldValue([
+                                        'listFlight_Airport',
+                                        subField.name,
+                                        'departureTime'
+                                      ])
+                                      if (!currentDeparture) return true
+
+                                      // Không được trước current departure
+                                      const isBeforeDeparture =
+                                        current && current < dayjs(currentDeparture).startOf('day')
+                                      // Không được sau main arrival
+                                      const isAfterReturn = current && current > dayjs(returnDate).startOf('day')
+
+                                      return isBeforeDeparture || isAfterReturn
+                                    }}
+                                    disabledTime={(current) =>
+                                      getIntermediateArrivalDisabledTime(
+                                        current,
+                                        subField.name,
+                                        returnDate as Dayjs,
+                                        form.getFieldValue('listFlight_Airport') || []
+                                      )
+                                    }
                                   />
                                 </Form.Item>
                               </Col>
