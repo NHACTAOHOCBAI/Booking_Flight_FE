@@ -41,6 +41,7 @@ import UserLayout from './layouts/userLayout/userLayout'
 import EmailConfirm from './pages/auth/ForgetPassword/EmailConfirm'
 import ResetPassword from './pages/auth/ForgetPassword/ResetPassword'
 import TicketSearchPage from './pages/client/findTicket/TicketSearchPage'
+import TicketAdmin from './pages/admin/booking/secondStep/ticketAdmin'
 
 // function ProtectedRoute() {
 //   const { isAuthenticated } = useContext(AppContext)
@@ -174,6 +175,14 @@ const router = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <RoleManagement />
+          </ProtectedRoute>
+        )
+      },
+      {
+        path: 'manage-ticket/ticketAdmin',
+        element: (
+          <ProtectedRoute>
+            <TicketAdmin />
           </ProtectedRoute>
         )
       }

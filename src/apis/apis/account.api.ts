@@ -22,6 +22,7 @@ const accountApi = {
     const res = await http.post<SuccessResponse<IAccountTable>>(URL, formData)
     return res.data
   },
+
   deleteAccount: async (id: string) => {
     const res = await http.delete<SuccessResponse<string>>(`${URL}/${id}`)
     return res.data
