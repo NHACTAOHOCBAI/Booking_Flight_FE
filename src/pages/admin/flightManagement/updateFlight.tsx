@@ -45,7 +45,7 @@ const UpdateFlight = (props: IProp) => {
         return {
           id: values.id,
           flightId: values.flightId,
-          airportId: values.airportId.value,
+          airportId: values.airportId,
           airportName: values.airportName,
           arrivalTime: dayjs(values.arrivalTime, 'HH:mm DD/MM/YYYY').format('HH:mm DD/MM/YYYY'),
           departureTime: dayjs(values.departureTime, 'HH:mm DD/MM/YYYY').format('HH:mm DD/MM/YYYY'),
@@ -266,7 +266,7 @@ const UpdateFlight = (props: IProp) => {
                   }
                 ]}
               >
-                <Input placeholder='Enter a code' />
+                <Input placeholder='Enter a code' disabled={updatedFlight.hasTicket} />
               </Form.Item>
 
               <Form.Item<IFlightTable>
@@ -301,6 +301,7 @@ const UpdateFlight = (props: IProp) => {
                 ]}
               >
                 <Select
+                  disabled={updatedFlight.hasTicket}
                   showSearch
                   placeholder='Select a departure airport'
                   optionFilterProp='label'
@@ -323,6 +324,7 @@ const UpdateFlight = (props: IProp) => {
                 ]}
               >
                 <Select
+                  disabled={updatedFlight.hasTicket}
                   showSearch
                   placeholder='Select a arrival airport'
                   optionFilterProp='label'
@@ -642,6 +644,7 @@ const UpdateFlight = (props: IProp) => {
                             rules={[{ required: true, message: 'Please select seat class' }]}
                           >
                             <Select
+                              disabled={updatedFlight.hasTicket}
                               placeholder='Seat class'
                               options={seatOptions?.map((s) => ({
                                 label: s.label,
@@ -654,13 +657,13 @@ const UpdateFlight = (props: IProp) => {
                             name={[field.name, 'quantity']}
                             rules={[{ required: true, message: 'Please input quantity' }]}
                           >
-                            <InputNumber min={1} placeholder='Quantity' />
+                            <InputNumber disabled={updatedFlight.hasTicket} min={1} placeholder='Quantity' />
                           </Form.Item>
                           <CloseOutlined onClick={() => remove(field.name)} />
                         </Space>
                       ))}
 
-                      <Button type='dashed' onClick={() => add()} block>
+                      <Button disabled={updatedFlight.hasTicket} type='dashed' onClick={() => add()} block>
                         + Add Seat Class
                       </Button>
 
@@ -691,6 +694,7 @@ const UpdateFlight = (props: IProp) => {
                 ]}
               >
                 <InputNumber
+                  disabled={updatedFlight.hasTicket}
                   min={0}
                   formatter={(value?: string | number) =>
                     value ? String(value).replace(/\B(?=(\d{3})+(?!\d))/g, ',') : ''

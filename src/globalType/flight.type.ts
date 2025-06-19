@@ -16,7 +16,7 @@ declare global {
     originPrice: number
     listFlight_Airport: IInterAirport[]
     listFlight_Seat: ISeat[]
-    hasBooked?: boolean
+    hasTicket?: boolean
   }
   interface IInterAirport {
     id?: string
