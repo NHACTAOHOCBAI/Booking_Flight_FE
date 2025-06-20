@@ -1,4 +1,5 @@
 import http from '@/apis/http'
+import httpFormData from '@/apis/httpFormData'
 import { SuccessResponse } from '@/globalType/util.type'
 import { AccountList, NewAccountReq } from '@/globalType/account.type'
 import { ListConfig } from '@/globalType/listConfig.type'
@@ -18,9 +19,11 @@ const accountApi = {
   createAccount: async (param: NewAccountReq) => {
     const formData = new FormData()
     formData.append('account', JSON.stringify(param.account))
+
     if (param.avatar) {
       formData.append('avatar', param.avatar)
     }
+
     const res = await httpFormData.post<SuccessResponse<IAccountTable>>(URL, formData)
 
     return res.data
