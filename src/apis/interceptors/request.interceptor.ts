@@ -6,10 +6,18 @@ const requestInterceptor = (config: any) => {
   if (token && config.headers && config.url !== '/api/auth/refresh') {
     config.headers.Authorization = `Bearer ${token}`
   }
-  if (!config.headers.Accept && config.headers['Content-Type']) {
-    config.headers.Accept = 'application/json'
-    config.headers['Content-Type'] = 'application/json; charset=utf-8'
+
+  const isFormData = config.data instanceof FormData
+
+  if (!isFormData) {
+    if (!config.headers.Accept) {
+      config.headers.Accept = 'application/json'
+    }
+    if (!config.headers['Content-Type']) {
+      config.headers['Content-Type'] = 'application/json; charset=utf-8'
+    }
   }
+
   return config
 }
 

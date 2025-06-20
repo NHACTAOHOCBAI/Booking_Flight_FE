@@ -12,6 +12,8 @@ const http = axios.create({
   withCredentials: true
 })
 
+
+
 http.interceptors.request.use(requestInterceptor, requestInterceptorError)
 http.interceptors.response.use(responseInterceptor, responseInterceptorError)
 

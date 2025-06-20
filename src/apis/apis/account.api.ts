@@ -1,4 +1,5 @@
 import http from '@/apis/http'
+import httpFormData from '@/apis/httpFormData'
 import { SuccessResponse } from '@/globalType/util.type'
 import { AccountList, NewAccountReq } from '@/globalType/account.type'
 import { ListConfig } from '@/globalType/listConfig.type'
@@ -16,11 +17,16 @@ const accountApi = {
   },
 
   createAccount: async (param: NewAccountReq) => {
-    const formData = new FormData()
-    formData.append('account', new Blob([JSON.stringify(param.account)], { type: 'application/json' }))
-    if (param.avatar) formData.append('avatar', param.avatar)
-    const res = await http.post<SuccessResponse<IAccountTable>>(URL, formData)
-    return res.data
+    const formData = new FormData();
+    formData.append("account", JSON.stringify(param.account));
+  
+    if (param.avatar) {
+      formData.append("avatar", param.avatar);
+    }
+  
+    const res = await httpFormData.post<SuccessResponse<IAccountTable>>(URL, formData);
+  
+    return res.data;
   },
 
   deleteAccount: async (id: string) => {
@@ -28,8 +34,19 @@ const accountApi = {
     return res.data
   },
   updateAccount: async (param: NewAccountReq) => {
-    const res = await http.put<SuccessResponse<string>>(`${URL}/${param.account.id}`, param)
-    return res.data
+    // Check if we have an avatar to upload
+    if (param.avatar) {
+      const formData = new FormData();
+      formData.append("account", JSON.stringify(param.account));
+      formData.append("avatar", param.avatar);
+      
+      const res = await httpFormData.put<SuccessResponse<string>>(`${URL}/${param.account.id}`, formData);
+      return res.data;
+    } else {
+      // If no avatar, just send JSON data
+      const res = await http.put<SuccessResponse<string>>(`${URL}/${param.account.id}`, param.account);
+      return res.data;
+    }
   }
 }
 export default accountApi
