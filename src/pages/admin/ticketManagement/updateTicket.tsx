@@ -23,47 +23,43 @@ const UpdateTicket = (props: IProp) => {
   const updateTicketMutation = useUpdateTicket()
   console.log(updatedTicket)
   const onFinish: FormProps<ITicketTable>['onFinish'] = async (value) => {
-    // const values = form.getFieldsValue()
-    // const initialValue = _.omit(updatedTicket, ['id', 'flightCode', 'seatName'])
-    // const isDirty = !_.isEqual(values, initialValue)
-    // if (!isDirty) {
-    //   messageApi.open({
-    //     type: 'error',
-    //     content: 'No Field Change'
-    //   })
+    const values = form.getFieldsValue()
+    const initialValue = _.omit(updatedTicket, ['id', 'flightCode', 'seatName'])
+    const isDirty = !_.isEqual(values, initialValue)
+    if (!isDirty) {
+      messageApi.open({
+        type: 'error',
+        content: 'No Field Change'
+      })
 
-    //   return
-    // }
+      return
+    }
 
-    // const body = {
-    //   id: updatedTicket.id,
-    //   flightId: updatedTicket.flight.id,
-    //   seatId: updatedTicket.seat.id,
-    //   passengerName: value.passengerName,
-    //   passengerPhone: value.passengerPhone,
-    //   passengerIDCard: value.passengerIDCard,
-    //   passengerEmail: value.passengerEmail,
-    //   haveBaggage: value.haveBaggage
-    // }
+    const body = {
+      id: updatedTicket.id,
+      flightId: updatedTicket.flight.id,
+      seatId: updatedTicket.seat.id,
+      passengerName: value.passengerName,
+      passengerPhone: value.passengerPhone,
+      passengerIDCard: value.passengerIDCard,
+      passengerEmail: value.passengerEmail,
+      haveBaggage: value.haveBaggage
+    }
 
-    // updateTicketMutation.mutate(body, {
-    //   onSuccess: async () => {
-    //     await refetchData()
-    //     messageApi.success('Update account successfully')
-    //     handleCancel()
-    //   },
-    //   onError(error: Error) {
-    //     console.log(error)
-    //     const messageError = onErrorUtil(error)
-    //     messageApi.open({
-    //       type: messageError.type,
-    //       content: messageError.content
-    //     })
-    //   }
-    // })
-
-    navigate('/admin/manage-ticket/ticketAdmin', {
-      state: { updatedTicket }
+    updateTicketMutation.mutate(body, {
+      onSuccess: async () => {
+        await refetchData()
+        messageApi.success('Update account successfully')
+        handleCancel()
+      },
+      onError(error: Error) {
+        console.log(error)
+        const messageError = onErrorUtil(error)
+        messageApi.open({
+          type: messageError.type,
+          content: messageError.content
+        })
+      }
     })
   }
 

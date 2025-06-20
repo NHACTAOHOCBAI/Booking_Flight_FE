@@ -12,11 +12,16 @@ import { MyProfileTicketRes } from '@/globalType/myProfile.type'
 import { TICKET_STATUSES_ENUM } from '@/globalType/ticket.type'
 import DetailTicket from './detailTicket'
 import UpdateTicket from './updateTicket'
-import { message, Popconfirm } from 'antd'
+import { Button, message, Popconfirm } from 'antd'
 import { useCancelTicket } from '@/hooks/useBooking'
+import { BookingState, setBookingFlight } from '@/redux/features/bookingFlight/bookingFlightSlice'
+import { IoTicketOutline } from 'react-icons/io5'
+import { useNavigate } from 'react-router-dom'
 
 const TicketManagement = () => {
   //detail
+
+  const navigate = useNavigate()
 
   const [isDetailOpen, setIsDetailOpen] = useState(false)
   const [detailTicket, setDetailTicket] = useState<MyProfileTicketRes>({
@@ -192,6 +197,23 @@ const TicketManagement = () => {
               <div className='text-gray-400 cursor-not-allowed'></div>
             )}
           </Access>
+
+          {record.ticketStatus == 'AVAILABLE' ? (
+            <Button
+              type='dashed'
+              onClick={() => {
+                console.log(record)
+                navigate('/admin/manage-ticket/ticketAdmin', {
+                  state: { record }
+                })
+              }}
+            >
+              <IoTicketOutline />
+              Booking
+            </Button>
+          ) : (
+            <div className='text-gray-400 cursor-not-allowed'></div>
+          )}
         </div>
       )
     }

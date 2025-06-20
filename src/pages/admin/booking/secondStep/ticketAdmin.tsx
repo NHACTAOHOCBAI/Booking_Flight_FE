@@ -14,7 +14,7 @@ interface TicketAdminProps {
 
 const TicketAdmin: React.FC<TicketAdminProps> = ({ ticket: ticketFromProps }) => {
   const location = useLocation()
-  const ticket = ticketFromProps || location.state?.updatedTicket
+  const ticket = ticketFromProps || location.state?.record
   const navigate = useNavigate()
   const captureRef = useRef<HTMLDivElement>(null)
   const [urlImage, setUrlImage] = useState<string | null>(null)

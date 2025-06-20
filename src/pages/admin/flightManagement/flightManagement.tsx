@@ -239,31 +239,7 @@ const FlightManagement = () => {
                 />
               </Popconfirm>
             </Access>
-            {/* <Button
-              type='dashed'
-              onClick={() => {
-                const bookingState: BookingState = {
-                  departureFlightDetails: {
-                    ...record,
-                    selectedSeat: {
-                      price: 0,
-                      quantity: 0,
-                      quantityAvailable: 0
-                    }
-                  },
-                  returnFlightDetails: null,
-                  queryConfig: {},
-                  amountPayment: 0,
-                  ticketNumbers: []
-                }
-
-                dispatch(setBookingFlight(bookingState))
-                navigate(`/booking/passenger`)
-              }}
-            >
-              <IoTicketOutline />
-              Booking
-            </Button> */}
+            {/*  */}
           </div>
         )
       }
