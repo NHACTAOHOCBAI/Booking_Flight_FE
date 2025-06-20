@@ -1,7 +1,14 @@
 import http from '@/apis/http'
 import { ListConfig } from '@/globalType/listConfig.type'
-import { MyProfileTicketResList, UpdatePassword, UpdateProfile } from '@/globalType/myProfile.type'
+import {
+  MyProfileTicketRes,
+  MyProfileTicketResList,
+  UpdateAccountReq,
+  UpdatePassword,
+  UpdateProfile
+} from '@/globalType/myProfile.type'
 import { SuccessResponse } from '@/globalType/util.type'
+import httpFormData from '../httpFormData'
 
 const URL = 'api/my-profile'
 
@@ -18,9 +25,19 @@ const myProfileApi = {
     const res = await http.get<SuccessResponse<MyProfileTicketResList>>(URL + '/tickets', { params })
     return res.data
   },
-  updateMyProfile: async (param: UpdateProfile) => {
-    const res = await http.put<SuccessResponse<IAccountTable>>(URL + '/update-account', param)
-    return res.data
+  updateMyProfile: async (param: UpdateAccountReq) => {
+    if (param.avatar) {
+      const formData = new FormData()
+      formData.append('account', JSON.stringify(param.account))
+      formData.append('avatar', param.avatar)
+
+      const res = await httpFormData.put<SuccessResponse<string>>(URL + '/update-account', formData)
+      return res.data
+    } else {
+      // If no avatar, just send JSON data
+      const res = await http.put<SuccessResponse<MyProfileTicketRes>>(URL + '/update-account', param.account)
+      return res.data
+    }
   }
 }
 export default myProfileApi

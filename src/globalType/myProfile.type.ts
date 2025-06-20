@@ -8,6 +8,15 @@ export interface MyProfileTicketResList {
   }
 }
 
+export interface UpdateAccountReq {
+  account: {
+    email: string
+    phone: string
+    fullName: string
+  }
+  avatar?: File
+}
+
 export interface MyProfileTicketRes {
   seatNumber: number
   id: string

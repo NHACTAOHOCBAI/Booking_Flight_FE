@@ -29,9 +29,7 @@ function MyProfile() {
       const value = await personalInfoForm.validateFields()
 
       const body = {
-        email: value.email,
-        fullName: value.fullName,
-        phone: value.phone,
+        account: { email: value.email, fullName: value.fullName, phone: value.phone },
         ...(fileList &&
           fileList.length > 0 && {
             avatar: fileList[0].originFileObj as File

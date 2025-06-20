@@ -3,7 +3,6 @@ import httpFormData from '@/apis/httpFormData'
 import { SuccessResponse } from '@/globalType/util.type'
 import { AccountList, NewAccountReq } from '@/globalType/account.type'
 import { ListConfig } from '@/globalType/listConfig.type'
-import httpFormData from '@/utils/httpFormData'
 
 const URL = 'api/accounts'
 
