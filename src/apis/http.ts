@@ -3,8 +3,8 @@ import { requestInterceptor, requestInterceptorError } from './interceptors/requ
 import { responseInterceptor, responseInterceptorError } from './interceptors/response.interceptor'
 
 const http = axios.create({
-  baseURL: 'http://localhost:8080/',
-  timeout: 10000,
+  baseURL: 'localhost:8000',
+  timeout: 30000,
   headers: {
     'Content-Type': 'application/json',
     Accept: 'application/json'

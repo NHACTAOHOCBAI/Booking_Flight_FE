@@ -1,5 +1,6 @@
 import airlineApi from '@/apis/apis/airline.api'
 import SearchFlightComponent from '@/components/SearchFlightComponent'
+import FloatingChatButton from '@/components/FloatingChatButton'
 import { useQuery } from '@tanstack/react-query'
 import { Button, Collapse, CollapseProps, Input, Typography } from 'antd'
 import TextArea from 'antd/es/input/TextArea'
@@ -268,6 +269,9 @@ const HomePage: React.FC = () => {
             </div>
           </div>
         </div>
+        
+        {/* Floating Chat Button */}
+        <FloatingChatButton currentUserId="guest" />
       </div>
     )
 }
