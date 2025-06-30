@@ -3,7 +3,7 @@ import { requestInterceptor, requestInterceptorError } from './interceptors/requ
 import { responseInterceptor, responseInterceptorError } from './interceptors/response.interceptor'
 
 const http = axios.create({
-  baseURL: 'localhost:8000',
+  baseURL: 'https://bookingflight-java.onrender.com',
   timeout: 30000,
   headers: {
     'Content-Type': 'application/json',
