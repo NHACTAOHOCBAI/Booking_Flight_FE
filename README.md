@@ -33,7 +33,7 @@ Please see the project's features in action through the demo videos below.
 
 ### 🎥 Project Overview Demo
 
-[![Project Demo](https://img.youtube.com/vi/your_video_id_here/0.jpg)](https://drive.google.com/drive/folders/1nUoDji1EEHVjO7A3h0OSh0gq6ROaDO6S?usp=drive_link)
+[![Project Demo]](https://drive.google.com/drive/folders/1nUoDji1EEHVjO7A3h0OSh0gq6ROaDO6S?usp=drive_link)
 *Click the image to view the project overview video on Google Drive.*
 
 ---
