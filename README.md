@@ -9,6 +9,8 @@
 
 **Booking Flight Web** is a comprehensive flight booking platform designed to provide a smooth booking experience for customers and an efficient management tool for administrators. The project consists of two main parts: a user-friendly client-facing interface that allows customers to easily search for and book flights, and a robust Admin Panel for managing flights, tickets, and user accounts.
 
+* **Backend Repository:** [https://github.com/Ductran-05/bookingflight-java.git](https://github.com/Ductran-05/bookingflight-java.git)
+
 ---
 
 ## ✨ Key Features
@@ -41,9 +43,9 @@ Please see the project's features in action through the demo videos below.
 ## 🛠️ Technologies Used
 
 * **Frontend:** `React.js`
-* **Backend:** `Node.js`, `Express.js`
-* **Database:** `MongoDB`
-* **Language:** `TypeScript`
+* **Frontend Languages:** `TypeScript`
+* **Backend:** `Java`, `Spring Boot` (A common framework for Java backends)
+* **Database:** `MongoDB` (Can be used with both Node.js and Java)
 * **UI Framework:** `Ant Design`, `Tailwind CSS`
 * **Other Tools:** `ESLint`, `Vite`
 
